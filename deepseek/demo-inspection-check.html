@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>检验 · 字段血缘演示</title>
+  <style>
+    :root {
+      --green: #00a65a;
+      --deep: #287460;
+      --line: #d3dce1;
+      --soft: #f5f8f9;
+      --blue: #1688ca
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      min-width: 960px;
+      margin: 0;
+      color: #17232d;
+      background: #fff;
+      font: 12px "Microsoft YaHei", Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px
+    }
+
+    .demo-main {
+      flex: 1;
+      max-width: 1050px;
+      min-width: 0
+    }
+
+    .bar {
+      height: 50px;
+      display: flex;
+      color: #fff;
+      background: var(--green)
+    }
+
+    .brand {
+      width: 215px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .nav {
+      display: flex
+    }
+
+    .nav span {
+      width: 70px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-weight: 700
+    }
+
+    .nav span.active {
+      background: rgba(0, 0, 0, .16);
+      box-shadow: inset 0 -3px 0 #fff
+    }
+
+    .bar-info {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: 700;
+      font-size: 11px;
+      gap: 8px;
+      margin-left: auto
+    }
+
+    .bar-badge {
+      background: rgba(255, 255, 255, .2);
+      padding: 2px 8px;
+      border-radius: 10px
+    }
+
+    /* Sub-tabs: MES 入口路径 */
+    .sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}
+    .sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default;white-space:nowrap}
+    .sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}
+    .sub-arr{color:#94a3b8;font-size:10px}
+
+    .toolbar {
+      background: var(--soft);
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .toolbar table {
+      width: 100%
+    }
+
+    .toolbar th {
+      text-align: right;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 6px
+    }
+
+    .toolbar td {
+      padding: 3px 12px 3px 4px
+    }
+
+    .toolbar input,
+    .toolbar select {
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      font-size: 12px;
+      outline: none;
+      width: 150px;
+      height: 28px
+    }
+
+    .btn {
+      border: none;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 5px 14px
+    }
+
+    .btn-pri {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .btn-sec {
+      background: #fff;
+      color: #17232d;
+      border: 1px solid var(--line)
+    }
+
+    .btn-ok {
+      background: var(--green);
+      color: #fff
+    }
+
+    .btn-warn {
+      background: #f59e0b;
+      color: #fff
+    }
+
+    .content {
+      padding: 10px
+    }
+
+    .sec-title {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 0 4px
+    }
+
+    .dg {
+      background: #fff;
+      border: 1px solid var(--line);
+      margin-bottom: 8px
+    }
+
+    .dg table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px
+    }
+
+    .dg th {
+      background: var(--soft);
+      padding: 5px 8px;
+      text-align: left;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      font-size: 10px
+    }
+
+    .dg td {
+      padding: 4px 8px;
+      border-right: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer
+    }
+
+    .dg td[data-k]:hover {
+      background: #eff6ff
+    }
+
+    .col2 {
+      display: flex;
+      gap: 10px
+    }
+
+    .col2>div {
+      flex: 1
+    }
+
+    .fm-wrap {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 10px
+    }
+
+    .fm-wrap table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 6px 3px;
+      font-size: 12px
+    }
+
+    .fm-wrap th {
+      text-align: right;
+      font-weight: 600;
+      white-space: nowrap;
+      padding: 4px 6px;
+      font-size: 11px
+    }
+
+    .fm-wrap td {
+      padding: 4px 6px
+    }
+
+    .fm-wrap input,
+    .fm-wrap select {
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      font-size: 12px;
+      height: 28px;
+      outline: none
+    }
+
+    .fm-wrap input[readonly] {
+      background: #EBEBE4
+    }
+
+    .fm-wrap .w80 {
+      width: 80px
+    }
+
+    .fm-wrap .w100 {
+      width: 100px
+    }
+
+    .fm-wrap .w150 {
+      width: 150px
+    }
+
+    .fm-wrap .w200 {
+      width: 200px
+    }
+
+    /* Card - fixed bottom-right */
+    .card {
+      position: fixed;
+      z-index: 5;
+      right: 24px;
+      bottom: 24px;
+      width: 620px;
+      min-height: 300px;
+      max-height: calc(100vh-40px);
+      overflow: auto;
+      border: 1px solid #b7c9d2;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 15px 36px rgba(24, 53, 70, .26);
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(.98);
+      transition: .16s
+    }
+
+    .card.show {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1)
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 50px;
+      padding: 0 17px;
+      color: #fff;
+      background: #245f84;
+      cursor: move
+    }
+
+    .card-head small {
+      color: #c8e1ed;
+      font-weight: 700;
+      letter-spacing: 1px
+    }
+
+    .card-head h3 {
+      margin: 3px 0 0;
+      font-size: 18px
+    }
+
+    .close {
+      border: 0;
+      color: #fff;
+      background: transparent;
+      font-size: 22px;
+      cursor: pointer
+    }
+
+    .card-body {
+      padding: 16px
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      padding: 10px;
+      border: 1px solid #d8e5df;
+      background: #f7faf8
+    }
+
+    .flow span {
+      display: grid;
+      place-items: center;
+      min-height: 30px;
+      padding: 4px;
+      border: 1px solid #c8d8d0;
+      color: #61766c;
+      background: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center
+    }
+
+    .flow span.active {
+      color: #fff;
+      border-color: var(--deep);
+      background: var(--deep)
+    }
+
+    .meta dt {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 700;
+      margin-top: 10px;
+      text-transform: uppercase
+    }
+
+    .meta dd {
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      margin: 4px 0 0;
+      line-height: 1.5
+    }
+
+    .pth {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 8px
+    }
+
+    .pth span {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+      background: #e8edf0
+    }
+
+    .pth .ar {
+      background: none;
+      padding: 0 2px;
+      color: #94a3b8
+    }
+
+    .stats-panel {
+      width: 280px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .1);
+      flex-shrink: 0;
+      position: sticky;
+      top: 12px;
+      max-height: calc(100vh-24px);
+      overflow-y: auto;
+      font-size: 12px
+    }
+
+    .stats-panel .sh {
+      background: var(--blue);
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 8px 8px 0 0
+    }
+
+    .stats-panel .sh .badge {
+      font-size: 10px;
+      background: #fff3;
+      padding: 2px 8px;
+      border-radius: 10px
+    }
+
+    .stats-panel .ss {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e8edf0
+    }
+
+    .stats-panel .ss:last-child {
+      border-bottom: none
+    }
+
+    .stats-panel .ss h4 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .stats-panel .ss h4 .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block
+    }
+
+    .stats-panel .si {
+      font-size: 11px;
+      padding: 3px 6px;
+      margin-bottom: 2px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .stats-panel .si:hover {
+      background: #f0f6ff
+    }
+
+    .stats-panel .si .sn {
+      flex: 1 1 0%;
+      min-width: 4em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: Consolas, monospace;
+      font-size: 10px;
+      line-height: 1.5
+    }
+
+    .stats-panel .st {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 600
+    }
+
+    .stats-panel .st.tbl {
+      background: #d1fae5;
+      color: #065f46
+    }
+
+    .stats-panel .st.sp {
+      background: #ede9fe;
+      color: #6d28d9
+    }
+
+    .stats-panel .st.bll {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    .stats-panel .st.wcf {
+      background: #fce7f3;
+      color: #be185d
+    }
+
+    .stats-count-row {
+      display: flex;
+      gap: 8px;
+      text-align: center;
+      padding: 10px 14px
+    }
+
+    .stats-count-row>div {
+      flex: 1
+    }
+
+    .stats-count-row .scn {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--blue)
+    }
+
+    .stats-count-row .scl {
+      font-size: 10px;
+      color: #94a3b8
+    }
+
+    /* Lineage expand */
+    .lx-toggle {
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--blue);
+      font-weight: 600;
+      padding: 8px 0
+    }
+
+    .card-detail {
+      display: none;
+      border-top: 2px solid #e2e8f0;
+      margin-top: 8px;
+      padding-top: 8px
+    }
+
+    .card-detail.show {
+      display: block
+    }
+
+    .lineage-wrap {
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px
+    }
+
+    .lxt {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      min-width: 400px
+    }
+
+    .lxt th {
+      background: #f1f5f9;
+      padding: 6px 8px;
+      text-align: left;
+      color: #475569;
+      font-weight: 700;
+      border-bottom: 2px solid #e2e8f0;
+      font-size: 10px
+    }
+
+    .lxt td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b
+    }
+
+    .lxt tbody tr {
+      cursor: pointer
+    }
+
+    .lxt tbody tr:hover td {
+      background: #eff6ff
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo-main">
+    <header class="bar">
+      <div class="brand">ⓘ MES制造执行系统</div>
+      <nav class="nav"><span>工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span
+          class="active">质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span></nav>
+      <div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| 检验 · 字段血缘演示</span></div>
+    </header>
+
+    <div class="sub-tabs">
+    <span class="sub-tab">质量控制</span><span class="sub-arr">▸</span><span class="sub-tab active">检验</span>
+    </div>
+
+    <div class="toolbar">
+      <table>
+        <tr>
+          <th>工序名称：</th>
+          <td><select style="width:180px">
+              <option>来料检验标准流程</option>
+            </select></td>
+          <th>物料编号：</th>
+          <td><input value="2969341" readonly data-k="productNM"></td>
+          <th>生产批号：</th>
+          <td><input value="2630" data-k="mfgBatch"></td>
+          <th>加测：</th>
+          <td><input type="checkbox"></td>
+        </tr>
+        <tr>
+          <th>样品批次：</th>
+          <td><input value="SL2607230001" style="width:180px" data-k="sampleLotNM"></td>
+          <th>包材报表类型：</th>
+          <td><select style="width:150px">
+              <option>变量</option>
+              <option>外观</option>
+            </select></td>
+          <td><button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button> <button class="btn btn-sec"
+              data-k="btnPreview">👁 预览</button></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="content">
+      <div class="sec-title">批次信息：</div>
+      <div class="dg">
+        <table>
+          <thead>
+            <tr>
+              <th>物料编号</th>
+              <th>工单号</th>
+              <th>流水号</th>
+              <th>生产批次</th>
+              <th>抽样批次</th>
+              <th>供应商</th>
+              <th>检验水平</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-k="productNM">2969341</td>
+              <td data-k="mfgOrderNM">MO2026070008</td>
+              <td data-k="lotNM">005226290006001</td>
+              <td>2630</td>
+              <td data-k="sampleLotNM">SL2607230001</td>
+              <td data-k="supplier">汉高股份有限公司</td>
+              <td data-k="inspLevel">正常检验</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sec-title">明细项目：</div>
+      <div class="dg">
+        <table>
+          <thead>
+            <tr>
+              <th>步骤</th>
+              <th>数据采集项</th>
+              <th>标准值</th>
+              <th>下限</th>
+              <th>上限</th>
+              <th>单位</th>
+              <th>结果</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-k="stepNM">1.外观检查</td>
+              <td>外观</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td style="color:var(--green)">合格</td>
+            </tr>
+            <tr>
+              <td>2.粘度测试</td>
+              <td data-k="dataCollectNM">粘度(25℃)</td>
+              <td data-k="standardValue">3500</td>
+              <td>3000</td>
+              <td>4000</td>
+              <td>mPa·s</td>
+              <td style="color:var(--green)">合格</td>
+            </tr>
+            <tr>
+              <td>3.密度测试</td>
+              <td>密度(25℃)</td>
+              <td>1.12</td>
+              <td>1.08</td>
+              <td>1.16</td>
+              <td>g/cm³</td>
+              <td style="color:var(--green)">合格</td>
+            </tr>
+            <tr>
+              <td>4.固含量</td>
+              <td>固含量</td>
+              <td>52.0</td>
+              <td>50.0</td>
+              <td>54.0</td>
+              <td>%</td>
+              <td style="color:var(--green)">合格</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sec-title">步骤：</div>
+      <div class="dg">
+        <table>
+          <thead>
+            <tr>
+              <th>步骤编号</th>
+              <th>步骤名称</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td data-k="stepNM">外观检查</td>
+              <td>已完成</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>粘度测试</td>
+              <td style="color:var(--blue);font-weight:700">← 当前</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>密度测试</td>
+              <td>待执行</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>固含量</td>
+              <td>待执行</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col2">
+        <div class="dg">
+          <table>
+            <thead>
+              <tr>
+                <th>设备编号</th>
+                <th>设备名称</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>EQ001</td>
+                <td data-k="equipmentNM">粘度计-Brookfield</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dg">
+          <table>
+            <thead>
+              <tr>
+                <th>结果</th>
+                <th>判定</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:var(--green);font-weight:700">合格</td>
+                <td data-k="result">通过</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sec-title">基本信息：</div>
+      <div class="fm-wrap">
+        <table>
+          <tr>
+            <th>当前步骤：</th>
+            <td><input class="w200" readonly value="2.粘度测试" data-k="currentStepNM"></td>
+            <th>抽样量：</th>
+            <td><input class="w200" value="125" data-k="aqlQty"></td>
+            <th>设备名：</th>
+            <td><input class="w200" value="粘度计-Brookfield" data-k="equipmentNM"></td>
+            <td><button class="btn btn-sec" data-k="btnRead">读取数据</button></td>
+          </tr>
+          <tr>
+            <th>文件上传：</th>
+            <td><input class="w200" readonly value="—" data-k="fileUpload"></td>
+            <th>允收数：</th>
+            <td><input class="w100" value="3" data-k="aqlAccept"> <b>拒收值：</b><input class="w100" value="4"
+                data-k="aqlReject"></td>
+            <th>值：</th>
+            <td><input class="w100" value="3650" data-k="value"> <b>结果：</b><input class="w100" readonly value="合格"
+                style="color:var(--green);font-weight:700" data-k="result"></td>
+          </tr>
+          <tr>
+            <th>数据采集值：</th>
+            <td><input class="w200" value="3650" data-k="value"></td>
+            <th>供应商批号：</th>
+            <td><input class="w200" value="HS202607001" data-k="supplierMfgBatch"></td>
+            <th>修改原因：</th>
+            <td><input class="w200"></td>
+            <td><button class="btn btn-sec" data-k="btnEdit">修改</button></td>
+          </tr>
+          <tr>
+            <th>标准值：</th>
+            <td><input class="w200" readonly value="3500" data-k="standardValue"></td>
+            <th>供应商：</th>
+            <td><input class="w200" value="汉高股份有限公司" data-k="supplier"></td>
+            <th>微生物日期：</th>
+            <td><input class="w200" type="date" value="2026-07-20" data-k="microbeDate"></td>
+            <td rowspan="2"><button class="btn btn-warn" data-k="btnNext">下一步</button></td>
+          </tr>
+          <tr>
+            <th>上限：</th>
+            <td><input class="w200" readonly value="4000" data-k="maxValue"></td>
+            <td></td>
+            <td></td>
+            <th></th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>下限：</th>
+            <td><input class="w200" readonly value="3000" data-k="minValue"></td>
+            <td></td>
+            <td></td>
+            <th></th>
+            <td rowspan="2"><button class="btn btn-ok" data-k="btnSend">送审</button></td>
+          </tr>
+          <tr>
+            <th>附件：</th>
+            <td><input class="w200" readonly value="检验报告.pdf"></td>
+            <td><input type="file"></td>
+          </tr>
+          <tr>
+            <th>罐号：</th>
+            <td><input class="w200" value="Tank-A12" data-k="tankNM"></td>
+            <th>配制日期：</th>
+            <td><input class="w200" type="date" value="2026-07-19" data-k="makingDate"></td>
+            <th>AMC号：</th>
+            <td><input class="w100" value="AMC2026-001" data-k="amcNo"> <b>订单号：</b><input class="w100"
+                value="PO2026070008" data-k="orderNo"></td>
+          </tr>
+        </table>
+        <div class="lx-toggle" onclick="tgl('inspLineage')">📋 查看所有字段 → 数据库血缘 (20字段)</div>
+        <div class="card-detail" id="inspLineage">
+          <div class="lineage-wrap">
+            <table class="lxt">
+              <thead>
+                <tr>
+                  <th>字段</th>
+                  <th>数据库来源</th>
+                  <th>按钮动作说明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>物料编号</td>
+                  <td>InspectionHistory.ProductNM</td>
+                  <td>查询→GetSampleLotDetail→DAL</td>
+                </tr>
+                <tr>
+                  <td>工单号</td>
+                  <td>InspectionHistory.MfgOrderNM</td>
+                  <td>查询关联</td>
+                </tr>
+                <tr>
+                  <td>流水号</td>
+                  <td>InspectionHistory.LotNM</td>
+                  <td>查询条件</td>
+                </tr>
+                <tr>
+                  <td>样品批次</td>
+                  <td>InspectionHistory.SampleLotNM</td>
+                  <td>SampleLot关联</td>
+                </tr>
+                <tr>
+                  <td>供应商</td>
+                  <td>InspectionHistory.InspectionSupplier</td>
+                  <td>Pro_Inspection_GetSupplier</td>
+                </tr>
+                <tr>
+                  <td>检验水平</td>
+                  <td>InspectionHistory.InspectionLevel</td>
+                  <td>AQL方案</td>
+                </tr>
+                <tr>
+                  <td>步骤名称</td>
+                  <td>InspectionHistory.ProcessSpecStepNM</td>
+                  <td>GetStepList</td>
+                </tr>
+                <tr>
+                  <td>数据采集项</td>
+                  <td>InspectionHistory.DataCollectNM</td>
+                  <td>GetSpecDetailList</td>
+                </tr>
+                <tr>
+                  <td>标准值</td>
+                  <td>InspectionHistory.StandardValue</td>
+                  <td>SpecRecipe</td>
+                </tr>
+                <tr>
+                  <td>下限/上限</td>
+                  <td>InspectionHistory.MinValue/MaxValue</td>
+                  <td>SpecRecipe</td>
+                </tr>
+                <tr>
+                  <td>实测值</td>
+                  <td>InspectionHistory.Value</td>
+                  <td>CheckValue→GetLoadResult</td>
+                </tr>
+                <tr>
+                  <td>检验结果</td>
+                  <td>InspectionHistory.Result</td>
+                  <td>自动判定：[Min,Max]</td>
+                </tr>
+                <tr>
+                  <td>抽样量</td>
+                  <td>InspectionHistory.AQLCheckQty</td>
+                  <td>GetAcrebyAQL</td>
+                </tr>
+                <tr>
+                  <td>设备名</td>
+                  <td>InspectionHistory.EquipmentNM</td>
+                  <td>GetEquipmentInfo</td>
+                </tr>
+                <tr>
+                  <td>供应商批号</td>
+                  <td>InspectionHistory.SupplierMfgBatch</td>
+                  <td>Pro_Inspection</td>
+                </tr>
+                <tr>
+                  <td>罐号</td>
+                  <td>InspectionHistory.TankNM</td>
+                  <td>配制关联</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><b>按钮动作：</b></td>
+                </tr>
+                <tr>
+                  <td>⌕ 查询</td>
+                  <td>→MESZLKZ_InspectionController.Query()</td>
+                  <td>触发GetSampleLotDetail+GetSpecDetailList+GetStepList</td>
+                </tr>
+                <tr>
+                  <td>读取数据</td>
+                  <td>→设备串口→Value</td>
+                  <td>写入InspectionHistory.Value / EquipmentNM</td>
+                </tr>
+                <tr>
+                  <td>下一步</td>
+                  <td>→NextStep(view)</td>
+                  <td>当前步骤→下一步，写入InspectionHistory</td>
+                </tr>
+                <tr>
+                  <td>修改</td>
+                  <td>→EditValue(view)</td>
+                  <td>电子签名校验→修改InspectionHistory.Value</td>
+                </tr>
+                <tr>
+                  <td>送审</td>
+                  <td>→SendApprove()</td>
+                  <td>状态→审核中，写入HistoryMainLine</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-panel">
+    <div class="sh">📊 调用统计<span class="badge">BS·检验</span></div>
+    <div class="stats-count-row">
+      <div>
+        <div class="scn">6</div>
+        <div class="scl">数据库表</div>
+      </div>
+      <div>
+        <div class="scn">2</div>
+        <div class="scl">存储过程</div>
+      </div>
+      <div>
+        <div class="scn">2</div>
+        <div class="scl">BLL/动作</div>
+      </div>
+    </div>
+    <div class="ss">
+      <h4><span class="dot" style="background:#10b981"></span>📊 数据库表</h4>
+      <div class="si"><span class="sn">InspectionHistory</span><span class="st tbl">检验记录</span></div>
+      <div class="si"><span class="sn">InspectionHistoryDetail</span><span class="st tbl">检验明细</span></div>
+      <div class="si"><span class="sn">SampleLot</span><span class="st tbl">抽样批次</span></div>
+      <div class="si"><span class="sn">ProcessSpec / SpecRecipe</span><span class="st tbl">规格配方</span></div>
+      <div class="si"><span class="sn">AQLSamplePlan</span><span class="st tbl">AQL方案</span></div>
+      <div class="si"><span class="sn">Attachment</span><span class="st tbl">附件</span></div>
+    </div>
+    <div class="ss">
+      <h4><span class="dot" style="background:#7c3aed"></span>⚙️ 存储过程</h4>
+      <div class="si"><span class="sn">Pro_Inspection_GetSupplier</span><span class="st sp">SP</span></div>
+      <div class="si"><span class="sn">Pro_Inspection_GetSpecDetailList</span><span class="st sp">SP</span></div>
+    </div>
+    <div class="ss">
+      <h4><span class="dot" style="background:#f59e0b"></span>🔘 按钮动作</h4>
+      <div class="si"><span class="sn">查询→GetSampleLotDetail</span><span class="st wcf">BLL</span></div>
+      <div class="si"><span class="sn">下一步→NextStep()</span><span class="st wcf">状态流转</span></div>
+      <div class="si"><span class="sn">送审→SendApprove()</span><span class="st wcf">审核流转</span></div>
+      <div class="si"><span class="sn">修改→EditValue()</span><span class="st wcf">电子签名</span></div>
+    </div>
+  </div>
+
+  <aside class="card" id="card">
+    <div class="card-head">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title">字段说明</h3>
+      </div><button class="close" onclick="document.getElementById('card').classList.remove('show')">×</button>
+    </div>
+    <div class="card-body">
+      <div class="pth" id="pth"></div>
+      <dl class="meta">
+        <dt>页面字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>数据库来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>数据类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>查询过程 / 按钮动作</dt>
+        <dd id="formula"></dd>
+      </dl>
+      <div class="flow" id="flow"></div>
+    </div>
+  </aside>
+
+  <script>
+    const map = {
+      productNM: ['物料编号', 'InspectionHistory.ProductNM', 'nvarchar(50)', 'GetSampleLotDetail→BLL', ['查询→BLL', 'InspectionHistory.ProductNM']],
+      mfgOrderNM: ['工单号', 'InspectionHistory.MfgOrderNM', 'nvarchar(50)', 'MfgOrder关联', ['MfgOrder', 'InspectionHistory']],
+      lotNM: ['流水号', 'InspectionHistory.LotNM', 'nvarchar(50)', '查询条件', ['查询参数', 'InspectionHistory.LotNM']],
+      mfgBatch: ['生产批号', 'InspectionHistory.MFGBatch', 'nvarchar(80)', 'Lot表关联', ['Lot', 'InspectionHistory']],
+      sampleLotNM: ['样品批次', 'InspectionHistory.SampleLotNM', 'nvarchar(50)', 'SampleLot关联', ['SampleLot', 'InspectionHistory']],
+      supplier: ['供应商', 'InspectionHistory.InspectionSupplier', 'nvarchar(MAX)', 'Pro_Inspection_GetSupplier', ['SP查询', 'InspectionHistory']],
+      inspLevel: ['检验水平', 'InspectionHistory.InspectionLevel', 'nvarchar(50)', 'AQL方案', ['AQLSamplePlan', 'InspectionHistory']],
+      stepNM: ['步骤名称', 'InspectionHistory.ProcessSpecStepNM', 'nvarchar(2000)', 'GetStepList', ['GetStepList', 'InspectionHistory']],
+      dataCollectNM: ['数据采集项', 'InspectionHistory.DataCollectNM', 'nvarchar(50)', 'GetSpecDetailList→DAL', ['GetSpecDetailList', 'InspectionHistory']],
+      standardValue: ['标准值', 'InspectionHistory.StandardValue', 'decimal(18,4)', 'SpecRecipe', ['SpecRecipe', 'InspectionHistory']],
+      minValue: ['下限', 'InspectionHistory.MinValue', 'decimal(18,4)', 'SpecRecipe', ['SpecRecipe', 'InspectionHistory']],
+      maxValue: ['上限', 'InspectionHistory.MaxValue', 'decimal(18,4)', 'SpecRecipe', ['SpecRecipe', 'InspectionHistory']],
+      value: ['实测值', 'InspectionHistory.Value', 'nvarchar(50)', 'CheckValue→GetLoadResult', ['输入/设备读取', 'InspectionHistory.Value']],
+      result: ['检验结果', 'InspectionHistory.Result', 'nvarchar(50)', '自动判定', ['Value∈[Min,Max]', '合格/不合格']],
+      aqlQty: ['抽样量', 'InspectionHistory.AQLCheckQty', 'nvarchar(50)', 'GetAcrebyAQL', ['AQL', 'InspectionHistory']],
+      aqlAccept: ['允收数', 'InspectionHistory.AQLAccept', 'nvarchar(50)', 'AQL方案', ['AQL', 'InspectionHistory']],
+      equipmentNM: ['设备名', 'InspectionHistory.EquipmentNM', 'nvarchar(50)', 'GetEquipmentInfo', ['设备', 'InspectionHistory']],
+      supplierMfgBatch: ['供应商批号', 'InspectionHistory.SupplierMfgBatch', 'nvarchar(200)', 'Pro_Inspection', ['SP', 'InspectionHistory']],
+      microbeDate: ['微生物日期', 'InspectionHistory.MicrobeDate', 'nvarchar(200)', '微生物关联', ['微生物', 'InspectionHistory']],
+      tankNM: ['罐号', 'InspectionHistory.TankNM', 'varchar(50)', '配制关联', ['配制', 'InspectionHistory']],
+      makingDate: ['配制日期', 'InspectionHistory.MakingDate', 'varchar(50)', '配制关联', ['配制', 'InspectionHistory']],
+      amcNo: ['AMC号', 'InspectionHistory.AMCNo', 'nvarchar(200)', '批次关联', ['批次', 'InspectionHistory']],
+      orderNo: ['订单号', 'InspectionHistory.OrderNo', 'nvarchar(200)', '订单关联', ['订单', 'InspectionHistory']],
+      currentStepNM: ['当前步骤', 'ProcessSpecStep.StepNM', 'nvarchar(50)', '当前步骤', ['步骤', 'InspectionHistory']],
+      btnQuery: ['⌕ 查询按钮', '触发→GetSampleLotDetail+GetSpecDetailList+GetStepList', '—', '查询批次→明细→步骤', ['Controller.Query()', '3个BLL调用', '填充3个datagrid']],
+      btnRead: ['读取数据按钮', '设备串口→Value / EquipmentNM', '—', '从称重/测量设备读取', ['设备串口', '写入InspectionHistory']],
+      btnEdit: ['修改按钮', 'EditValue(view)→电子签名校验', '—', '修改实测值需电子签名', ['电子签名', '写入InspectionHistory']],
+      btnNext: ['下一步按钮', 'NextStep(ViewSBList)', '—', '当前步骤推进到下一步', ['NextStep()', '状态流转', '写入InspectionHistory']],
+      btnSend: ['送审按钮', 'SendApprove()→写入HistoryMainLine表', '—', '将当前步骤检验结果提交审核，写入HistoryMainLine审批流主表，进入审核流程（待审核状态），后续由审核人审批后流转到下一步检验或最终判定', ['SendApprove()', '构造审批数据', 'HistoryMainLine表', '状态→待审核', '审核人审批→流转']],
+      btnPreview: ['预览按钮', '打印预览→BCReportPrint', '—', '根据包材报表类型生成预览', ['PrepareProcessSpecPrint']],
+      fileUpload: ['文件上传', 'ApiUpload→Attachment表', '—', '上传文件到附件表', ['ApiUpload', 'Attachment']]
+    };
+    const card = document.getElementById('card');
+    function show(k, n) {
+      const f = map[k]; if (!f) return;
+      document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0];
+      document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2];
+      document.getElementById('formula').textContent = f[3];
+      document.getElementById('pth').innerHTML = (f[4] || []).map((p, i) => (i > 0 ? '<span class="ar">→</span>' : '') + `<span>${p}</span>`).join('');
+
+      // Smart positioning: avoid blocking the clicked element
+      var r = n ? n.getBoundingClientRect() : null;
+      var midX = window.innerWidth / 2, midY = window.innerHeight / 2;
+      var clickX = r ? r.left + r.width / 2 : 0, clickY = r ? r.top + r.height / 2 : 0;
+      var hasTarget = !!r;
+      card.style.left = ''; card.style.top = ''; card.style.right = ''; card.style.bottom = '';
+      if (!hasTarget) {
+        card.style.right = '24px'; card.style.bottom = '24px';
+      } else {
+        if (clickX < midX) { card.style.right = '24px'; } else { card.style.left = '24px'; }
+        if (clickY < midY) { card.style.bottom = '24px'; } else { card.style.top = '24px'; }
+      }
+      card.classList.add('show');
+    }
+    document.querySelectorAll('[data-k]').forEach(n => { n.onclick = () => show(n.dataset.k, n); n.style.cursor = 'pointer' });
+    document.querySelectorAll('.close').forEach(b => b.onclick = () => card.classList.remove('show'));
+    let drag = null; const head = card.querySelector('.card-head');
+    head.onpointerdown = e => { if (e.target.closest('.close') || !card.classList.contains('show')) return; const r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; head.setPointerCapture(e.pointerId) };
+    head.onpointermove = e => { if (!drag) return; card.style.left = `${Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x))}px`; card.style.top = `${Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y))}px` };
+    head.onpointerup = () => drag = null;
+    document.addEventListener('click', e => { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+    function tgl(id) { document.getElementById(id).classList.toggle('show') }
+  </script>
+</body>
+
+</html>

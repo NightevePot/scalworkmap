@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>收料查询 · 字段血缘演示</title>
+<style>:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9}*{box-sizing:border-box;margin:0;padding:0}body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}.demo-main{flex:1;max-width:1100px}.bar{height:50px;display:flex;color:#fff;background:var(--green)}.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default;white-space:nowrap}.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}.sub-arr{color:#94a3b8;font-size:10px}.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line)}.toolbar table{width:100%}.toolbar th{text-align:right;font-size:12px;font-weight:600;padding:3px 6px}.toolbar td{padding:3px 12px 3px 4px}.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}.btn-pri{background:var(--blue);color:#fff}.btn-sec{background:#fff;color:#17232d;border:1px solid var(--line)}.content{padding:8px 10px}.dg{background:#fff;border:1px solid var(--line)}.dg table{width:100%;border-collapse:collapse;font-size:10px}.dg th{background:var(--soft);padding:4px 6px;text-align:left;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;font-weight:700}.dg td{padding:3px 6px;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:10px}.dg td[data-k]:hover{background:#eff6ff}.card{position:fixed;z-index:5;right:24px;bottom:24px;width:620px;min-height:300px;max-height:calc(100vh-40px);overflow:auto;border:1px solid #b7c9d2;border-radius:6px;background:#fff;box-shadow:0 15px 36px rgba(24,53,70,.26);opacity:0;visibility:hidden;transform:scale(.98);transition:.16s}.card.show{opacity:1;visibility:visible;transform:scale(1)}.card-head{display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:0 17px;color:#fff;background:#245f84;cursor:move}.card-body{padding:16px}.pth{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}.pth span{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;background:#e8edf0}.pth .ar{background:none;padding:0 2px;color:#94a3b8}.meta dt{font-size:10px;color:#64748b;font-weight:700;margin-top:10px}.meta dd{font-family:Consolas,monospace;font-size:12px;margin:4px 0 0}.stats-panel{width:280px;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1);flex-shrink:0;position:sticky;top:12px;max-height:calc(100vh-24px);display:flex;flex-direction:column;font-size:12px}.stats-panel .sh{background:var(--blue);color:#fff;padding:8px 12px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-radius:8px 8px 0 0;flex-shrink:0}.stats-body{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}.stats-panel .sh .badge{font-size:9px;background:#fff3;padding:1px 6px;border-radius:10px}.stats-panel .ss{padding:6px 8px;border-bottom:1px solid #e8edf0}.stats-panel .ss h4{font-size:9px;color:#64748b;margin-bottom:4px}.stats-panel .si{font-size:11px;padding:2px 4px;margin-bottom:1px;border-radius:3px;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px}.stats-panel .si .sn{flex:1 1 auto;font-family:Consolas,monospace;font-size:9px;line-height:1.35}.stats-panel .st{font-size:8px;padding:0 3px;border-radius:2px;font-weight:600;flex-shrink:0;white-space:nowrap}.stats-panel .st.tbl{background:#d1fae5;color:#065f46}.stats-panel .st.bll{background:#fef3c7;color:#92400e}.stats-panel .st.api{background:#dbeafe;color:#1d4ed8}.stats-count-row{display:flex;gap:8px;text-align:center;padding:8px 12px}.stats-count-row>div{flex:1}.stats-count-row .scn{font-size:20px;font-weight:800;color:var(--blue)}.stats-count-row .scl{font-size:10px;color:#94a3b8}</style></head><body>
+<div class="demo-main">
+<header class="bar"><div class="brand">ⓘ MES制造执行系统</div><nav class="nav"><span>工艺流程</span><span>企业架构</span><span>生产模型</span><span class="active">查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span></nav><div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| 收料查询 · 字段血缘演示</span></div></header>
+<div class="sub-tabs"><span class="sub-tab">查询管理</span><span class="sub-arr">▸</span><span class="sub-tab active">收料查询</span></div>
+
+<div class="toolbar"><table>
+<tr><th>客户：</th><td><input data-k="sCustomerNM" value="客户A" style="width:180px"></td>
+<th style="padding-left:10px">产品类型：</th><td><input data-k="sProductType" value="原料" style="width:180px"></td>
+<th style="padding-left:10px">物料编号：</th><td><input data-k="sProductBOMNM" value="2969341" style="width:180px"></td></tr>
+<tr><th>客户PO：</th><td><input data-k="sCustomerPO" value="PO2026070008" style="width:180px"></td>
+<th style="padding-left:10px">产品名称：</th><td><input data-k="ProductNM" value="洗发水" style="width:180px"></td>
+<td style="padding-left:10px"><button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button> <button class="btn btn-sec" data-k="btnExport">📥 导出</button> <button class="btn btn-sec" data-k="btnReset">↺ 重置</button></td></tr>
+<tr><th>开始时间：</th><td><input data-k="startDate" value="2026-07-01" style="width:180px"></td>
+<th style="padding-left:10px"><span style="color:crimson">*</span>结束时间：</th><td><input data-k="endDate" value="2026-07-27" style="width:180px"></td></tr>
+</table></div>
+
+<div class="content">
+<div class="dg"><table>
+<thead><tr><th>编号</th><th>客户编码</th><th>入库日期</th><th>物料编号</th><th>品名</th><th>流水号</th><th>生产批号</th><th>收料数量</th><th>单位</th><th>内包个数</th><th>放行日期</th><th>有效日期</th></tr></thead>
+<tbody><tr>
+<td data-k="SN">1</td><td data-k="CustomerCode">C001</td><td data-k="InStockDate">2026-07-23</td><td data-k="ProductNMCol">2969341</td><td data-k="Note">ZW_NE OP SER SUD</td><td data-k="LotNM">005226290006001</td><td data-k="MFGBatch">2630</td><td data-k="ReceivedQty">4000</td><td data-k="UOMNM">kg</td><td data-k="InnerPackageCount">40</td><td data-k="MReleaseDate">2026-07-23</td><td data-k="ExpirationDate">2027-07-23</td>
+</tr></tbody>
+</table></div>
+</div></div>
+
+<aside class="card" id="card"><div class="card-head"><div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div><button class="close-btn" onclick="cl()">×</button></div><div class="card-body"><div class="pth" id="pth"></div><dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl><dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl><dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl><dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl></div></aside>
+
+<div class="stats-panel"><div class="sh">📊 调用统计<span class="badge">BS·收料查询 | CKZY_RecieveMaterialQuery</span></div><div class="stats-body">
+<div class="stats-count-row"><div><div class="scn">4</div><div class="scl">数据库表</div></div><div><div class="scn">1</div><div class="scl">BLL</div></div><div><div class="scn">1</div><div class="scl">存储过程</div></div></div>
+<div class="ss"><h4>📊 数据库表（SP 内联查）</h4><div class="si"><span class="sn" title="InWHOrder">InWHOrder</span><span class="st tbl">入库单</span></div><div class="si"><span class="sn" title="InWHOrderDetail">InWHOrderDetail</span><span class="st tbl">入库明细</span></div><div class="si"><span class="sn" title="Product">Product</span><span class="st tbl">产品</span></div><div class="si"><span class="sn" title="Customer">Customer</span><span class="st tbl">客户</span></div></div>
+<div class="ss"><h4>🧩 BLL</h4><div class="si"><span class="sn" title="CKZY_RecieveMaterialQueryBLL">CKZY_RecieveMaterialQueryBLL</span><span class="st bll">收料查询</span></div></div>
+<div class="ss"><h4>⚙ 存储过程</h4><div class="si"><span class="sn" title="Pro_RecieveMaterialQuery_GetResult_New">Pro_RecieveMaterialQuery_GetResult_New</span><span class="st sp">收料查询</span></div></div></div></div>
+
+<script>
+const map={
+sCustomerNM:['客户','Customer.CustomerNM','nvarchar(100)','combogrid→loadCustomerCombogrid','查询',['Customer']],
+sProductType:['产品类型','Product.ProductType','nvarchar(50)','combogrid→loadProductTypeCombogrid','查询',['Product']],
+sProductBOMNM:['物料编号','Product.ProductNM','nvarchar(50)','combogrid→loadProductCombogrid','查询',['Product']],
+sCustomerPO:['客户PO','InWHOrder.CustomerPO','nvarchar(50)','textbox','查询',['InWHOrder']],
+ProductNM:['产品名称','Product.ProductNM','nvarchar(50)','textbox','查询',['Product']],
+startDate:['开始时间','InWHOrder.InStockDate','datetime','datebox→默认当天','查询',['InWHOrder']],
+endDate:['结束时间','InWHOrder.InStockDate','datetime','datebox→默认当天·必填','查询',['InWHOrder']],
+SN:['编号','Row_Number()','int','List datagrid·scrollview','列表',['GetRecieveMaterialQueryPageList']],
+CustomerCode:['客户编码','Customer.CustomerCode','nvarchar(50)','List datagrid','列表',['Customer']],
+InStockDate:['入库日期','InWHOrder.InStockDate','datetime','List datagrid','列表',['InWHOrder']],
+ProductNMCol:['物料编号','Product.ProductNM','nvarchar(50)','List datagrid','列表',['Product']],
+Note:['品名','Product.Note','nvarchar(300)','List datagrid','列表',['Product']],
+LotNM:['流水号','Lot.LotNM','nvarchar(50)','List datagrid','列表',['Lot']],
+MFGBatch:['生产批号','Lot.MFGBatch','nvarchar(80)','List datagrid','列表',['Lot']],
+ReceivedQty:['收料数量','InWHOrder.ReceivedQty','decimal','List datagrid','列表',['InWHOrder']],
+UOMNM:['单位','UOM.UOMNM','nvarchar(20)','List datagrid','列表',['UOM']],
+InnerPackageCount:['内包个数','InWHOrder.InnerPackageCount','int','List datagrid','列表',['InWHOrder']],
+MReleaseDate:['放行日期','Lot.ReleaseDate','datetime','List datagrid','列表',['Lot']],
+ExpirationDate:['有效日期','Lot.ExpirationDate','date','List datagrid','列表',['Lot']],
+btnQuery:['⌕ 查询','API:GetRecieveMaterialQueryPageList','—','条件→CKZY_RecieveMaterialQueryBLL→InWHOrder+Lot','查询',['CKZY_RecieveMaterialQueryBLL','InWHOrder','Lot']],
+btnExport:['📥 导出','datagrid-export.js→Excel','—','前端导出List为xls','导出',['jquery.datagrid-export']],
+btnReset:['↺ 重置','—','—','清空所有查询条件','重置',['jQuery']],
+};
+const card=document.getElementById('card');
+function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');var r=n?n.getBoundingClientRect():null;var mx=window.innerWidth/2,my=window.innerHeight/2;card.style.left='';card.style.top='';card.style.right='';card.style.bottom='';if(!r){card.style.right='24px';card.style.bottom='24px'}else{if(r.left+r.width/2<mx){card.style.right='24px'}else{card.style.left='24px'}if(r.top+r.height/2<my){card.style.bottom='24px'}else{card.style.top='24px'}}card.classList.add('show')}function cl(){card.classList.remove('show')}
+document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));document.querySelectorAll('.close-btn').forEach(b=>b.onclick=()=>card.classList.remove('show'));
+let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=`${Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))}px`;card.style.top=`${Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))}px`};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
+</script></body></html>

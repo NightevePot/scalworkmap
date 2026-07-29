@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCAL 端到端流程地图</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f4f6f9;
+      color: #1e293b;
+      min-height: 100vh
+    }
+
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .04)
+    }
+
+    .header h1 {
+      font-size: 19px;
+      font-weight: 700;
+      color: #0f172a
+    }
+
+    .sys-tags {
+      display: flex;
+      gap: 6px
+    }
+
+    .sys-tag {
+      font-size: 10px;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      letter-spacing: .3px
+    }
+
+    .sys-bs {
+      background: #dbeafe;
+      color: #1d4ed8
+    }
+
+    .sys-cs {
+      background: #fef3c7;
+      color: #b45309
+    }
+
+    .sys-pda {
+      background: #d1fae5;
+      color: #047857
+    }
+
+    .sys-db {
+      background: #f3f4f6;
+      color: #4b5563
+    }
+
+    .sys-erp {
+      background: #fce7f3;
+      color: #be185d
+    }
+
+    .main {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px
+    }
+
+    .section {
+      width: 100%
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .section-title .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%
+    }
+
+    .mermaid-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, .05);
+      overflow-x: auto;
+      position: relative
+    }
+
+    .mermaid-box:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .1)
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e2e8f0
+    }
+
+    .detail-header .back-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      transition: all .2s
+    }
+
+    .detail-header .back-btn:hover {
+      background: #e2e8f0
+    }
+
+    .detail-header h3 {
+      font-size: 17px;
+      font-weight: 700
+    }
+
+    .blackbox {
+      background: #fdf2f8;
+      border: 2px dashed #ec4899;
+      border-radius: 10px;
+      padding: 20px 30px;
+      text-align: center;
+      color: #9d174d
+    }
+
+    .blackbox h3 {
+      font-size: 16px;
+      margin-bottom: 4px
+    }
+
+    .blackbox p {
+      font-size: 12px;
+      color: #be185d
+    }
+
+    .ev-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+      margin-top: 16px
+    }
+
+    .ev-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px
+    }
+
+    .ev-card h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .ev-type {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+      margin-right: 4px
+    }
+
+    .ev-type-bll {
+      background: #dbeafe;
+      color: #1d4ed8
+    }
+
+    .ev-type-ctrl {
+      background: #ede9fe;
+      color: #6d28d9
+    }
+
+    .ev-type-dal {
+      background: #f3f4f6;
+      color: #4b5563
+    }
+
+    .ev-type-wcf {
+      background: #d1fae5;
+      color: #047857
+    }
+
+    .ev-type-sp {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    .ev-type-tbl {
+      background: #e0f2fe;
+      color: #0369a1
+    }
+
+    .ev-type-frag {
+      background: #fce7f3;
+      color: #9d174d
+    }
+
+    .ev-type-thread {
+      background: #fff7ed;
+      color: #c2410c
+    }
+
+    .ev-type-form {
+      background: #fef3c7;
+      color: #b45309
+    }
+
+    .ev-type-activity {
+      background: #fce7f3;
+      color: #9d174d
+    }
+
+    .ev-item {
+      font-size: 12px;
+      color: #334155;
+      font-family: "SF Mono", "Consolas", monospace;
+      padding: 2px 0;
+      word-break: break-all
+    }
+
+    .branch-legend {
+      display: flex;
+      gap: 16px;
+      padding: 8px 16px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #92400e;
+      margin-top: 12px;
+      flex-wrap: wrap
+    }
+
+    #stageSections {
+      cursor: default;
+      padding-bottom: 60px;
+      min-height: 70vh
+    }
+
+    .back-hint {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 12px;
+      padding: 28px 0 10px;
+      letter-spacing: .5px;
+      user-select: none;
+      pointer-events: none
+    }
+
+    .detail-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-top: 16px
+    }
+
+    .detail-left {
+      flex: 0 0 70%;
+      min-width: 0
+    }
+
+    .detail-right {
+      flex: 0 0 30%;
+      min-width: 0;
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, .05);
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      position: sticky;
+      top: 70px
+    }
+
+    .detail-left .mermaid-box {
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: calc(100vh - 220px);
+      cursor: grab;
+      position: relative
+    }
+
+    .detail-left .mermaid-box:active {
+      cursor: grabbing
+    }
+
+    .detail-left .mermaid-box.panning {
+      cursor: grabbing
+    }
+
+    .detail-left .mermaid {
+      display: table;
+      margin: 0 auto;
+      transform-origin: top center;
+      transition: transform .15s ease
+    }
+
+    .detail-left .mermaid.zooming {
+      transition: none
+    }
+
+    .zoom-bar {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 6px 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      z-index: 10
+    }
+
+    .zoom-bar.show {
+      display: flex
+    }
+
+    .zoom-bar button {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      background: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1
+    }
+
+    .zoom-bar button:hover {
+      background: #f1f5f9
+    }
+
+    .zoom-bar .zoom-pct {
+      font-size: 11px;
+      color: #64748b;
+      min-width: 38px;
+      text-align: center;
+      font-weight: 600
+    }
+
+    .detail-left .mermaid-box {
+      overflow-x: auto;
+      display: flex;
+      justify-content: center
+    }
+
+    .detail-left .mermaid {
+      display: table;
+      margin: 0 auto
+    }
+
+    .detail-left .mermaid-box svg .nodeLabel p,
+    .detail-left .mermaid-box svg .nodeLabel span,
+    .detail-left .mermaid-box svg .node foreignObject div {
+      font-size: 12px !important;
+      line-height: 1.4
+    }
+
+    .detail-left .mermaid-box svg .node foreignObject div small {
+      font-size: 10px !important
+    }
+
+    .detail-right .ev-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 0
+    }
+
+    .detail-right .ev-card {
+      width: 100%
+    }
+
+    /* Demo card in evidence grid */
+    .demo-card:hover {
+      box-shadow: 0 4px 16px rgba(16, 185, 129, .2) !important;
+      border-color: #059669 !important
+    }
+
+    .demo-card h4 {
+      color: #047857
+    }
+
+    @media(max-width:900px) {
+      .main {
+        padding: 12px 8px
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>SCAL 端到端流程地图</h1>
+    <div class="sys-tags">
+      <span class="sys-tag sys-erp">ERP · 外部系统</span>
+      <span class="sys-tag sys-bs">BS · Web MES</span>
+      <span class="sys-tag sys-cs">CS · 桌面MES</span>
+      <span class="sys-tag sys-pda">PDA · 手持</span>
+      <span class="sys-tag sys-db">DB · 数据库</span>
+    </div>
+  </div>
+
+  <div class="main" id="mainContent">
+    <div class="section" id="overviewSection">
+      <div class="section-title"><span class="dot" style="background:#3b82f6"></span> 总览 · 8 阶段主链路 + 生产模型配置 + 结案并行输出</div>
+      <div class="mermaid-box overview" id="overviewChart"></div>
+      <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:300px;background:#f0fdf4;border:2px dashed #22c55e;border-radius:10px;padding:14px 18px">
+          <div style="font-weight:700;font-size:13px;color:#166534;margin-bottom:6px">📐 生产模型配置（基础参考数据，外侧引用）</div>
+          <div style="display:flex;gap:10px;font-size:11px;color:#4b5563">
+            <span style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px"><b>BOM</b> 物料清单<br/><small>MESSCMX_BOM</small></span>
+            <span style="color:#22c55e;align-self:center">→</span>
+            <span style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px"><b>工艺维护</b> 工艺步骤/参数<br/><small>MESGYLC_Recipe</small></span>
+            <span style="color:#22c55e;align-self:center">→</span>
+            <span style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px"><b>BPR配方</b> 批次配方定义<br/><small>MESGYLC_BPR</small></span>
+          </div>
+          <div style="font-size:10px;color:#6b7280;margin-top:6px">↓ BOM引用 ④领料 | ↓ 工艺引用 ⑤称料 | ↓ 配方引用 ⑥BPR作业</div>
+        </div>
+        <div style="flex:1;min-width:300px;background:#fefce8;border:2px dashed #eab308;border-radius:10px;padding:14px 18px">
+          <div style="font-weight:700;font-size:13px;color:#854d0e;margin-bottom:6px">📤 结案阶段 · 并行输出</div>
+          <div style="display:flex;gap:8px;font-size:11px;color:#4b5563;flex-wrap:wrap">
+            <span style="background:#fff;border:1px solid #fde68a;border-radius:6px;padding:4px 8px">📊 BPR报表</span>
+            <span style="background:#fff;border:1px solid #fde68a;border-radius:6px;padding:4px 8px">🔍 数据追溯</span>
+            <span style="background:#fff;border:1px solid #fde68a;border-radius:6px;padding:4px 8px">📋 审计追踪</span>
+            <span style="background:#fff;border:1px solid #fde68a;border-radius:6px;padding:4px 8px">🔗 ERP接口(可选)</span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:8px">点击阶段块或连接箭头查看子流程详情 · 共 13 个热点</div>
+    </div>
+    <div id="stageSections"></div>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: { fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif', fontSize: '15px', primaryColor: '#eff6ff', primaryBorderColor: '#3b82f6', lineColor: '#94a3b8', tertiaryColor: '#f8fafc' }, flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', rankSpacing: 70, nodeSpacing: 40 } });
+
+    const overviewDef = `graph LR
+  P["<b>① 采购</b><br/>Procurement<br/><i>ERP·黑盒</i>"] == "条码申请<br/>→扫码入库" ==> R["<b>② 入库</b><br/>Receiving<br/><i>PDA主导</i>"]
+  R == "→抽样标签" ==> Q["<b>③ 质检</b><br/>Inspection<br/><i>BS主导</i>"]
+  Q == "放行→领料" ==> L["<b>④ 领料/发料</b><br/>Dispatch<br/><i>PDA主导</i>"]
+  L == "发料→称重" ==> W["<b>⑤ 称料</b><br/>Weighing<br/><i>CS主导</i>"]
+  W == "称重→BPR" ==> BPR["<b>⑥ BPR作业</b><br/>BPR Operation<br/><i>BS主导</i>"]
+  BPR == "→配制产出" ==> F["<b>⑦ 产出</b><br/>Output<br/><i>CS主导</i>"]
+  F == "入库→结案" ==> C["<b>⑧ 结案</b><br/>Closure<br/><i>BS主导</i>"]
+  style P fill:#fce7f3,stroke:#ec4899,color:#9d174d,stroke-dasharray:5 5
+  style R fill:#d1fae5,stroke:#059669,color:#065f46
+  style Q fill:#ede9fe,stroke:#7c3aed,color:#6d28d9
+  style L fill:#fee2e2,stroke:#dc2626,color:#991b1b
+  style W fill:#fef3c7,stroke:#d97706,color:#92400e
+  style BPR fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+  style F fill:#cffafe,stroke:#0891b2,color:#0e7490
+  style C fill:#f3f4f6,stroke:#4b5563,color:#374151
+`;
+
+    const stageDefs = {
+      procurement: `<div class="blackbox">
+    <h3>🔒 采购 · ERP 系统（外部黑盒）</h3>
+    <p>采购单来源于外部 ERP 系统，SCAL 通过条码申请/标签分发环节接入</p>
+    <p style="margin-top:8px">SCAL 侧入口：CKZY_LotApplyBLL（采购单下拉） · BarCodeDefBll（条码定义）</p>
+  </div>`,
+
+      receiving: `graph TB
+    A["📥 从采购:标签分发"] --> B["PDA暂收<br/><small>WMS移动端</small>"]
+    B --> C["扫描流水号LotNM<br/><small>校验采购单+物料</small>"]
+    C --> D["暂收确认<br/><small>生成暂收单</small>"]
+    D --> E["PDA扫码入库<br/><small>DoInWH</small>"]
+    E --> F["入库单生成<br/><small>InWHOrder</small>"]
+    F --> G["📤 → 质检阶段"]
+    D -.->|"BS查询"| H["📱暂收单<br/><small>demo-temp-receipt.html</small>"]
+    E -.->|"BS查询"| I["📱收料查询<br/><small>demo-receive-query.html</small>"]
+    style A fill:#d1fae5,stroke:#059669,color:#065f46
+    style B fill:#d1fae5,stroke:#059669,color:#065f46
+    style C fill:#d1fae5,stroke:#059669,color:#065f46
+    style D fill:#d1fae5,stroke:#059669,color:#065f46
+    style E fill:#a7f3d0,stroke:#059669,color:#065f46
+    style F fill:#d1fae5,stroke:#059669,color:#065f46
+    style G fill:#d1fae5,stroke:#059669,color:#065f46
+    style H fill:#d1fae5,stroke:#059669,color:#065f46
+    style I fill:#d1fae5,stroke:#059669,color:#065f46`,
+
+      quality: `graph TB
+    A["📥 从入库:暂收入库"] --> B["<b>📱 抽样标签</b><br/><small>SamplingLabelQueriesBLL</small>"]
+    B --> C["<b>📱 送检</b><br/><small>ZLKZ_SendBLL</small>"]
+    C --> C2["<b>📱 检验</b><br/><small>MESZLKZ_InspectionBLL</small>"]
+    C2 --> C3["<b>📱 质检结果判定</b><br/><small>MESZLKZ_FinalInspectionBLL</small>"]
+    C3 --> D{"<b>检验合格？</b><br/><small>人工判定</small>"}
+    D -->|"✅ 合格"| E["放行<br/><small>MESZLKZ_ReleaseHoldBLL</small>"]
+    D -->|"❌ 不合格"| F["扣留/报废返工<br/><small>人工操作</small>"]
+    D -->|"⏳ 待定"| G["复检<br/><small>MESZLKZ_ReInspecBLL</small>"]
+    G --> C3
+    E --> H["📤 → 称料阶段"]
+    F --> I["退货 / 报废 / 让步接收<br/><small>人工决策</small>"]
+    E -.->|"📱demo"| E2["<b>📱 放行/滞留</b><br/><small>demo-release-hold.html</small>"]
+    style A fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style B fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style C fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style C2 fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style C3 fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style D fill:#fde68a,stroke:#f59e0b,color:#92400e
+    style E fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style F fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style G fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style H fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style I fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style E2 fill:#d1fae5,stroke:#059669,color:#065f46
+    linkStyle 5 stroke:#10b981,stroke-width:2.5px
+    linkStyle 6 stroke:#ef4444,stroke-width:2.5px
+    linkStyle 7 stroke:#f59e0b,stroke-width:2.5px
+    linkStyle 8 stroke:#f59e0b,stroke-width:1.5px
+    linkStyle 9 stroke:#10b981,stroke-width:2px
+    linkStyle 10 stroke:#ef4444,stroke-width:2px`,
+
+      loading: `graph TB
+    A["📥 从质检:放行"] --> B["工单领料<br/><small>PDA: GongDanLingLiaoFragment</small>"]
+    B --> C["发料扫描<br/><small>DoDispatchLot</small>"]
+    C --> D["领料确认<br/><small>DispatchConfirm</small>"]
+    D --> E["DispatchHistory 生成<br/><small>LotEstate = 10 (线边仓)</small>"]
+    E --> F["📤 → 称料阶段"]
+    B -.->|"BS查询"| G["📱工单<br/><small>demo-work-order.html</small>"]
+    style A fill:#fee2e2,stroke:#dc2626,color:#991b1b
+    style B fill:#fee2e2,stroke:#dc2626,color:#991b1b
+    style C fill:#fee2e2,stroke:#dc2626,color:#991b1b
+    style D fill:#fee2e2,stroke:#dc2626,color:#991b1b
+    style E fill:#fecaca,stroke:#dc2626,color:#991b1b
+    style F fill:#fee2e2,stroke:#dc2626,color:#991b1b
+    style G fill:#d1fae5,stroke:#059669,color:#065f46`,
+
+      weighing: `graph TB
+    A["📥 从领料:发料完成<br/><small>DispatchHistory 已存在</small>"] --> B["投前称重确认<br/><small>CS: frmME_IssueMaterial_Weighting</small>"]
+    B --> C{"称重结果"}
+    C -->|"✅ 在允差内"| D["称重测试<br/><small>frmME_WeightingTest</small>"]
+    C -->|"❌ 超差"| E["异常处理<br/><small>调整/退回</small>"]
+    E --> B
+    D --> F["称重流水号生成<br/><small>LotNM + W001</small>"]
+    F --> G["📤 → BPR作业阶段"]
+    B -.->|"BS查询"| H["📱物料称重查询<br/><small>demo-weighing-query.html</small>"]
+    D -.->|"BS报表"| I["📱预称报表<br/><small>demo-pre-weight.html</small>"]
+    style A fill:#fef3c7,stroke:#d97706,color:#92400e
+    style B fill:#fef3c7,stroke:#d97706,color:#92400e
+    style C fill:#fde68a,stroke:#d97706,color:#92400e
+    style D fill:#fef3c7,stroke:#d97706,color:#92400e
+    style E fill:#fef3c7,stroke:#d97706,color:#92400e
+    style F fill:#fef3c7,stroke:#d97706,color:#92400e
+    style G fill:#fef3c7,stroke:#d97706,color:#92400e
+    style H fill:#d1fae5,stroke:#059669,color:#065f46
+    style I fill:#d1fae5,stroke:#059669,color:#065f46
+    linkStyle 1 stroke:#10b981,stroke-width:2.5px
+    linkStyle 2 stroke:#ef4444,stroke-width:2.5px
+    linkStyle 3 stroke:#ef4444,stroke-width:2px
+    linkStyle 5 stroke:#059669,stroke-width:1.5px,stroke-dasharray:5
+    linkStyle 6 stroke:#059669,stroke-width:1.5px,stroke-dasharray:5`,
+
+      bpr: `graph TB
+    A["📥 从称料:称重确认"] --> B["BPR配制作业<br/><small>BS: BPR作业页面</small>"]
+    B --> C["预配物<br/><small>工艺步骤执行</small>"]
+    C --> D["主配物<br/><small>加料→搅拌→循环→均质→出料→确认</small>"]
+    D --> E{"是否跳步？"}
+    E -->|"是"| F["跳步确认<br/><small>电子签名→审计追踪</small>"]
+    E -->|"否"| G["继续执行"]
+    F --> G
+    G --> H["预配物三<br/><small>后续步骤</small>"]
+    H --> I["BPR完成<br/><small>主配物状态=完成</small>"]
+    I --> J["📤 → 产出阶段"]
+    style A fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style B fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style C fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style D fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style E fill:#c7d2fe,stroke:#6366f1,color:#3730a3
+    style F fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style G fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style H fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style I fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    style J fill:#e0e7ff,stroke:#6366f1,color:#3730a3
+    linkStyle 2 stroke:#10b981,stroke-width:2.5px
+    linkStyle 3 stroke:#ef4444,stroke-width:2.5px
+    linkStyle 4 stroke:#ef4444,stroke-width:2px
+    linkStyle 5 stroke:#10b981,stroke-width:2px`,
+
+      formula: `graph TB
+    A["📥 从BPR作业:配制完成"] --> B["工单启动<br/><small>PDA: StartMfgOrder</small>"]
+    B --> C["设备启动<br/><small>CS: frmME_EquipmentStart</small>"]
+    C --> D["操作指导<br/><small>MESGYLC_Recipe · 加载工艺配方</small>"]
+    D --> E["配制产出<br/><small>CS: frmME_PZOutput</small>"]
+    E --> H{"<b>产出判定</b><br/><small>人工判定</small>"}
+    H -->|"✅ 合格"| I["成品入库<br/><small>CompliteProductInWarehouse</small>"]
+    H -->|"❌ 不合格"| J["报废/返工<br/><small>frmME_ScrapOrder</small>"]
+    J --> E
+    I --> K["📤 → 结案阶段"]
+    style A fill:#cffafe,stroke:#0891b2,color:#0e7490
+    style B fill:#cffafe,stroke:#0891b2,color:#0e7490
+    style C fill:#cffafe,stroke:#0891b2,color:#0e7490
+    style D fill:#cffafe,stroke:#0891b2,color:#0e7490
+    style E fill:#cffafe,stroke:#0891b2,color:#0e7490
+    style H fill:#fde68a,stroke:#f59e0b,color:#92400e
+    style I fill:#cffafe,stroke:#0891b2,color:#0e7490
+    style J fill:#cffafe,stroke:#0891b2,color:#0e7490
+    style K fill:#cffafe,stroke:#0891b2,color:#0e7490
+    linkStyle 5 stroke:#10b981,stroke-width:2.5px
+    linkStyle 6 stroke:#ef4444,stroke-width:2.5px
+    linkStyle 7 stroke:#ef4444,stroke-width:2px`,
+
+      closure: `graph TB
+    A["📥 从产出:成品入库"] --> B["结案前检查<br/><small>Pro_MfgOrder_Close_Check</small>"]
+    B --> C{"检查结果"}
+    C -->|"✅ 通过"| D["正常结案<br/><small>Pro_MfgOrder_Close</small>"]
+    C -->|"⚠️ 偏差≥5%"| E["强制结案确认"]
+    C -->|"❌ 阻断"| F["待处理<br/><small>线边未送库/退料未收/产线未关</small>"]
+    E --> D
+    D --> G["MOStatus=2<br/><small>工单已结案</small>"]
+    G --> H["线边归档<br/><small>LotDeduction</small>"]
+    G --> I["ERP接口<br/><small>InterfaceBusiness</small>"]
+    D -.->|"并行报表"| J["📱BPR记录查询<br/><small>demo-bpr-record.html</small>"]
+    D -.->|"并行追溯"| K["📱数据链查询<br/><small>demo-data-link.html</small>"]
+    D -.->|"并行追溯"| L["📱质量追溯<br/><small>demo-quality-trace.html</small>"]
+    D -.->|"并行报表"| M["📱预称报表<br/><small>demo-pre-weight.html</small>"]
+    style A fill:#f3f4f6,stroke:#6b7280,color:#374151
+    style B fill:#f3f4f6,stroke:#6b7280,color:#374151
+    style C fill:#e5e7eb,stroke:#6b7280,color:#374151
+    style D fill:#f3f4f6,stroke:#6b7280,color:#374151
+    style E fill:#fef3c7,stroke:#f59e0b,color:#92400e
+    style F fill:#fee2e2,stroke:#dc2626,color:#991b1b
+    style G fill:#f3f4f6,stroke:#6b7280,color:#374151
+    style H fill:#f3f4f6,stroke:#6b7280,color:#374151
+    style I fill:#f3f4f6,stroke:#6b7280,color:#374151
+    style J fill:#d1fae5,stroke:#059669,color:#065f46
+    style K fill:#d1fae5,stroke:#059669,color:#065f46
+    style L fill:#d1fae5,stroke:#059669,color:#065f46
+    style M fill:#d1fae5,stroke:#059669,color:#065f46
+    linkStyle 3 stroke:#10b981,stroke-width:2.5px
+    linkStyle 4 stroke:#f59e0b,stroke-width:2.5px
+    linkStyle 5 stroke:#ef4444,stroke-width:2.5px
+    linkStyle 6 stroke:#f59e0b,stroke-width:2px
+    linkStyle 7 stroke:#10b981,stroke-width:2.5px`
+    };
+
+    const stageIds = ['procurement', 'receiving', 'quality', 'loading', 'weighing', 'bpr', 'formula', 'closure'];
+    const stageNames = { procurement: '采购', receiving: '入库', quality: '质检', loading: '领料/发料', weighing: '称料', bpr: 'BPR作业', formula: '产出', closure: '结案' };
+    const stageColors = { procurement: '#ec4899', receiving: '#059669', quality: '#7c3aed', loading: '#dc2626', weighing: '#d97706', bpr: '#6366f1', formula: '#0891b2', closure: '#4b5563' };
+    let currentStage = null;
+    let currentConn = null; // connection index (-1 = stage detail, 0-6 = connection detail)
+
+    // ===== CONNECTION DEFINITIONS =====
+    const connNames = [
+      '采购 → 入库：条码申请·标签打印·扫码入库',
+      '入库 → 质检：入库完成·抽样标签',
+      '质检 → 领料：放行·工单领料',
+      '领料 → 称料：发料完成·投前称重',
+      '称料 → BPR作业：称重确认·BPR配制',
+      'BPR作业 → 产出：配制完成·工单产出',
+      '产出 → 结案：成品入库·结案归档'
+    ];
+    const connDefs = [
+      // 0: 采购→入库（交接：标签分发到收货区）
+      `graph TB
+        A["🏷️ 标签分发完成<br/><small>LotNM流水号已生成</small>"] --> B["物理贴标<br/><small>ZDesigner打印·贴标到货物</small>"]
+        B --> C["货物送至收货区"]
+        C --> D["PDA扫描LotNM<br/><small>触发暂收/入库流程</small>"]
+        style A fill:#dbeafe,stroke:#2563eb
+        style B fill:#fef3c7,stroke:#d97706
+        style C fill:#fef3c7,stroke:#d97706
+        style D fill:#d1fae5,stroke:#059669`,
+      // 1: 入库→质检（交接：入库完成触发抽样）
+      `graph TB
+        A["InWHOrder 入库完成<br/><small>LotNM已入系统库存</small>"] --> B["抽样规则匹配<br/><small>物料类别+供应商判定</small>"]
+        B --> C["生成SampleLot<br/><small>Pro_CreateSampleLot_New</small>"]
+        C --> D["送检阶段入口<br/><small>ZLKZ_SendBLL</small>"]
+        style A fill:#d1fae5,stroke:#059669
+        style B fill:#fef3c7,stroke:#f59e0b
+        style C fill:#ede9fe,stroke:#7c3aed
+        style D fill:#ede9fe,stroke:#7c3aed`,
+      // 2: 质检→领料（交接：放行后批次可用）
+      `graph TB
+        A["放行确认<br/><small>HoldStatus→放行</small>"] --> B["批次状态变更<br/><small>Lot.QCState→可投料</small>"]
+        B --> C["PDA工单领料<br/><small>扫描流水号发料</small>"]
+        style A fill:#ede9fe,stroke:#7c3aed
+        style B fill:#fef3c7,stroke:#f59e0b
+        style C fill:#fee2e2,stroke:#dc2626`,
+      // 3: 领料→称料（交接：发料记录→称重校验）
+      `graph TB
+        A["DispatchHistory 生成<br/><small>发料完成·数量>0</small>"] --> B["LotEstate = 10<br/><small>物料到达线边仓</small>"]
+        B --> C["称重SP校验<br/><small>DispatchHistory存在+量>0</small>"]
+        C --> D["投前称重<br/><small>frmME_IssueMaterial_Weighting</small>"]
+        style A fill:#fee2e2,stroke:#dc2626
+        style B fill:#fef3c7,stroke:#f59e0b
+        style C fill:#fef3c7,stroke:#d97706
+        style D fill:#fef3c7,stroke:#d97706`,
+      // 4: 称料→BPR作业（交接：称重完成→工艺配方关联）
+      `graph TB
+        A["称重流水号 W001<br/><small>WeighingHistory.Status=1</small>"] --> B["关联工艺配方<br/><small>ProcessSpecStep→BPR配方行</small>"]
+        B --> C["BPR作业触发<br/><small>预配物·主配物·预配物三</small>"]
+        style A fill:#fef3c7,stroke:#d97706
+        style B fill:#e0e7ff,stroke:#6366f1
+        style C fill:#e0e7ff,stroke:#6366f1`,
+      // 5: BPR作业→产出（交接：配制完成→工单启动）
+      `graph TB
+        A["BPR主配物完成<br/><small>各步骤OK/Skip</small>"] --> B["配制罐选择<br/><small>设备编号+配制罐号</small>"]
+        B --> C["工单启动<br/><small>PDA: StartMfgOrder</small>"]
+        C --> D["产出执行<br/><small>frmME_PZOutput</small>"]
+        A -->|"回环"| E["余料退回称重<br/><small>frmME_SurplusMaterial</small>"]
+        style A fill:#e0e7ff,stroke:#6366f1
+        style B fill:#cffafe,stroke:#0891b2
+        style C fill:#cffafe,stroke:#0891b2
+        style D fill:#cffafe,stroke:#0891b2
+        style E fill:#fef3c7,stroke:#d97706`,
+      // 6: 产出→结案（交接：成品入库→结案检查）
+      `graph TB
+        A["成品入库完成<br/><small>CompliteProductInWarehouse</small>"] --> B["结案前检查<br/><small>Pro_MfgOrder_Close_Check</small>"]
+        B --> C{"检查结果"}
+        C -->|"通过"| D["结案关闭<br/><small>MOStatus=2</small>"]
+        C -->|"偏差≥5%"| E["强制结案确认"]
+        C -->|"阻断"| F["待处理"]
+        style A fill:#cffafe,stroke:#0891b2
+        style B fill:#f3f4f6,stroke:#4b5563
+        style C fill:#e5e7eb,stroke:#6b7280
+        style D fill:#f3f4f6,stroke:#4b5563
+        style E fill:#fef3c7,stroke:#f59e0b
+        style F fill:#fee2e2,stroke:#dc2626`
+    ];
+
+    const connEvidenceData = [
+      // 0: 采购→入库（交接：标签分发到收货区）
+      [
+        { sys: '交接物', items: ['LotNM 流水号（条码）从采购阶段传入入库阶段', '物理标签贴在货物外包装上'] },
+        { sys: '触发条件', items: ['标签分发完成 → 货物到达收货区 → PDA扫描LotNM启动暂收'] },
+        { sys: '关键代码', bll: ['SendLabelQueryBLL（标签分发查询）'], wcf: ['GetProductInWarehouseOrderSumInfo（PDA扫描后调用）'] }
+      ],
+      // 1: 入库→质检（交接：入库完成触发抽样）
+      [
+        { sys: '交接物', items: ['LotNM（已入库批次号）', 'InWHOrder 入库单'] },
+        { sys: '触发条件', items: ['入库完成 → 系统按物料类别+供应商规则判断是否需要抽样 → 生成SampleLot'] },
+        { sys: '关键代码', sp: ['Pro_CreateSample_GetReceivedLotList_New（获取待抽样列表）', 'Pro_CreateSampleLot_New（生成样品批次）'] }
+      ],
+      // 2: 质检→领料（交接：放行后批次可用）
+      [
+        { sys: '交接物', items: ['LotNM + QCState=放行', 'HoldReleaseHistory 放行记录'] },
+        { sys: '触发条件', items: ['检验合格 → 放行操作 → 批次状态变为可投料 → PDA可查询到放行批次'] },
+        { sys: '关键代码', bll: ['MESZLKZ_ReleaseHoldBLL'], wcf: ['DoHoldOrRelease'] }
+      ],
+      // 3: 领料→称料（交接：发料记录→称重校验）
+      [
+        { sys: '交接物', items: ['DispatchHistory（发料记录）', 'LotEstate=10（线边仓状态）'] },
+        { sys: '硬约束', items: ['称重SP前置校验：DispatchHistory必须存在 且 发料量>0 且 LotEstate=10 → 否则拒绝称重'] },
+        { sys: '关键代码', sp: ['Pro_IssueMaterial_Confirm_News（称重确认·校验DispatchHistory）'] }
+      ],
+      // 4: 称料→BPR作业（交接：称重完成→工艺配方关联）
+      [
+        { sys: '交接物', items: ['称重流水号（原LotNM+W后缀）', 'WeighingHistory（Status=1激活）'] },
+        { sys: '触发条件', items: ['称重完成 → 称重记录关联ProcessSpecStep → BPR配方行获取工艺参数 → 启动BPR作业'] },
+        { sys: '关键代码', sp: ['Pro_Tran_Weighing_News（称重历史写入）', 'Pro_STD_Tran_DispatchSplit（发料拆分关联称重批次）'] }
+      ],
+      // 5: BPR作业→产出（交接：配制完成→工单产出）
+      [
+        { sys: '交接物', items: ['BPR完成状态（主配物=完成）', '配制罐编号'] },
+        { sys: '分支', items: ['正常路径：BPR完成→配制罐选择→工单启动→产出', '回环路径：余料退回称重（frmME_SurplusMaterial）'] },
+        { sys: '关键代码', form: ['frmME_PZOutput（配制产出）'], sp: ['Pro_PZOutput_Packing_New'] }
+      ],
+      // 6: 产出→结案（交接：成品入库→结案检查）
+      [
+        { sys: '交接物', items: ['成品入库单', '产出Lot批次', 'BPRStartHistory'] },
+        { sys: '阻断条件', items: ['线边未送库→阻断', '退料未收→阻断', '产线未关→阻断', '产出<2分钟→阻断', '耗用偏差≥5%→强制结案'] },
+        { sys: '关键代码', sp: ['Pro_MfgOrder_Close_Check（结案前校验）', 'Pro_MfgOrder_Close（执行结案）'] }
+      ]
+    ];
+
+    // ===== EVIDENCE DATA =====
+    const evidenceData = {
+      procurement: [
+        { sys: 'ERP系统(外部)', type: 'blackbox', items: ['采购单来源于 ERP，SCAL 无法感知采购内部流程', '采购单号 PO 从 ERP 传入 SCAL，作为条码申请的起点'] },
+        {
+          sys: 'Web MES(BS) · 条码申请',
+          bll: ['CKZY_LotApplyBLL（采购单下拉查询→选择物料→输入DateCode/批号→生成流水号）'],
+          ctrl: ['CKZY_LotApplyController'],
+          sp: ['Pro_LotApply_GetPurchaseOrderDetailList_New', 'Pro_LotApply_AddPurchaseOrderLotApplyOutPackage'],
+          tbl: ['PurchaseOrder', 'PurchaseOrderDetail', 'PurchaseOrderLotApply（LotNM流水号=条码内容）', 'BarCodeDef（条码格式定义）']
+        },
+        {
+          sys: 'Web MES(BS) · 标签分发/打印',
+          bll: ['SendLabelQueryBLL（标签分发查询）'],
+          ctrl: ['SendLabelQueryController'],
+          tbl: ['BarCodeDef']
+        },
+        { sys: 'PDA后端', bll: ['BarCodeDefBll（条码定义CRUD）'] },
+        { sys: '桌面MES(CS)', form: ['frmME_LotReprint（标签补打）'] }
+      ],
+      receiving: [
+        {
+          sys: 'PDA前端 · 暂收',
+          frag: ['ZanShouFramgnet_A/B（暂收界面）'],
+          thread: ['ZanShouThread', 'ZanShouMingXiThread']
+        },
+        {
+          sys: 'PDA后端 · 暂收WCF',
+          wcf: ['AddTemporaryReceiptOrder（创建暂收单）', 'AddTemporaryReceiptOrderDetail', 'CompliteTemporaryReceipt（完成暂收）'],
+          sp: ['Pro_PDA_TemporaryReceiptOrder_Add', 'Pro_PDA_Tran_TemporaryReceiptLotStart_Basic']
+        },
+        { sys: 'PDA后端 · 暂收数据', tbl: ['TemporaryReceiptOrder', 'TemporaryReceiptOrderDetail'] },
+        {
+          sys: 'PDA前端 · 扫码入库',
+          frag: ['JieShouFramgnet_A/B（入库扫描）', 'RuKuFramgnet_A/B（入库操作）'],
+          thread: ['ScanReceiveThread', 'SaoMiaoJieShouThread', 'AddRukuDanThread', 'RukuThread']
+        },
+        {
+          sys: 'PDA后端 · 入库WCF',
+          wcf: ['GetProductInWarehouseOrderSumInfo', 'DoInWH（执行入库）', 'CheckInWHQty', 'AddProductInWarehouseOrder', 'CompliteProductInWarehouseOrder'],
+          sp: ['Pro_PDA_MfgInWHOrder_Add', 'Pro_PDA_MfgInWHOrder_AddDetail']
+        },
+        { sys: 'PDA后端 · 入库数据', bll: ['InWHBll'], dal: ['InWHDal'], tbl: ['InWH', 'InWHOrder', 'InWHDetail', 'CheckInHistory', 'MfgInWHOrder'] },
+        { sys: 'Web MES(BS) · 查询', bll: ['CKZY_RecieveMaterialQueryBLL（收料查询）', 'CKZY_TemporaryReceiptOrderBLL（暂收单查询）', 'CKZY_UnfinishedTempReceiptBLL（未完成暂收）'] }
+      ],
+      quality: [
+        {
+          sys: 'Web MES(BS) · 抽样标签',
+          bll: ['SamplingLabelQueriesBLL', 'ZLKZ_SamplingLabelBLL', 'ZLKZ_BCPSamplingLabelBLL', 'ZLKZ_GZSamplingLabelBLL', 'ZLKZ_PZSamplingLabelBLL'],
+          ctrl: ['SamplingLabelQueriesController'],
+          tbl: ['SampleLot', 'SampleLotDetail']
+        },
+        { sys: 'Web MES(BS) · 送检', bll: ['ZLKZ_SendBLL（送检操作）'] },
+        {
+          sys: 'Web MES(BS) · 质检结果判定',
+          bll: ['MESZLKZ_InspectionBLL（来料检验判定）', 'MESZLKZ_InspectionCPBLL（成品检验判定）', 'MESZLKZ_FinalInspectionBLL（最终检验判定）', 'MESZLKZ_ReInspecBLL（复检判定）', 'MESZLKZ_InspectionExemptionBLL（免检判定）'],
+          sp: ['Pro_Inspection_GetSupplier', 'Pro_Inspection_GetSpecDetailList'],
+          tbl: ['InspectionHistory']
+        },
+        { sys: 'Web MES(BS) · 放行/滞留', bll: ['MESZLKZ_ReleaseHoldBLL', 'HoldReleaseHistoryBLL'], tbl: ['HoldReleaseHistory'] },
+        { sys: 'PDA · 滞留/放行', wcf: ['DoHoldOrRelease'], activity: ['FragmentHoldReleaseActivity'] },
+        {
+          sys: 'Web MES(BS) · IPQC在线检测(23+项)',
+          bll: ['MESZLKZ_PAD_IPQC_FirstCheckBLL（首检）', 'MESZLKZ_PAD_IPQC_OnLineAppearanceInspectionBLL（外观）', 'MESZLKZ_PAD_IPQC_OnLineSealingCheckFormBLL（密封）', '... 等23+种'],
+          tbl: ['IPQCCheck', 'IPQCCheckDetail', 'IPQCCheckMaster']
+        }
+      ],
+      weighing: [
+        { sys: '桌面MES(CS) · 称重', form: ['frmME_IssueMaterial_Weighting（投前称重确认）', 'frmME_WeightingTest（称重测试）', 'frmME_SurplusMaterial（余料称重）'] },
+        { sys: 'Web MES(BS)', bll: ['CKZY_MaterialWeighingBLL（物料称重查询）', 'MESZZZX_SurplusMaterialBLL（余料称重）'] },
+        { sys: '数据库', tbl: ['WeightingEquipmentContentList', 'WeightingEquipmentHanderList', 'WeightingEquipmentValueView', 'WeighingHistory'] }
+      ],
+      bpr: [
+        { sys: 'Web MES(BS) · BPR作业', bll: ['MESGYLC_OperationBLL（BPR作业·工艺步骤执行）', 'tonBPRRecord（BPR作业页面）', 'tonBPRRecordEdir（BPR作业修改）'] },
+        { sys: 'Web MES(BS) · BPR配方配置', bll: ['MESGYLC_BPR（BPR配方定义）', 'MESGYLC_BPRApprovel（BPR核准）'], tbl: ['BPRSize'] },
+        { sys: '数据库', tbl: ['BPRHistory', 'BPRTimeHistory', 'BPRWorkLog', 'BPRLoadMaterial'], sp: ['Pro_Tran_Weighing_News（称重历史关联BPR）'] },
+        { sys: '衔接说明', items: ['BPR作业介于称重与产出之间：称重完成后进入BPR配制页面→按预配物/主配物/预配物三执行工艺步骤→支持跳步(审计追踪)→完成后进入产出阶段'] }
+      ],
+      loading: [
+        {
+          sys: 'PDA前端 · 领料',
+          frag: ['GongDanLingLiaoFragment_A/B/C（工单领料）', 'Fragment_GongDanTouLiao_A/B/C（工单投料）', 'DiaoLiaoFramgnet_A（调料理库）'],
+          thread: ['GongDanLingLiaoThread', 'FaLiaoThread', 'B_FaLiaoThread', 'TouLiaoItemThread', 'JieLiaoThread']
+        },
+        {
+          sys: 'PDA后端 · WCF接口',
+          wcf: ['DoLoadMaterial（PDA端配制）', 'CompliteLoadMaterial（完成配制）', 'CompliteLoadSMTMaterial（完成SMT上料）', 'DoProductLineLoadMaterialLoad（产线上料加载）', 'DoDispatchLot（发料扫描）', 'DoDisptachLot（派工发料）', 'DoProductLineDispatchConfirm（产线派工确认）'],
+          bll: ['LoadMaterialBll'], dal: ['LoadMaterialDal', 'ResourceLoadedMaterial2Dal']
+        },
+        { sys: '桌面MES(CS) · 配制', form: ['frmME_IssueMaterial（发料/配制主界面）', 'frmME_IssueMaterialCheck（配制校验）'] },
+        { sys: 'Web MES(BS)', bll: ['MESZZZX_IssueMaterialBLL'], tbl: ['BPRLoadMaterial', 'ProductLineLoadMaterialHistory', 'V_ResourceLoadMaterial', 'DispatchMaterialOrder'] }
+      ],
+      formula: [
+        { sys: 'PDA前端', activity: ['StartMfgOrder（工单启动）'], frag: ['Fragment_Output_a/b（产出扫描）', 'Fragment_Collect_a/b/c/d（数据采集）', 'ChanChuPingRuKuNewFragment（成品入库）'], thread: ['YesThread', 'TotalThread'] },
+        { sys: 'PDA后端 · WCF', wcf: ['AddMfgOrderStart（工单启动）', 'DoMfgOrderStartStart', 'DoOutput（产出）', 'DoProductLineOutPut（产线产出）', 'CompliteProductInWarehouseOrder（成品入库完成）'], bll: ['MfgOrderStartBll', 'RecipeBll'], dal: ['RecipeDal'] },
+        { sys: '桌面MES(CS) · 产出', form: ['frmME_PZOutput（PZ配置产出）', 'frmME_BCPOutput（BCP半成品产出）', 'frmME_EquipmentConfigOut（设备配置产出）', 'frmME_CPPackage（成品包装）', 'frmME_EquipmentStart（设备启动）', 'frmME_ScrapOrder（报废单）'] },
+        { sys: 'Web MES(BS)', bll: ['MESZZZX_PZOutputBLL', 'MESZZZX_BCPOutputBLL', 'MESZZZX_EquipmentConfigOutBLL', 'MESGYLC_RecipeController（操作指导）'], tbl: ['Recipe', 'SpecRecipe', 'ProductLineOutputHistory', 'MfgOrderStart', 'MfgInWHOrder'] },
+        { sys: '数据库', sp: ['Pro_PZOutput_Packing_New（配制产出入库）'] }
+      ],
+      closure: [
+        { sys: 'Web MES(BS) · 结案执行', bll: ['CKZY_WorkOrder（工单页面·结案/反结案按钮）'], sp: ['Pro_MfgOrder_Close_Check（结案前校验）', 'Pro_MfgOrder_Close（执行结案）', 'Pro_Tran_OpenCloseMO（CloseMO事务）', 'Pro_MfgOrder_UnClose_New（反结案·受控修正）'] },
+        { sys: '结案前阻断条件', items: ['线边批次未送库→阻断', '收料未确认→阻断', '退料未接收→阻断', '产线未关→阻断', '产出未满2分钟→阻断', '耗用偏差≥5%→强制结案确认'] },
+        { sys: '结案后归档', tbl: ['LotDeduction（线边物料归档）', 'InterfaceBusiness（ERP接口队列·可选）', 'MfgOrderBOM（实际消耗回写）'] },
+        { sys: 'Web MES(BS) · 并行输出·BPR报表', bll: ['BPRReportListBLL（BPR工艺操作记录表）', 'BPRReportListProductHistoryBLL（模板）', 'OperationRecordBLL（新BPR工艺操作记录表）', 'OperationQueryBLL'] },
+        { sys: 'Web MES(BS) · 并行输出·追溯查询', bll: ['MESBT_DataLinkBLL（批次工具·数据链查询）', 'QualityTraceabilityListBLL（质量追溯）', 'CKZY_BPRStartQueryBLL（BPR启动查询）'] },
+        { sys: 'Web MES(BS) · 并行输出·审计与报表', bll: ['BillhiStoryQueryBLL（单据历史）', 'BillhiStoryQuery2BLL（审计追踪）', 'PreWeightBLL（预称报表）'] },
+        { sys: '数据库', tbl: ['MfgOrder（MOStatus=2已结案）', 'BPRStartHistory', 'BPREquipmentHistory'] }
+      ]
+    };
+
+    // ===== DEMO LINKS MAPPING =====
+    const demoLinks = {
+      'conn-0': [{ label: '条码申请', sub: '54字段血缘追踪 · 模拟MES页面', file: 'demo-barcode-apply.html' }],
+      'conn-1': [{ label: '抽样标签', sub: '来料抽样标签页面 · 字段血缘演示', file: 'sampling-label.html' }]
+    };
+
+    function renderDemoLinks(id, isConn) {
+      const key = isConn ? ('conn-' + id) : id;
+      const links = demoLinks[key];
+      if (!links || !links.length) return '';
+      return links.map(l => {
+        return `<a href="${l.file}" target="_blank" class="ev-card demo-card" style="display:block;text-decoration:none;border:2px solid #10b981;border-radius:8px;transition:all .2s;cursor:pointer" onmouseenter="this.style.boxShadow='0 4px 16px rgba(16,185,129,.2)'" onmouseleave="this.style.boxShadow=''">
+          <h4>📱 操作演示 · 新窗口打开</h4>
+          <div class="ev-item" style="color:#047857;font-weight:700;font-size:13px">${l.label}</div>
+          <div class="ev-item" style="color:#6b7280;font-size:11px">${l.sub}</div>
+        </a>`;
+      }).join('');
+    }
+
+    // ===== FLOWCHART NODE → DEMO HOTSPOTS =====
+    const nodeDemoMap = {
+      '📱条码申请': 'demo-barcode-apply.html',
+      '📱抽样标签': 'sampling-label.html',
+      '📱抽样标签生成': 'sampling-label.html',
+      '📱PDA暂收入库': 'demo-pda-receiving.html',
+      '📱送检': 'demo-inspection-check.html',
+      '📱检验': 'demo-inspection-check.html',
+      '📱质检结果判定': 'demo-inspection.html',
+      '📱放行/滞留': 'demo-release-hold.html',
+      '📱BPR记录查询': 'demo-bpr-record.html',
+      '📱收货/暂收查询': 'demo-receive-query.html',
+      '📱暂收单': 'demo-temp-receipt.html',
+      '📱收料查询': 'demo-receive-query.html',
+      '📱物料称重查询': 'demo-work-order.html',
+      '📱预称报表': 'demo-pre-weight.html',
+      '📱质量追溯': 'demo-quality-trace.html',
+      '📱工单': 'demo-work-order.html',
+      '📱数据链查询': 'demo-data-link.html'
+    };
+
+    function addDetailHotspots() {
+      setTimeout(() => {
+        const svg = document.querySelector('#stageSections .mermaid-box svg, #stageSections .mermaid svg');
+        if (!svg) return;
+        const nodes = svg.querySelectorAll('.node:not(.edgeLabel)');
+        nodes.forEach(ng => {
+          const text = (ng.textContent || '').replace(/\s+/g, '');
+          let file = null;
+          for (const [key, val] of Object.entries(nodeDemoMap)) {
+            if (text.startsWith(key)) { file = val; break; }
+          }
+          if (file) {
+            ng.style.cursor = 'pointer';
+            ng.title = '📱 点击查看操作演示（新窗口打开）';
+            ng.addEventListener('click', (e) => { e.stopPropagation(); window.open(file, '_blank'); });
+            ng.addEventListener('mouseenter', function () { const r = this.querySelector('rect'); if (r) { r.style.stroke = '#10b981'; r.style.strokeWidth = '2.5'; } });
+            ng.addEventListener('mouseleave', function () { const r = this.querySelector('rect'); if (r) { r.style.stroke = ''; r.style.strokeWidth = ''; } });
+          }
+        });
+      }, 500);
+    }
+
+    function typeTag(t) {
+      const map = { bll: 'BLL·业务逻辑', ctrl: 'Controller·控制器', dal: 'DAL·数据访问', wcf: 'WCF·服务接口', sp: 'SP·存储过程', tbl: 'Table·数据库表', frag: 'Fragment·页面碎片', thread: 'Thread·后台线程', form: 'Form·CS窗体', activity: 'Activity·页面', blackbox: '外部系统' };
+      const clsMap = { bll: 'ev-type-bll', ctrl: 'ev-type-ctrl', dal: 'ev-type-dal', wcf: 'ev-type-wcf', sp: 'ev-type-sp', tbl: 'ev-type-tbl', frag: 'ev-type-frag', thread: 'ev-type-thread', form: 'ev-type-form', activity: 'ev-type-activity', blackbox: '' };
+      return `<span class="ev-type ${clsMap[t] || ''}">${map[t] || t}</span>`;
+    }
+
+    function renderEvidence(stageId) {
+      const d = evidenceData[stageId] || [];
+      return d.map(c => {
+        let html = '';
+        if (c.items) html += c.items.map(i => `<div class="ev-item">${i}</div>`).join('');
+        if (c.bll) html += c.bll.map(i => `<div class="ev-item">${typeTag('bll')}${i}</div>`).join('');
+        if (c.ctrl) html += c.ctrl.map(i => `<div class="ev-item">${typeTag('ctrl')}${i}</div>`).join('');
+        if (c.dal) html += c.dal.map(i => `<div class="ev-item">${typeTag('dal')}${i}</div>`).join('');
+        if (c.wcf) html += c.wcf.map(i => `<div class="ev-item">${typeTag('wcf')}${i}</div>`).join('');
+        if (c.sp) html += c.sp.map(i => `<div class="ev-item">${typeTag('sp')}${i}</div>`).join('');
+        if (c.tbl) html += c.tbl.map(i => `<div class="ev-item">${typeTag('tbl')}${i}</div>`).join('');
+        if (c.frag) html += c.frag.map(i => `<div class="ev-item">${typeTag('frag')}${i}</div>`).join('');
+        if (c.thread) html += c.thread.map(i => `<div class="ev-item">${typeTag('thread')}${i}</div>`).join('');
+        if (c.form) html += c.form.map(i => `<div class="ev-item">${typeTag('form')}${i}</div>`).join('');
+        if (c.activity) html += c.activity.map(i => `<div class="ev-item">${typeTag('activity')}${i}</div>`).join('');
+        return `<div class="ev-card"><h4>${c.sys}</h4>${html}</div>`;
+      }).join('');
+    }
+
+    // ===== RENDER =====
+    function renderOverview() {
+      const el = document.getElementById('overviewChart');
+      el.innerHTML = `<div class="mermaid">${overviewDef}</div>`;
+      mermaid.run({ nodes: [el.querySelector('.mermaid')] }).then(() => {
+        setTimeout(addOverviewHotspots, 400);
+      });
+    }
+
+    function addOverviewHotspots() {
+      const svg = document.querySelector('#overviewChart svg');
+      if (!svg) return;
+      // 按节点文本匹配阶段，而非数组下标（TB布局下节点顺序不可靠）
+      const labelToStage = {};
+      stageIds.forEach((sid, i) => {
+        labelToStage[String(i + 1)] = sid;
+      });
+      const nodeGroups = svg.querySelectorAll('.node:not(.edgeLabel)');
+      nodeGroups.forEach((ng) => {
+        const txt = (ng.textContent || '').replace(/\s+/g, '');
+        // 匹配 "①采购" 到 "⑧结案"
+        const m = txt.match(/^([①②③④⑤⑥⑦⑧])/);
+        if (!m) return;
+        const numMap = { '①':1,'②':2,'③':3,'④':4,'⑤':5,'⑥':6,'⑦':7,'⑧':8 };
+        const n = numMap[m[1]];
+        if (!n) return;
+        const sid = stageIds[n - 1];
+        ng.style.cursor = 'pointer';
+        ng.addEventListener('click', () => showStageDetail(sid));
+        ng.addEventListener('mouseenter', function () { const r = this.querySelector('rect'); if (r) r.style.filter = 'brightness(0.95)' });
+        ng.addEventListener('mouseleave', function () { const r = this.querySelector('rect'); if (r) r.style.filter = '' });
+      });
+      const edgeLabels = svg.querySelectorAll('.edgeLabel');
+      // 边标签关键词 → connIndex 映射
+      const edgeMap = [
+        ['条码申请', '扫码入库'], // 0: 采购→入库
+        ['抽样标签'],              // 1: 入库→质检
+        ['放行', '领料'],          // 2: 质检→领料
+        ['发料', '称重'],          // 3: 领料→称料
+        ['称重', 'BPR'],           // 4: 称料→BPR
+        ['配制产出'],              // 5: BPR→产出
+        ['入库', '结案']           // 6: 产出→结案
+      ];
+      edgeLabels.forEach((el) => {
+        const txt = (el.textContent || '').replace(/\s+/g, '');
+        let ci = -1;
+        for (let i = 0; i < edgeMap.length; i++) {
+          if (edgeMap[i].every(k => txt.includes(k))) { ci = i; break; }
+        }
+        if (ci < 0) return;
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => showConnDetail(ci));
+        el.addEventListener('mouseenter', function () { const r = this.querySelector('rect'); if (r) r.style.filter = 'brightness(0.9)' });
+        el.addEventListener('mouseleave', function () { const r = this.querySelector('rect'); if (r) r.style.filter = '' });
+      });
+    }
+
+    function showConnDetail(connIndex) {
+      currentConn = connIndex;
+      currentStage = null;
+      document.getElementById('overviewSection').style.display = 'none';
+
+      const parts = connNames[connIndex].split('：');
+      const title = parts[0];
+      const sub = parts[1] || '';
+      const isFeedback = connDefs[connIndex].includes('余料退回');
+
+      let html = `<div class="section"><div class="section-title"><span class="dot" style="background:#f59e0b"></span> 衔接区 · ${title}</div>`;
+      html += `<div class="detail-header"><button class="back-btn" onclick="event.stopPropagation();backToOverview()">← 返回总览</button><h3>${title} 过渡流程</h3></div>`;
+      html += `<div style="color:#64748b;font-size:13px;margin-bottom:8px">📌 ${sub}</div>`;
+      if (isFeedback) html += `<div class="branch-legend">⚠️ 此衔接包含回环：配制完成后余料退回称重（反馈回路）</div>`;
+      html += `<div class="detail-layout"><div class="detail-left"><div class="mermaid-box"><div class="mermaid">${connDefs[connIndex]}</div><div class="zoom-bar"><button onclick="zoomFlow(-0.2)" title="缩小">−</button><span class="zoom-pct" id="zoomPct">100%</span><button onclick="zoomFlow(0.2)" title="放大">+</button><button onclick="resetZoom()" title="重置" style="font-size:10px">↺</button></div></div></div><div class="detail-right"><div class="ev-panel">${renderConnEvidence(connIndex)}</div></div></div>`;
+      html += `<div class="back-hint">🖱️ 点击页面空白处返回总览</div>`;
+      html += '</div>';
+
+      document.getElementById('stageSections').innerHTML = html;
+      document.getElementById('stageSections').style.display = 'block';
+      mermaid.run({ nodes: [document.querySelector('#stageSections .mermaid')] }).then(() => { addDetailHotspots(); setupZoom(); });
+
+      // 点击非交互空白区域返回总览（排除流程图/证据面板区域）
+      var ss = document.getElementById('stageSections');
+      if (ss._backClick) ss.removeEventListener('click', ss._backClick);
+      ss._backClick = function (e) {
+        var t = e.target;
+        while (t && t !== ss) {
+          if (t.nodeType !== 1) { t = t.parentNode; continue; }
+          var tg = t.tagName;
+          if (tg === 'BUTTON' || tg === 'A' || tg === 'SELECT' || tg === 'INPUT' || tg === 'TEXTAREA') return;
+          if (t.classList) {
+            var cls = t.classList;
+            if (cls.contains('mermaid-box') || cls.contains('detail-left') || cls.contains('detail-right') || cls.contains('detail-header') || cls.contains('section-title') || cls.contains('ev-card') || cls.contains('back-btn') || cls.contains('demo-card') || cls.contains('zoom-bar') || cls.contains('branch-legend')) return;
+          }
+          if (t.getAttribute && t.getAttribute('contenteditable') === 'true') return;
+          if (t.style && t.style.cursor === 'pointer') return;
+          t = t.parentNode;
+        }
+        backToOverview();
+      };
+      ss.addEventListener('click', ss._backClick);
+    }
+
+    function renderConnEvidence(ci) {
+      const d = connEvidenceData[ci] || [];
+      return d.map(c => {
+        let html = '';
+        if (c.items) html += c.items.map(i => `<div class="ev-item">${i}</div>`).join('');
+        if (c.bll) html += c.bll.map(i => `<div class="ev-item">${typeTag('bll')}${i}</div>`).join('');
+        if (c.ctrl) html += c.ctrl.map(i => `<div class="ev-item">${typeTag('ctrl')}${i}</div>`).join('');
+        if (c.wcf) html += c.wcf.map(i => `<div class="ev-item">${typeTag('wcf')}${i}</div>`).join('');
+        if (c.form) html += c.form.map(i => `<div class="ev-item">${typeTag('form')}${i}</div>`).join('');
+        if (c.frag) html += c.frag.map(i => `<div class="ev-item">${typeTag('frag')}${i}</div>`).join('');
+        if (c.activity) html += c.activity.map(i => `<div class="ev-item">${typeTag('activity')}${i}</div>`).join('');
+        if (c.tbl) html += c.tbl.map(i => `<div class="ev-item">${typeTag('tbl')}${i}</div>`).join('');
+        return `<div class="ev-card"><h4>${c.sys}</h4>${html}</div>`;
+      }).join('');
+    }
+
+    function showStageDetail(stageId) {
+      currentStage = stageId;
+      currentConn = -1;
+      const isBlackbox = stageId === 'procurement';
+      const def = stageDefs[stageId];
+      const hasBranches = !isBlackbox && def.includes('{');
+
+      document.getElementById('overviewSection').style.display = 'none';
+
+      let html = `<div class="section"><div class="section-title"><span class="dot" style="background:${stageColors[stageId]}"></span> ${stageNames[stageId]} · 子流程详情</div>`;
+      html += `<div class="detail-header"><button class="back-btn" onclick="event.stopPropagation();backToOverview()">← 返回总览</button><h3>${stageNames[stageId]}阶段</h3></div>`;
+      if (hasBranches) html += `<div class="branch-legend">⚠️ 菱形 = 决策判定点 | 🟢 绿色 = 通过/合格 | 🔴 红色 = 不通过/不合格 | 🟡 黄色 = 待定/回环/补充</div>`;
+      if (isBlackbox) {
+        html += `<div class="detail-layout"><div class="detail-left">${def}</div><div class="detail-right"><div class="ev-panel">${renderEvidence(stageId)}${renderDemoLinks(stageId, false)}</div></div></div>`;
+      } else {
+        html += `<div class="detail-layout"><div class="detail-left"><div class="mermaid-box"><div class="mermaid">${def}</div><div class="zoom-bar"><button onclick="zoomFlow(-0.2)" title="缩小">−</button><span class="zoom-pct" id="zoomPct">100%</span><button onclick="zoomFlow(0.2)" title="放大">+</button><button onclick="resetZoom()" title="重置" style="font-size:10px">↺</button></div></div></div><div class="detail-right"><div class="ev-panel">${renderEvidence(stageId)}${renderDemoLinks(stageId, false)}</div></div></div>`;
+      }
+      html += `<div class="back-hint">🖱️ 点击页面空白处返回总览</div>`;
+      html += '</div>';
+
+      document.getElementById('stageSections').innerHTML = html;
+      document.getElementById('stageSections').style.display = 'block';
+
+      if (!isBlackbox) {
+        mermaid.run({ nodes: [document.querySelector('#stageSections .mermaid')] }).then(() => { addDetailHotspots(); setupZoom(); });
+      }
+
+      // 点击非交互空白区域返回总览（排除流程图/证据面板区域）
+      var ss = document.getElementById('stageSections');
+      if (ss._backClick) ss.removeEventListener('click', ss._backClick);
+      ss._backClick = function (e) {
+        var t = e.target;
+        while (t && t !== ss) {
+          if (t.nodeType !== 1) { t = t.parentNode; continue; }
+          var tg = t.tagName;
+          if (tg === 'BUTTON' || tg === 'A' || tg === 'SELECT' || tg === 'INPUT' || tg === 'TEXTAREA') return;
+          if (t.classList) {
+            var cls = t.classList;
+            if (cls.contains('mermaid-box') || cls.contains('detail-left') || cls.contains('detail-right') || cls.contains('detail-header') || cls.contains('section-title') || cls.contains('ev-card') || cls.contains('back-btn') || cls.contains('demo-card') || cls.contains('zoom-bar') || cls.contains('branch-legend')) return;
+          }
+          if (t.getAttribute && t.getAttribute('contenteditable') === 'true') return;
+          if (t.style && t.style.cursor === 'pointer') return;
+          t = t.parentNode;
+        }
+        backToOverview();
+      };
+      ss.addEventListener('click', ss._backClick);
+    }
+
+    // ===== ZOOM / PAN =====
+    let zoomLevel = 0.85, panX = 0, panY = 0, isPanning = false, panStart = { x: 0, y: 0 };
+
+    function setupZoom() {
+      const box = document.querySelector('.detail-left .mermaid-box');
+      const mermaid = box ? box.querySelector('.mermaid') : null;
+      const zb = box ? box.querySelector('.zoom-bar') : null;
+      if (!box || !mermaid) return;
+      if (zb) zb.classList.add('show');
+
+      mermaid.classList.add('zooming');
+      setTimeout(() => {
+        const svg = mermaid.querySelector('svg');
+        if (!svg) { mermaid.classList.remove('zooming'); return; }
+        // Fit by height (primary for TB flowcharts), capped at 2.0x
+        const boxH = box.clientHeight - 20;
+        const svgH = svg.getBoundingClientRect().height || 400;
+        zoomLevel = Math.min(2.0, Math.max(0.6, (boxH / svgH) * 0.9));
+        panX = 0; panY = 0;
+        mermaid.style.transform = `scale(${zoomLevel})`;
+        mermaid.classList.remove('zooming');
+        const pct = document.getElementById('zoomPct');
+        if (pct) pct.textContent = Math.round(zoomLevel * 100) + '%';
+      }, 200);
+
+      box.onwheel = e => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        zoomFlow(delta);
+      };
+
+      box.onmousedown = e => {
+        if (e.target.closest('.zoom-bar') || e.target.closest('.node') || e.target.closest('.edgeLabel')) return;
+        isPanning = true; panStart = { x: e.clientX - panX, y: e.clientY - panY };
+        box.classList.add('panning');
+      };
+      window.addEventListener('mousemove', e => {
+        if (!isPanning) return;
+        panX = e.clientX - panStart.x; panY = e.clientY - panStart.y;
+        mermaid.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+      });
+      window.addEventListener('mouseup', () => { isPanning = false; box.classList.remove('panning'); });
+    }
+
+    function zoomFlow(delta) {
+      zoomLevel = Math.max(0.4, Math.min(3, zoomLevel + delta));
+      const mermaid = document.querySelector('.detail-left .mermaid');
+      const pct = document.getElementById('zoomPct');
+      if (mermaid) mermaid.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+      if (pct) pct.textContent = Math.round(zoomLevel * 100) + '%';
+    }
+
+    function resetZoom() {
+      const box = document.querySelector('.detail-left .mermaid-box');
+      const mermaid = document.querySelector('.detail-left .mermaid');
+      if (!box || !mermaid) return;
+      const svg = mermaid.querySelector('svg');
+      if (!svg) { zoomLevel = 0.85; panX = 0; panY = 0; }
+      else {
+        const boxH = box.clientHeight - 20;
+        const svgH = svg.getBoundingClientRect().height || 400;
+        zoomLevel = Math.min(2.0, Math.max(0.6, (boxH / svgH) * 0.9));
+      }
+      panX = 0; panY = 0;
+      mermaid.style.transform = `scale(${zoomLevel})`;
+      const pct = document.getElementById('zoomPct');
+      if (pct) pct.textContent = Math.round(zoomLevel * 100) + '%';
+    }
+
+    function backToOverview() {
+      currentStage = null;
+      currentConn = null;
+      var mc = document.getElementById('mainContent');
+      if (mc._detailClick) { mc.removeEventListener('click', mc._detailClick); }
+      document.getElementById('overviewSection').style.display = '';
+      document.getElementById('stageSections').innerHTML = '';
+      document.getElementById('stageSections').style.display = 'none';
+      document.getElementById('overviewSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && currentStage) backToOverview(); });
+
+    window.addEventListener('DOMContentLoaded', renderOverview);
+  </script>
+</body>
+
+</html>

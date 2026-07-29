@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>检验历史数据查询 · 字段血缘演示</title>
+<style>
+:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}
+.demo-main{flex:1;max-width:1100px}
+.bar{height:50px;display:flex;color:#fff;background:var(--green)}
+.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}
+.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}
+.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}
+.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}
+.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}
+.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}
+.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default;white-space:nowrap}
+.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}
+.sub-arr{color:#94a3b8;font-size:10px}
+.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line)}
+.toolbar table{width:100%}.toolbar th{text-align:right;font-size:12px;font-weight:600;padding:3px 6px}.toolbar td{padding:3px 12px 3px 4px}
+.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}
+.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}
+.btn-pri{background:var(--blue);color:#fff}
+.btn-sec{background:#fff;color:#17232d;border:1px solid var(--line)}
+.content{padding:8px 10px}
+.result-title{font-size:13px;font-weight:700;padding:8px 0 4px}
+.dg{background:#fff;border:1px solid var(--line)}
+.dg table{width:100%;border-collapse:collapse;font-size:10px}
+.dg th{background:var(--soft);padding:4px 6px;text-align:left;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;font-weight:700}
+.dg td{padding:3px 6px;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:10px}
+.dg td[data-k]:hover{background:#eff6ff}
+.tree-row{font-weight:700;background:#f6f8f9;cursor:pointer}
+.tree-row:hover{background:#e8f0ec}
+.tree-child{}
+.tree-child.hidden{display:none}
+.tree-toggle{display:inline-block;width:16px;text-align:center;font-size:10px;margin-right:4px;cursor:pointer;user-select:none}
+.tree-indent{display:inline-block;width:20px}
+.fill-note{font-size:10px;color:#94a3b8;padding:4px 0 8px}
+.fill-note code{background:#f1f5f9;padding:1px 4px;border-radius:2px;font-size:9px}
+.card{position:fixed;z-index:5;right:24px;bottom:24px;width:620px;min-height:300px;max-height:calc(100vh-40px);overflow:auto;border:1px solid #b7c9d2;border-radius:6px;background:#fff;box-shadow:0 15px 36px rgba(24,53,70,.26);opacity:0;visibility:hidden;transform:scale(.98);transition:.16s}
+.card.show{opacity:1;visibility:visible;transform:scale(1)}
+.card-head{display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:0 17px;color:#fff;background:#245f84;cursor:move}
+.card-body{padding:16px}
+.pth{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}.pth span{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;background:#e8edf0}.pth .ar{background:none;padding:0 2px;color:#94a3b8}
+.meta dt{font-size:10px;color:#64748b;font-weight:700;margin-top:10px}
+.meta dd{font-family:Consolas,monospace;font-size:12px;margin:4px 0 0}
+.stats-panel{width:280px;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1);flex-shrink:0;position:sticky;top:12px;max-height:calc(100vh-24px);display:flex;flex-direction:column;font-size:12px}
+.stats-panel .sh{background:var(--blue);color:#fff;padding:8px 12px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-radius:8px 8px 0 0;flex-shrink:0}
+.stats-body{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
+.stats-panel .sh .badge{font-size:9px;background:#fff3;padding:1px 6px;border-radius:10px}
+.stats-panel .ss{padding:6px 8px;border-bottom:1px solid #e8edf0}.stats-panel .ss h4{font-size:9px;color:#64748b;margin-bottom:4px}
+.stats-panel .si{font-size:11px;padding:2px 4px;margin-bottom:1px;border-radius:3px;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px}
+.stats-panel .si .sn{flex:1 1 auto;font-family:Consolas,monospace;font-size:9px;line-height:1.35}
+.stats-panel .st{font-size:8px;padding:0 3px;border-radius:2px;font-weight:600;flex-shrink:0;white-space:nowrap}
+.stats-panel .st.tbl{background:#d1fae5;color:#065f46}
+.stats-panel .st.bll{background:#fef3c7;color:#92400e}
+.stats-panel .st.api{background:#dbeafe;color:#1d4ed8}
+.stats-count-row{display:flex;gap:8px;text-align:center;padding:8px 12px}
+.stats-count-row>div{flex:1}.stats-count-row .scn{font-size:20px;font-weight:800;color:var(--blue)}.stats-count-row .scl{font-size:10px;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<div class="demo-main">
+
+<header class="bar">
+  <div class="brand">ⓘ MES制造执行系统</div>
+  <nav class="nav">
+    <span>工艺流程</span><span>企业架构</span><span>生产模型</span><span class="active">查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span>
+  </nav>
+  <div class="bar-info">
+    <span class="bar-badge">BS · Web MES</span><span>| 检验历史数据查询 · 字段血缘演示</span>
+  </div>
+</header>
+<div class="sub-tabs">
+  <span class="sub-tab">查询管理</span><span class="sub-arr">▸</span><span class="sub-tab active">质量追溯查询</span>
+</div>
+
+<!-- ====== 查询栏 ====== -->
+<div class="toolbar"><table>
+<tr>
+  <th>成品编号：</th><td><input data-k="sProductNM" value="2969341" style="width:200px"></td>
+  <th style="padding-left:15px">生产批号：</th><td><input data-k="sMFGBatch" value="2630" style="width:200px"></td>
+  <th style="padding-left:15px">工单编号：</th><td><input data-k="MfgOrderNM" value="MO2026070008" style="width:200px"></td>
+</tr>
+<tr>
+  <th>开始时间：</th><td><input data-k="sTxnStartDatetime" value="2026-07-01 00:00" style="width:200px"></td>
+  <th style="padding-left:15px">结束时间：</th><td><input data-k="sTxnEndDatetime" value="2026-07-27 23:59" style="width:200px"></td>
+  <td style="padding-left:15px">
+    <button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button>
+    <button class="btn btn-sec" data-k="btnReset">↺ 重置</button>
+  </td>
+</tr>
+</table></div>
+
+<div class="content">
+
+<!-- ====== 查询结果 treegrid ====== -->
+<div class="result-title">查询结果：</div>
+<div class="fill-note">
+  📐 <b>充填规律：</b>父行 = 工单分组头，所有列均填充（工单产出成品 + 汇总数据）；子行 = 该工单追溯到的物料明细（每条为 InspectionHistory 记录）。<br>
+  🖱 点击 <code>▾ / ▸</code> 展开或折叠子行。<code>treeField</code>=工单编号，<code>idField</code>=Id。
+</div>
+<div class="dg"><table id="treeTbl">
+<thead><tr><th style="width:30px"></th><th>工单编号</th><th>物料编号</th><th>物料批号</th><th>生产批次</th><th>使用数量</th></tr></thead>
+<tbody>
+<!-- 父节点：工单1（所有列填充） -->
+<tr class="tree-row" data-parent="p1">
+  <td><span class="tree-toggle" onclick="toggleTree('p1')">▾</span></td>
+  <td data-k="treeMfgOrderNM">MO2026070008</td>
+  <td data-k="treeParentProductNM">ON25F0021N5</td>
+  <td data-k="treeParentMFGBatch">2630</td>
+  <td data-k="treeParentmfgMFGBatch">2630</td>
+  <td data-k="treeParentQty">5760</td>
+</tr>
+<!-- 子节点（可折叠） -->
+<tr class="tree-child" data-child="p1"><td><span class="tree-indent"></span></td><td></td><td data-k="treeProductNM">2969341</td><td data-k="treeMFGBatch">2630</td><td data-k="treemfgMFGBatch">2630</td><td data-k="treeQty">4000</td></tr>
+<tr class="tree-child" data-child="p1"><td><span class="tree-indent"></span></td><td></td><td data-k="treeProductNM2">ON25F0021N5</td><td data-k="treeMFGBatch2">2630</td><td data-k="treemfgMFGBatch2">2630</td><td data-k="treeQty2">1760</td></tr>
+
+<!-- 父节点：工单2 -->
+<tr class="tree-row" data-parent="p2">
+  <td><span class="tree-toggle" onclick="toggleTree('p2')">▾</span></td>
+  <td data-k="treeMfgOrderNM3">MO2026070015</td>
+  <td data-k="treeParentProductNM2">2969342</td>
+  <td data-k="treeParentMFGBatch2">2640</td>
+  <td data-k="treeParentmfgMFGBatch2">2640</td>
+  <td data-k="treeParentQty2">2000</td>
+</tr>
+<tr class="tree-child" data-child="p2"><td><span class="tree-indent"></span></td><td></td><td data-k="treeProductNM3">2969342</td><td data-k="treeMFGBatch3">2640</td><td data-k="treemfgMFGBatch3">2640</td><td data-k="treeQty3">2000</td></tr>
+</tbody>
+</table></div>
+
+</div>
+</div>
+
+<!-- ====== 字段血缘卡片 ====== -->
+<aside class="card" id="card">
+  <div class="card-head">
+    <div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div>
+    <button class="close-btn" onclick="cl()">×</button>
+  </div>
+  <div class="card-body">
+    <div class="pth" id="pth"></div>
+    <dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl>
+    <dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl>
+    <dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl>
+    <dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl>
+  </div>
+</aside>
+
+<!-- ====== 统计面板 ====== -->
+<div class="stats-panel">
+  <div class="sh">📊 调用统计<span class="badge">BS·检验历史 | QualityTraceabilityQuery</span></div>
+  <div class="stats-body">
+    <div class="stats-count-row">
+      <div><div class="scn">3</div><div class="scl">数据库表</div></div>
+      <div><div class="scn">1</div><div class="scl">BLL</div></div>
+      <div><div class="scn">3</div><div class="scl">API</div></div>
+    </div>
+    <div class="ss"><h4>📊 数据库表</h4>
+      <div class="si"><span class="sn" title="MfgOrder">MfgOrder</span><span class="st tbl">工单</span></div>
+      <div class="si"><span class="sn" title="InspectionHistory">InspectionHistory</span><span class="st tbl">检验历史</span></div>
+      <div class="si"><span class="sn" title="Product">Product</span><span class="st tbl">产品</span></div>
+    </div>
+    <div class="ss"><h4>🧩 BLL</h4>
+      <div class="si"><span class="sn" title="QualityTraceabilityQueryBLL">QualityTraceabilityQueryBLL</span><span class="st bll">质量追溯</span></div>
+    </div>
+    <div class="ss"><h4>🔌 API</h4>
+      <div class="si"><span class="sn" title="GetQualityTraceabilityQueryList">GetQualityTraceabilityQueryList</span><span class="st api">treegrid数据</span></div>
+      <div class="si"><span class="sn" title="GetProductNMListByTypePage">GetProductNMListByTypePage</span><span class="st api">成品编号下拉</span></div>
+      <div class="si"><span class="sn" title="GetMfgOrderListPage">GetMfgOrderListPage</span><span class="st api">工单编号下拉</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// treegrid 展开/折叠
+function toggleTree(parentId) {
+  const children = document.querySelectorAll(`[data-child="${parentId}"]`);
+  const toggle = document.querySelector(`[data-parent="${parentId}"] .tree-toggle`);
+  const isCollapsed = children[0] && children[0].classList.contains('hidden');
+  children.forEach(c => c.classList.toggle('hidden', !isCollapsed));
+  if (toggle) toggle.textContent = isCollapsed ? '▾' : '▸';
+}
+
+const map={
+sProductNM:['成品编号','Product.ProductNM','nvarchar(50)','combogrid→GetProductNMListByTypePage API','查询',['ComboBoxCommon','Product']],
+sMFGBatch:['生产批号','Lot.MFGBatch','nvarchar(80)','textbox','查询',['Lot']],
+MfgOrderNM:['工单编号','MfgOrder.MfgOrderNM','nvarchar(50)','combogrid→GetMfgOrderListPage API','查询',['ComboBoxCommon','MfgOrder']],
+sTxnStartDatetime:['开始时间','HistoryMainLine.TxnDatetime','datetime','datetimebox','查询',['HistoryMainLine']],
+sTxnEndDatetime:['结束时间','HistoryMainLine.TxnDatetime','datetime','datetimebox','查询',['HistoryMainLine']],
+treeMfgOrderNM:['工单编号','MfgOrder.MfgOrderNM','nvarchar(50)','treegrid 父节点·treeField','分组',['GetQualityTraceabilityQueryList','MfgOrder']],
+treeParentProductNM:['物料编号','Product.ProductNM','nvarchar(50)','treegrid 父节点·产出成品','分组',['Product']],
+treeParentMFGBatch:['物料批号','InspectionHistory.MFGBatch','nvarchar(80)','treegrid 父节点·汇总','分组',['InspectionHistory']],
+treeParentmfgMFGBatch:['生产批次','InspectionHistory.mfgMFGBatch','nvarchar(80)','treegrid 父节点·汇总','分组',['InspectionHistory']],
+treeParentQty:['使用数量','SUM(InspectionHistory.Qty)','decimal','treegrid 父节点·汇总','分组',['InspectionHistory']],
+treeProductNM:['物料编号','Product.ProductNM','nvarchar(50)','treegrid 子节点','明细',['InspectionHistory','Product']],
+treeMFGBatch:['物料批号','InspectionHistory.MFGBatch','nvarchar(80)','treegrid 子节点','明细',['InspectionHistory']],
+treemfgMFGBatch:['生产批次','InspectionHistory.mfgMFGBatch','nvarchar(80)','treegrid 子节点','明细',['InspectionHistory']],
+treeQty:['使用数量','InspectionHistory.Qty','decimal','treegrid 子节点','明细',['InspectionHistory']],
+treeMfgOrderNM3:['工单编号','MfgOrder.MfgOrderNM','nvarchar(50)','treegrid 父节点·treeField','分组',['MfgOrder']],
+treeParentProductNM2:['物料编号','Product.ProductNM','nvarchar(50)','treegrid 父节点·产出成品','分组',['Product']],
+treeParentMFGBatch2:['物料批号','InspectionHistory.MFGBatch','nvarchar(80)','treegrid 父节点·汇总','分组',['InspectionHistory']],
+treeParentmfgMFGBatch2:['生产批次','InspectionHistory.mfgMFGBatch','nvarchar(80)','treegrid 父节点·汇总','分组',['InspectionHistory']],
+treeParentQty2:['使用数量','SUM(InspectionHistory.Qty)','decimal','treegrid 父节点·汇总','分组',['InspectionHistory']],
+treeProductNM2:['物料编号','Product.ProductNM','nvarchar(50)','treegrid 子节点','明细',['InspectionHistory','Product']],
+treeMFGBatch2:['物料批号','InspectionHistory.MFGBatch','nvarchar(80)','treegrid 子节点','明细',['InspectionHistory']],
+treemfgMFGBatch2:['生产批次','InspectionHistory.mfgMFGBatch','nvarchar(80)','treegrid 子节点','明细',['InspectionHistory']],
+treeQty2:['使用数量','InspectionHistory.Qty','decimal','treegrid 子节点','明细',['InspectionHistory']],
+treeProductNM3:['物料编号','Product.ProductNM','nvarchar(50)','treegrid 子节点','明细',['Product']],
+treeMFGBatch3:['物料批号','InspectionHistory.MFGBatch','nvarchar(80)','treegrid 子节点','明细',['InspectionHistory']],
+treemfgMFGBatch3:['生产批次','InspectionHistory.mfgMFGBatch','nvarchar(80)','treegrid 子节点','明细',['InspectionHistory']],
+treeQty3:['使用数量','InspectionHistory.Qty','decimal','treegrid 子节点','明细',['InspectionHistory']],
+btnQuery:['⌕ 查询','API:GetQualityTraceabilityQueryList','—','条件→QualityTraceabilityQueryBLL→treegrid分组(工单)|明细(物料)','查询',['QualityTraceabilityQueryBLL','MfgOrder','InspectionHistory']],
+btnReset:['↺ 重置','—','—','清空所有查询条件','重置',['jQuery']],
+};
+const card=document.getElementById('card');
+function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');var r=n?n.getBoundingClientRect():null;var mx=window.innerWidth/2,my=window.innerHeight/2;card.style.left='';card.style.top='';card.style.right='';card.style.bottom='';if(!r){card.style.right='24px';card.style.bottom='24px'}else{if(r.left+r.width/2<mx){card.style.right='24px'}else{card.style.left='24px'}if(r.top+r.height/2<my){card.style.bottom='24px'}else{card.style.top='24px'}}card.classList.add('show')}function cl(){card.classList.remove('show')}
+document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));document.querySelectorAll('.close-btn').forEach(b=>b.onclick=()=>card.classList.remove('show'));
+let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=`${Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))}px`;card.style.top=`${Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))}px`};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
+</script>
+</body>
+</html>

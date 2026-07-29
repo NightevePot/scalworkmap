@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDA暂收 · 字段血缘演示</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .demo-wrapper {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      max-width: 1100px
+    }
+
+    .stats-panel {
+      width: 280px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
+      overflow: hidden;
+      flex-shrink: 0;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto
+    }
+
+    .stats-header {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .stats-header .badge {
+      font-size: 10px;
+      background: #fff3;
+      padding: 2px 8px;
+      border-radius: 10px
+    }
+
+    .stats-section {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9
+    }
+
+    .stats-section:last-child {
+      border-bottom: none
+    }
+
+    .stats-section h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .stats-section h4 .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block
+    }
+
+    .stats-item {
+      font-size: 11px;
+      padding: 4px 8px;
+      margin-bottom: 3px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background .15s;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .stats-item:hover {
+      background: #f0f6ff
+    }
+
+    .stats-item .si-icon {
+      font-size: 10px;
+      flex-shrink: 0
+    }
+
+    .stats-item .si-name {
+      flex: 1;
+      word-break: break-all
+    }
+
+    .stats-item .si-type {
+      font-size: 9px;
+      color: #94a3b8;
+      flex-shrink: 0
+    }
+
+    .stats-tag {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+      margin-left: 4px;
+      flex-shrink: 0
+    }
+
+    .stats-tag.tbl {
+      background: #d1fae5;
+      color: #065f46
+    }
+
+    .stats-tag.sp {
+      background: #ede9fe;
+      color: #6d28d9
+    }
+
+    .stats-tag.wcf {
+      background: #fce7f3;
+      color: #be185d
+    }
+
+    .stats-tag.bll {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    .stats-count {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a3a5c
+    }
+
+    .stats-sub {
+      font-size: 10px;
+      color: #94a3b8
+    }
+
+    .pda-device {
+      width: 400px;
+      background: #2d2d44;
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, .6), inset 0 0 0 3px #3d3d5c
+    }
+
+    .pda-screen {
+      background: #eef3f9;
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 700px;
+      border: 2px solid #222;
+      display: flex;
+      flex-direction: column
+    }
+
+    .pda-topbar {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0
+    }
+
+    .pda-topbar .title {
+      font-size: 14px
+    }
+
+    .pda-topbar .menu-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 2px 6px
+    }
+
+    .pda-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column
+    }
+
+    .pda-tabs {
+      display: flex;
+      border-top: 2px solid #cbd5e1;
+      background: #fff;
+      flex-shrink: 0
+    }
+
+    .pda-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      background: #fff;
+      color: #64748b;
+      border-bottom: 3px solid transparent
+    }
+
+    .pda-tab.active {
+      color: #1a3a5c;
+      border-bottom-color: #1a3a5c;
+      background: #f0f6ff
+    }
+
+    /* 暂收单列表 */
+    .list-card {
+      background: #fff;
+      margin: 8px;
+      border-radius: 6px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+      cursor: pointer;
+      transition: all .15s
+    }
+
+    .list-card:hover {
+      background: #eff6ff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .12)
+    }
+
+    .list-card .lc-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 3px
+    }
+
+    .list-card .lc-label {
+      color: #353535;
+      font-weight: 600
+    }
+
+    .list-card .lc-val {
+      color: #6e6e6e
+    }
+
+    .list-card .lc-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600
+    }
+
+    .lc-status.done {
+      background: #d1fae5;
+      color: #065f46
+    }
+
+    .lc-status.pending {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    /* 卡片展开后的血缘表 */
+    .card-detail {
+      display: none;
+      border-top: 2px solid #e2e8f0;
+      margin-top: 10px;
+      padding: 10px 0
+    }
+
+    .card-detail.show {
+      display: block
+    }
+
+    .card-detail h5 {
+      font-size: 12px;
+      color: #475569;
+      margin-bottom: 8px;
+      font-weight: 700
+    }
+
+    .lineage-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px
+    }
+
+    .lineage-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 460px
+    }
+
+    .lineage-table th {
+      background: #f1f5f9;
+      padding: 8px 10px;
+      text-align: left;
+      color: #475569;
+      font-weight: 700;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      font-size: 11px
+    }
+
+    .lineage-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+      white-space: nowrap
+    }
+
+    .lineage-table td:nth-child(3) {
+      white-space: normal;
+      min-width: 160px;
+      font-family: monospace;
+      font-size: 11px
+    }
+
+    .lineage-table td code {
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 10px
+    }
+
+    .lineage-table tbody tr {
+      cursor: pointer;
+      transition: background .1s
+    }
+
+    .lineage-table tbody tr:hover td {
+      background: #eff6ff
+    }
+
+    .lineage-table tbody tr:last-child td {
+      border-bottom: none
+    }
+
+    .card-detail .cd-hint {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 8px
+    }
+
+    /* 菜单弹层 */
+    .menu-overlay {
+      display: none;
+      position: absolute;
+      top: 34px;
+      right: 8px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
+      z-index: 50;
+      overflow: hidden;
+      min-width: 130px
+    }
+
+    .menu-overlay.show {
+      display: block
+    }
+
+    .menu-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9
+    }
+
+    .menu-item:hover {
+      background: #f0f6ff
+    }
+
+    .menu-item:last-child {
+      border-bottom: none
+    }
+
+    /* 扫描/信息区 */
+    .scan-area {
+      background: #fff;
+      margin: 8px;
+      border-radius: 6px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08)
+    }
+
+    .scan-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px
+    }
+
+    .scan-label {
+      font-size: 15px;
+      color: #353535;
+      font-weight: 600;
+      white-space: nowrap
+    }
+
+    .scan-input {
+      flex: 1;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: monospace;
+      color: #6e6e6e;
+      outline: none
+    }
+
+    .scan-input:focus {
+      border-color: #3b82f6
+    }
+
+    .scan-btn {
+      background: #1a3a5c;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    .scan-btn:hover {
+      background: #0f2440
+    }
+
+    .scan-hint {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 3px
+    }
+
+    .info-area {
+      background: #fff;
+      margin: 0 8px 8px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08)
+    }
+
+    .info-row {
+      display: flex;
+      border-bottom: 1px solid #f1f5f9
+    }
+
+    .info-row:last-child {
+      border-bottom: none
+    }
+
+    .info-label {
+      width: 82px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: #353535;
+      font-weight: 600;
+      background: #f8fafc;
+      flex-shrink: 0
+    }
+
+    .info-value {
+      padding: 7px 10px;
+      font-size: 12px;
+      color: #6e6e6e;
+      flex: 1;
+      cursor: pointer
+    }
+
+    .info-value:hover {
+      background: #eff6ff
+    }
+
+    .info-value[data-lineage]:after {
+      content: 'ⓘ';
+      float: right;
+      font-size: 10px;
+      color: #94a3b8;
+      opacity: 0
+    }
+
+    .info-value[data-lineage]:hover:after {
+      opacity: 1
+    }
+
+    .progress-wrap {
+      padding: 8px 12px 4px
+    }
+
+    .progress-outer {
+      height: 5px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .progress-inner {
+      height: 100%;
+      background: #10b981;
+      border-radius: 3px;
+      width: 30%
+    }
+
+    .detail-header {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #6e6e6e;
+      border-bottom: 1px solid #f1f5f9;
+      line-height: 1.8;
+      background: #fff;
+      margin: 0 8px;
+      border-radius: 6px 6px 0 0
+    }
+
+    .detail-header span {
+      cursor: pointer;
+      color: #1d4ed8
+    }
+
+    .detail-list {
+      background: #fff;
+      margin: 0 8px 8px;
+      border-radius: 0 0 6px 6px;
+      overflow: hidden
+    }
+
+    .detail-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 12px;
+      cursor: pointer
+    }
+
+    .detail-item:hover {
+      background: #eff6ff
+    }
+
+    .detail-item .di-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px
+    }
+
+    .detail-item .di-label {
+      color: #353535
+    }
+
+    .detail-item .di-val {
+      color: #6e6e6e;
+      text-align: right
+    }
+
+    .action-bar {
+      background: #fff;
+      margin: 0 8px 8px;
+      border-radius: 6px;
+      padding: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+      display: flex;
+      gap: 8px
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      flex: 1;
+      text-align: center
+    }
+
+    .action-btn.primary {
+      background: #1a3a5c;
+      color: #fff
+    }
+
+    .action-btn.secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0
+    }
+
+    /* WCF 详情 */
+    .wcf-detail {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+      margin: 8px;
+      border-radius: 8px;
+      padding: 12px;
+      display: none
+    }
+
+    .wcf-detail.show {
+      display: block
+    }
+
+    .wcf-detail h4 {
+      font-size: 12px;
+      color: #065f46;
+      margin-bottom: 8px
+    }
+
+    .wcf-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 11px
+    }
+
+    .wcf-step .sn {
+      background: #10b981;
+      color: #fff;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 18px;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0
+    }
+
+    .wcf-step .sb {
+      color: #1e293b;
+      line-height: 1.4
+    }
+
+    .wcf-step .sb code {
+      background: #d1fae5;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 10px
+    }
+
+    /* 血缘面板 */
+    .inspector-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, .4);
+      z-index: 100;
+      justify-content: center;
+      align-items: center
+    }
+
+    .inspector-overlay.show {
+      display: flex
+    }
+
+    .inspector-panel {
+      background: #fff;
+      border-radius: 12px;
+      width: 440px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3)
+    }
+
+    .inspector-header {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0
+    }
+
+    .inspector-header h3 {
+      font-size: 14px
+    }
+
+    .inspector-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer
+    }
+
+    .inspector-body {
+      padding: 12px 16px
+    }
+
+    .ifn {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0
+    }
+
+    .ir {
+      margin-bottom: 8px
+    }
+
+    .ir .irl {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 2px
+    }
+
+    .ir .irv {
+      font-size: 12px;
+      color: #1e293b;
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      word-break: break-all
+    }
+
+    .ch {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-wrap: wrap;
+      margin-top: 4px
+    }
+
+    .ci {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      white-space: nowrap
+    }
+
+    .ca {
+      font-size: 9px;
+      color: #94a3b8
+    }
+
+    .ci-u {
+      background: #dbeafe;
+      color: #1d4ed8
+    }
+
+    .ci-w {
+      background: #fce7f3;
+      color: #be185d
+    }
+
+    .ci-b {
+      background: #fef3c7;
+      color: #b45309
+    }
+
+    .ci-s {
+      background: #ede9fe;
+      color: #7c3aed
+    }
+
+    .ci-d {
+      background: #d1fae5;
+      color: #047857
+    }
+
+    .toast {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    .toast.success {
+      background: #065f46
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toast" id="toast"></div>
+  <div class="inspector-overlay" id="inspectorOverlay" onclick="if(event.target===this)cl()">
+    <div class="inspector-panel">
+      <div class="inspector-header">
+        <h3>🔍 字段血缘追踪</h3><button class="inspector-close" onclick="cl()">✕</button>
+      </div>
+      <div class="inspector-body" id="inspectorBody"></div>
+    </div>
+  </div>
+
+  <div class="demo-wrapper">
+
+    <div class="pda-device">
+      <div class="pda-screen">
+        <div class="pda-topbar" style="position:relative">
+          <span>⬅</span><span class="title" id="topTitle">首臻MES · 暂收</span>
+          <span><button class="menu-btn" id="menuBtn" onclick="toggleMenu()" style="display:none">⋮</button></span>
+          <div class="menu-overlay" id="menuOverlay">
+            <div class="menu-item" onclick="doSearch()">🔍 查询</div>
+            <div class="menu-item" onclick="newZanShou()">➕ 新建暂收单</div>
+          </div>
+        </div>
+        <div class="pda-content" id="pdaContent"></div>
+        <div class="pda-tabs" id="pdaTabs" style="display:none">
+          <div class="pda-tab active" id="tab0" onclick="switchTab(0)">收料</div>
+          <div class="pda-tab" id="tab1" onclick="switchTab(1)">明细</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 右侧统计面板 ===== -->
+    <div class="stats-panel" id="statsPanel">
+      <div class="stats-header">
+        📊 调用统计
+        <span class="badge">PDA·暂收</span>
+      </div>
+      <div class="stats-section">
+        <div style="display:flex;gap:12px;text-align:center">
+          <div style="flex:1">
+            <div class="stats-count">12</div>
+            <div class="stats-sub">数据库表</div>
+          </div>
+          <div style="flex:1">
+            <div class="stats-count">0</div>
+            <div class="stats-sub">存储过程</div>
+          </div>
+          <div style="flex:1">
+            <div class="stats-count">3</div>
+            <div class="stats-sub">WCF接口</div>
+          </div>
+        </div>
+      </div>
+      <div class="stats-section">
+        <h4><span class="dot" style="background:#10b981"></span>📊 数据库表</h4>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">TemporaryReceiptOrder</span><span
+            class="stats-tag tbl">暂收单</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span
+            class="si-name">TemporaryReceiptOrderDetail</span><span class="stats-tag tbl">暂收明细</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">PurchaseOrder</span><span
+            class="stats-tag tbl">采购单</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">PurchaseOrderDetail</span><span
+            class="stats-tag tbl">采购明细</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">PurchaseOrderLotApply</span><span
+            class="stats-tag tbl">条码申请</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">Product</span><span
+            class="stats-tag tbl">物料</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">ProductVendorPN</span><span
+            class="stats-tag tbl">供应商料号</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">Vendor</span><span
+            class="stats-tag tbl">供应商</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">Lot</span><span
+            class="stats-tag tbl">批次</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">UOM</span><span
+            class="stats-tag tbl">计量单位</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">BarCodeDef</span><span
+            class="stats-tag tbl">条码定义</span></div>
+        <div class="stats-item"><span class="si-icon">📋</span><span class="si-name">User / Resource</span><span
+            class="stats-tag tbl">操作人/设备</span></div>
+      </div>
+      <div class="stats-section">
+        <h4><span class="dot" style="background:#7c3aed"></span>⚙️ 存储过程</h4>
+        <div style="font-size:11px;color:#94a3b8;padding:4px 8px">暂收功能通过 WCF 直接操作 DAL 层，未使用独立存储过程</div>
+      </div>
+      <div class="stats-section">
+        <h4><span class="dot" style="background:#ec4899"></span>🔌 WCF 接口</h4>
+        <div class="stats-item"><span class="si-icon">🔗</span><span
+            class="si-name">GetProductInWarehouseOrderSumInfo</span><span class="stats-tag wcf">POST</span></div>
+        <div class="stats-item"><span class="si-icon">🔗</span><span
+            class="si-name">CheckProductInWarehouseLotInfo</span><span class="stats-tag wcf">POST</span></div>
+        <div class="stats-item"><span class="si-icon">🔗</span><span
+            class="si-name">AddTemporaryReceiptOrder</span><span class="stats-tag wcf">POST</span></div>
+      </div>
+      <div class="stats-section">
+        <h4><span class="dot" style="background:#d97706"></span>🧩 业务层 (BLL)</h4>
+        <div class="stats-item"><span class="si-icon">📦</span><span class="si-name">InWHBll</span><span
+            class="stats-tag bll">入库业务</span></div>
+        <div class="stats-item"><span class="si-icon">📦</span><span class="si-name">BarCodeDefBll</span><span
+            class="stats-tag bll">条码定义</span></div>
+      </div>
+      <div class="stats-section">
+        <h4><span class="dot" style="background:#3b82f6"></span>📱 PDA 前端</h4>
+        <div class="stats-item"><span class="si-icon">📄</span><span class="si-name">ZanShouFramgnet_A</span><span
+            class="stats-tag tbl">收料</span></div>
+        <div class="stats-item"><span class="si-icon">📄</span><span class="si-name">ZanShouFramgnet_B</span><span
+            class="stats-tag tbl">明细</span></div>
+        <div class="stats-item"><span class="si-icon">🧵</span><span class="si-name">ZanShouThread</span><span
+            class="stats-tag wcf">线程</span></div>
+      </div>
+    </div>
+
+  </div><!-- /demo-wrapper -->
+
+  <script>
+    // ===== 字段血缘 (按真实 ZanShou 源码) =====
+    const F = {
+      // 暂收单列表卡片 (zanshou_item.xml)
+      zsOrderNM: { label: '暂收单编号', db: 'TemporaryReceiptOrder.TemporaryReceiptOrderNM', type: 'nvarchar(50)', ui: 'tv_zanshou_zanshoudanbianhao', chain: ['WCF→单号生成服务', 'TemporaryReceiptOrder.TemporaryReceiptOrderNM'] },
+      zsDate: { label: '日期', db: 'TemporaryReceiptOrder.CreateDatetime', type: 'datetime', ui: 'tv_zanshou_riqi', chain: ['WCF返回', 'TemporaryReceiptOrder.CreateDatetime'] },
+      zsReceiver: { label: '收料人', db: 'TemporaryReceiptOrder.UserId→User', type: 'nvarchar(50)', ui: 'tv_zanshou_shouliaoren', chain: ['PDA登录态', 'TemporaryReceiptOrder.UserId'] },
+      zsStatus: { label: '状态', db: 'TemporaryReceiptOrder.Status', type: 'int', ui: 'tv_zanshou_done', chain: ['TemporaryReceiptOrder.Status', '0=待处理 1=已完成'] },
+
+      // 收料 Tab (zanshou_fragment_a.xml, ZanShouFramgnet_A)
+      slBarcode: { label: '扫描条码', db: 'PurchaseOrderLotApply.LotNM', type: 'nvarchar(50)', wcf: '(扫描枪读取标签LotNM)', ui: 'et_shouliao_saomiaotiaoma', chain: ['条码申请→LotNM', '标签贴标→货物', 'PDA扫码枪读取'] },
+      slLotBatch: { label: '物料批号', db: 'Lot.LotNM', type: 'nvarchar(50)', wcf: 'WCF返回', ui: 'tv_shouliao_wuliaopihao', chain: ['WCF→TemporaryReceiptOrder', 'Lot.LotNM'] },
+      slMaterialNM: { label: '料号', db: 'Product.ProductNM', type: 'varchar(50)', wcf: 'WCF返回', ui: 'tv_shouliao_liaohao', chain: ['WCF返回', 'Product.ProductNM'] },
+      slProductName: { label: '品名', db: 'Product.ProductName', type: 'nvarchar(100)', ui: 'tv_shouliao_pingming', chain: ['料号→本地映射'] },
+      slSpec: { label: '规格', db: 'Product.Spec', type: 'nvarchar(100)', ui: 'tv_shouliao_guige', chain: ['Product.Spec'] },
+      slVendorPN: { label: '供应商料号', db: 'ProductVendorPN.VendorPN', type: 'nvarchar(50)', ui: 'tv_shouliao_gongyingshangliaohao', chain: ['WCF返回', 'ProductVendorPN.VendorPN'] },
+      slCustomerPN: { label: '客户料号', db: 'ProductVendorPN.CustomerPN', type: 'nvarchar(50)', ui: 'tv_shouliao_kehuliaohao', chain: ['WCF返回', 'ProductVendorPN.CustomerPN'] },
+      slPONM: { label: '采购单编号', db: 'PurchaseOrder.PurchaseOrderNM', type: 'nvarchar(50)', ui: 'tv_shouliao_caigoudanbianhao', chain: ['WCF返回', 'PurchaseOrder.PurchaseOrderNM'] },
+      slVendorName: { label: '供应商名称', db: 'Vendor.VendorName', type: 'nvarchar(100)', ui: 'tv_shouliao_gongyingshangmingchen', chain: ['WCF返回', 'Vendor.VendorName'] },
+      slQty: { label: '数量', db: 'TemporaryReceiptOrderDetail.Qty', type: 'decimal', wcf: 'WCF返回', ui: 'tv_shouliao_shuliang', chain: ['WCF返回', 'TemporaryReceiptOrderDetail.Qty'] },
+      slUOM: { label: '单位', db: 'UOM.UOMNM', type: 'varchar(50)', ui: 'tv_shouliao_danwei', chain: ['UOM.UOMNM'] },
+
+      // 明细 Tab (zanshou_fragment_b.xml, ZanShouFramgnet_B)
+      mxOrderNM: { label: '收料单号', db: 'TemporaryReceiptOrder.TemporaryReceiptOrderNM', type: 'nvarchar(50)', ui: 'tv_mingxi_shouliaodanbianhao', chain: ['WCF返回', 'TemporaryReceiptOrder'] },
+      mxDate: { label: '日期', db: 'TemporaryReceiptOrder.CreateDatetime', type: 'datetime', ui: 'tv_mingxi_riqi', chain: ['TemporaryReceiptOrder.CreateDatetime'] },
+      mxReceiver: { label: '收料人', db: 'TemporaryReceiptOrder.UserId', type: 'nvarchar(50)', ui: 'tv_mingxi_shouliaoren', chain: ['PDA登录态'] },
+      mxTotalItems: { label: '总收料项次', db: 'TemporaryReceiptOrderDetail.COUNT', type: 'int', ui: 'tv_mingxi_zongshouliaoxiangci', chain: ['明细行数统计'] },
+
+      // 明细列表项 (zanshou_mingxi_listview_item2.xml)
+      mxPONM: { label: '采购单号', db: 'PurchaseOrder.PurchaseOrderNM', ui: 'tv_mingxi_adapter_caigoudanhao' },
+      mxItem: { label: '项次', db: 'PurchaseOrderDetail.Item', ui: 'tv_mingxi_adapter_xiangci' },
+      mxProdNM: { label: '物料编号', db: 'Product.ProductNM', ui: 'tv_mingxi_adapter_wuliaobianhao' },
+      mxName: { label: '名称', db: 'Product.ProductName', ui: 'tv_mingxi_adapter_mingchen' },
+      mxSpec: { label: '规格', db: 'Product.Spec', ui: 'tv_mingxi_adapter_guige' },
+      mxQty: { label: '数量', db: 'TemporaryReceiptOrderDetail.Qty', ui: 'tv_mingxi_adapter_shuliang' },
+      mxUOM: { label: '单位', db: 'UOM.UOMNM', ui: 'tv_mingxi_adapter_danwei' }
+    };
+
+    let screen = 'list', currentTab = 0, scannedItems = [], orderInfo = null;
+
+    // ===== 渲染 =====
+    function render() {
+      document.getElementById('topTitle').textContent = screen === 'list' ? '首臻MES · 暂收' : '首臻MES · 新建暂收单';
+      document.getElementById('menuBtn').style.display = screen === 'list' ? 'inline' : 'none';
+      document.getElementById('pdaTabs').style.display = screen === 'new' ? 'flex' : 'none';
+      document.getElementById('menuOverlay').classList.remove('show');
+      if (screen === 'list') renderList();
+      else { currentTab = 0; renderNew() }
+    }
+
+    // ===== 暂收单列表 (zanshoudan_layout.xml + zanshou_item.xml) =====
+    function renderList() {
+      const items = [
+        { nm: 'ZS202607240001', date: '2026-07-24', receiver: '超级管理员', status: '待处理', statusCls: 'pending' },
+        { nm: 'ZS202607230003', date: '2026-07-23', receiver: '李四', status: '已完成', statusCls: 'done' },
+        { nm: 'ZS202607220002', date: '2026-07-22', receiver: '张三', status: '已完成', statusCls: 'done' }
+      ];
+      let h = `<div class="progress-wrap"><div class="progress-outer"><div class="progress-inner"></div></div></div>`;
+      h += `<div style="padding:4px 12px;font-size:13px;color:#353535;font-weight:600">共计: ${items.length} 条暂收单</div>`;
+      items.forEach((it, i) => {
+        h += `<div class="list-card" id="card${i}" onclick="toggleCard(${i})">
+      <div class="lc-row"><span class="lc-label">暂收单编号:</span><span class="lc-val">${it.nm}</span></div>
+      <div class="lc-row"><span class="lc-label">日期:</span><span class="lc-val">${it.date}</span></div>
+      <div class="lc-row"><span class="lc-label">收料人:</span><span class="lc-val">${it.receiver}</span></div>
+      <div class="lc-row"><span class="lc-label">状态:</span><span class="lc-status ${it.statusCls}">${it.status}</span></div>
+      <div class="card-detail" id="detail${i}">
+        <h5>📋 卡片字段 → 数据库血缘</h5>
+        <div class="lineage-wrap">
+        <table class="lineage-table">
+          <thead><tr><th>显示字段</th><th>PDA UI 控件 (源码ID)</th><th>数据库来源</th><th>类型</th></tr></thead>
+          <tbody>
+            <tr onclick="event.stopPropagation();showL('zsOrderNM')"><td>暂收单编号</td><td><code>tv_zanshou_zanshoudanbianhao</code></td><td>TemporaryReceiptOrder.TemporaryReceiptOrderNM</td><td>nvarchar(50)</td></tr>
+            <tr onclick="event.stopPropagation();showL('zsDate')"><td>日期</td><td><code>tv_zanshou_riqi</code></td><td>TemporaryReceiptOrder.CreateDatetime</td><td>datetime</td></tr>
+            <tr onclick="event.stopPropagation();showL('zsReceiver')"><td>收料人</td><td><code>tv_zanshou_shouliaoren</code></td><td>TemporaryReceiptOrder.UserId → User</td><td>nvarchar(50)</td></tr>
+            <tr onclick="event.stopPropagation();showL('zsStatus')"><td>状态</td><td><code>tv_zanshou_done</code></td><td>TemporaryReceiptOrder.Status</td><td>int</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="cd-hint">💡 横向滚动查看更多列 · 点击行可查看完整数据路径链</div>
+      </div>
+    </div>`;
+      });
+      h += `<div style="text-align:center;padding:16px;color:#94a3b8;font-size:11px">点击卡片展开字段血缘表 | 右上角 ⋮ 新建暂收单</div>`;
+      document.getElementById('pdaContent').innerHTML = h;
+    }
+
+    // ===== 新建暂收单 (zanshou_main_layout.xml) =====
+    function renderNew() {
+      switchTab(0);
+    }
+    function switchTab(i) {
+      currentTab = i;
+      document.getElementById('tab0').className = 'pda-tab' + (i === 0 ? ' active' : '');
+      document.getElementById('tab1').className = 'pda-tab' + (i === 1 ? ' active' : '');
+      document.getElementById('pdaContent').innerHTML = i === 0 ? renderShouLiao() : renderMingXi();
+    }
+
+    // 收料 Tab (zanshou_fragment_a.xml, ZanShouFramgnet_A)
+    function renderShouLiao() {
+      const has = scannedItems.length > 0, last = has ? scannedItems[scannedItems.length - 1] : null;
+      let h = `<div class="scan-area"><div class="scan-row"><span class="scan-label">扫描条码:</span><input class="scan-input" id="scanInput" value="005226290006001" placeholder="扫描标签LotNM..." onkeydown="if(event.key==='Enter')doZSScan()"><button class="scan-btn" onclick="doZSScan()">收料</button></div><div class="scan-hint">📡 扫描货物标签 LotNM → WCF: TemporaryReceiptOrder 查询</div></div>`;
+      if (has && orderInfo) {
+        h += `<div class="wcf-detail show"><h4>🔌 WCF调用 — 暂收扫码查询</h4>
+      <div class="wcf-step"><span class="sn">1</span><span class="sb">PDA扫描枪读取标签 <code>LotNM=${orderInfo.sv}</code>（来源：条码申请→ZDesigner打印→人工贴标）</span></div>
+      <div class="wcf-step"><span class="sn">2</span><span class="sb"><code>ZanShouThread</code> 构造请求 → WCF查询物料信息</span></div>
+      <div class="wcf-step"><span class="sn">3</span><span class="sb">WCF返回 → <code>Handler(what=3)</code> → <code>againInItView()</code> 填充下方字段</span></div>
+    </div>`;
+      }
+      h += `<div class="info-area">`;
+      if (has && last) {
+        h += ir('物料批号', last.lotNM || '26101502001', 'slLotBatch');
+        h += ir('料\u3000\u3000号', last.matNM || '2969341', 'slMaterialNM');
+        h += ir('品\u3000\u3000名', 'ZW_NE OP SER SUD', 'slProductName');
+        h += ir('规\u3000\u3000格', '25KG/桶', 'slSpec');
+        h += ir('供应商料号', 'V2969341', 'slVendorPN');
+        h += ir('客户料号', '2969341', 'slCustomerPN');
+        h += ir('采购单编号', 'RE2026070008', 'slPONM');
+        h += ir('供应商名称', '汉高股份有限公司', 'slVendorName');
+        h += ir('数\u3000\u3000量', '4000', 'slQty');
+        h += ir('单\u3000\u3000位', 'PCS', 'slUOM');
+      } else {
+        h += `<div style="text-align:center;padding:30px;color:#94a3b8;font-size:12px">📷 扫描货物标签 LotNM<br><small>已预填示例: 005226290006001</small></div>`;
+      }
+      h += `</div>`;
+      if (has && last) {
+        h += `<div style="padding:8px 8px 0;cursor:pointer;font-size:12px;color:#1a3a5c;font-weight:600" onclick="toggleCard2('slLineage')">📋 查看所有字段 → 数据库血缘 <span style="font-size:10px">(11个字段)</span></div>`;
+        h += `<div class="card-detail" id="slLineage" style="margin:0 8px"><h5>收料 Tab · 字段血缘 (zanshou_fragment_a.xml)</h5><div class="lineage-wrap"><table class="lineage-table">
+      <thead><tr><th>显示字段</th><th>PDA UI 控件 (源码ID)</th><th>数据库来源</th><th>类型</th></tr></thead><tbody>
+        <tr onclick="showL('slBarcode')"><td>扫描条码</td><td><code>et_shouliao_saomiaotiaoma</code></td><td>PurchaseOrderLotApply.LotNM</td><td>nvarchar(50)</td></tr>
+        <tr onclick="showL('slLotBatch')"><td>物料批号</td><td><code>tv_shouliao_wuliaopihao</code></td><td>Lot.LotNM</td><td>nvarchar(50)</td></tr>
+        <tr onclick="showL('slMaterialNM')"><td>料号</td><td><code>tv_shouliao_liaohao</code></td><td>Product.ProductNM</td><td>varchar(50)</td></tr>
+        <tr onclick="showL('slProductName')"><td>品名</td><td><code>tv_shouliao_pingming</code></td><td>Product.ProductName</td><td>nvarchar(100)</td></tr>
+        <tr onclick="showL('slSpec')"><td>规格</td><td><code>tv_shouliao_guige</code></td><td>Product.Spec</td><td>nvarchar(100)</td></tr>
+        <tr onclick="showL('slVendorPN')"><td>供应商料号</td><td><code>tv_shouliao_gongyingshangliaohao</code></td><td>ProductVendorPN.VendorPN</td><td>nvarchar(50)</td></tr>
+        <tr onclick="showL('slCustomerPN')"><td>客户料号</td><td><code>tv_shouliao_kehuliaohao</code></td><td>ProductVendorPN.CustomerPN</td><td>nvarchar(50)</td></tr>
+        <tr onclick="showL('slPONM')"><td>采购单编号</td><td><code>tv_shouliao_caigoudanbianhao</code></td><td>PurchaseOrder.PurchaseOrderNM</td><td>nvarchar(50)</td></tr>
+        <tr onclick="showL('slVendorName')"><td>供应商名称</td><td><code>tv_shouliao_gongyingshangmingchen</code></td><td>Vendor.VendorName</td><td>nvarchar(100)</td></tr>
+        <tr onclick="showL('slQty')"><td>数量</td><td><code>tv_shouliao_shuliang</code></td><td>TemporaryReceiptOrderDetail.Qty</td><td>decimal</td></tr>
+        <tr onclick="showL('slUOM')"><td>单位</td><td><code>tv_shouliao_danwei</code></td><td>UOM.UOMNM</td><td>varchar(50)</td></tr>
+      </tbody></table></div><div class="cd-hint">💡 横向滚动 · 点击行查看完整路径链</div></div>`;
+      }
+      return h;
+    }
+
+    // 明细 Tab (zanshou_fragment_b.xml, ZanShouFramgnet_B)
+    function renderMingXi() {
+      const totalItems = scannedItems.length || 2;
+      let h = `<div class="detail-header" style="margin-top:8px">
+    收料单号: <span onclick="showL('mxOrderNM')">ZS202607240001</span><br>
+    日　期: <span onclick="showL('mxDate')">2026-07-24</span><br>
+    收料人: <span onclick="showL('mxReceiver')">超级管理员</span><br>
+    总收料项次: <span onclick="showL('mxTotalItems')">${totalItems}</span>
+  </div>`;
+      h += `<div class="detail-list">`;
+      const details = [
+        { po: 'RE2026070008', item: '90', prod: '2969341', name: 'ZW_NE OP SER', spec: '25KG/桶', qty: '4000', uom: 'PCS' },
+        { po: 'RE2026070009', item: '10', prod: '3100256', name: 'EPOXY RESIN', spec: '200KG/桶', qty: '2000', uom: 'PCS' }
+      ];
+      details.forEach(d => {
+        h += `<div class="detail-item" onclick="showL('mxPONM')">
+      <div class="di-row"><span class="di-label">采购单号</span><span class="di-val">${d.po}</span></div>
+      <div class="di-row"><span class="di-label">项次</span><span class="di-val">${d.item}</span></div>
+      <div class="di-row"><span class="di-label">物料编号</span><span class="di-val">${d.prod}</span></div>
+      <div class="di-row"><span class="di-label">名称</span><span class="di-val">${d.name}</span></div>
+      <div class="di-row"><span class="di-label">规格</span><span class="di-val">${d.spec}</span></div>
+      <div class="di-row"><span class="di-label">数量</span><span class="di-val">${d.qty} ${d.uom}</span></div>
+    </div>`;
+      });
+      h += `</div>`;
+      // 明细头部血缘
+      h += `<div style="padding:8px 8px 0;cursor:pointer;font-size:12px;color:#1a3a5c;font-weight:600" onclick="toggleCard2('mxHeadLineage')">📋 明细头部 → 数据库血缘 <span style="font-size:10px">(4个字段)</span></div>`;
+      h += `<div class="card-detail" id="mxHeadLineage" style="margin:0 8px"><h5>明细 Tab · 头部字段 (zanshou_fragment_b.xml)</h5><div class="lineage-wrap"><table class="lineage-table">
+    <thead><tr><th>显示字段</th><th>PDA UI 控件 (源码ID)</th><th>数据库来源</th><th>类型</th></tr></thead><tbody>
+      <tr onclick="showL('mxOrderNM')"><td>收料单号</td><td><code>tv_mingxi_shouliaodanbianhao</code></td><td>TemporaryReceiptOrder.TemporaryReceiptOrderNM</td><td>nvarchar(50)</td></tr>
+      <tr onclick="showL('mxDate')"><td>日期</td><td><code>tv_mingxi_riqi</code></td><td>TemporaryReceiptOrder.CreateDatetime</td><td>datetime</td></tr>
+      <tr onclick="showL('mxReceiver')"><td>收料人</td><td><code>tv_mingxi_shouliaoren</code></td><td>TemporaryReceiptOrder.UserId → User</td><td>nvarchar(50)</td></tr>
+      <tr onclick="showL('mxTotalItems')"><td>总收料项次</td><td><code>tv_mingxi_zongshouliaoxiangci</code></td><td>TemporaryReceiptOrderDetail.COUNT</td><td>int</td></tr>
+    </tbody></table></div><div class="cd-hint">💡 横向滚动 · 点击行查看完整路径链</div></div>`;
+      // 明细列表血缘
+      h += `<div style="padding:8px 8px 0;cursor:pointer;font-size:12px;color:#1a3a5c;font-weight:600" onclick="toggleCard2('mxListLineage')">📋 明细列表项 → 数据库血缘 <span style="font-size:10px">(7个字段)</span></div>`;
+      h += `<div class="card-detail" id="mxListLineage" style="margin:0 8px"><h5>明细 Tab · 列表项 (zanshou_mingxi_listview_item2.xml)</h5><div class="lineage-wrap"><table class="lineage-table">
+    <thead><tr><th>显示字段</th><th>PDA UI 控件 (源码ID)</th><th>数据库来源</th><th>类型</th></tr></thead><tbody>
+      <tr onclick="showL('mxPONM')"><td>采购单号</td><td><code>tv_mingxi_adapter_caigoudanhao</code></td><td>PurchaseOrder.PurchaseOrderNM</td><td>nvarchar(50)</td></tr>
+      <tr onclick="showL('mxItem')"><td>项次</td><td><code>tv_mingxi_adapter_xiangci</code></td><td>PurchaseOrderDetail.Item</td><td>int</td></tr>
+      <tr onclick="showL('mxProdNM')"><td>物料编号</td><td><code>tv_mingxi_adapter_wuliaobianhao</code></td><td>Product.ProductNM</td><td>varchar(50)</td></tr>
+      <tr onclick="showL('mxName')"><td>名称</td><td><code>tv_mingxi_adapter_mingchen</code></td><td>Product.ProductName</td><td>nvarchar(100)</td></tr>
+      <tr onclick="showL('mxSpec')"><td>规格</td><td><code>tv_mingxi_adapter_guige</code></td><td>Product.Spec</td><td>nvarchar(100)</td></tr>
+      <tr onclick="showL('mxQty')"><td>数量</td><td><code>tv_mingxi_adapter_shuliang</code></td><td>TemporaryReceiptOrderDetail.Qty</td><td>decimal</td></tr>
+      <tr onclick="showL('mxUOM')"><td>单位</td><td><code>tv_mingxi_adapter_danwei</code></td><td>UOM.UOMNM</td><td>varchar(50)</td></tr>
+    </tbody></table></div><div class="cd-hint">💡 横向滚动 · 点击行查看完整路径链</div></div>`;
+      h += `<div class="action-bar"><button class="action-btn secondary" onclick="screen='list';render();scannedItems=[]">← 返回列表</button><button class="action-btn primary" onclick="t('✅ 暂收单已保存','success')">💾 保存</button></div>`;
+      return h;
+    }
+
+    function ir(l, v, k) { return `<div class="info-row"><div class="info-label">${l}</div><div class="info-value" data-lineage="${k}" onclick="showL('${k}')">${v}</div></div>` }
+
+    // ===== 操作 =====
+    function toggleCard(i) {
+      const d = document.getElementById('detail' + i);
+      if (!d) return;
+      document.querySelectorAll('.card-detail.show').forEach(el => { if (el.id !== 'detail' + i) el.classList.remove('show') });
+      d.classList.toggle('show');
+    }
+    function toggleCard2(id) {
+      const d = document.getElementById(id);
+      if (!d) return;
+      document.querySelectorAll('.card-detail.show').forEach(el => { if (el.id !== id) el.classList.remove('show') });
+      d.classList.toggle('show');
+    }
+    function toggleMenu() { document.getElementById('menuOverlay').classList.toggle('show') }
+    function newZanShou() { screen = 'new'; scannedItems = []; orderInfo = null; render() }
+    function doSearch() { t('🔍 查询暂收单', 'success') }
+    function openZanShou(nm) { screen = 'new'; scannedItems = [{ lotNM: '26101502001', matNM: '2969341' }]; orderInfo = { sv: '005226290006001' }; render() }
+    function doZSScan() {
+      const v = (document.getElementById('scanInput')?.value || '').trim();
+      if (!v) { t('请输入条码', 'error'); return }
+      orderInfo = { sv: v };
+      scannedItems = [{ lotNM: '26101502001', matNM: '2969341' }];
+      render(); switchTab(0);
+      t('✅ 物料信息已加载 → 切换"明细"查看收料单', 'success')
+    }
+
+    // ===== 血缘 =====
+    function showL(k) {
+      const f = F[k]; if (!f) return;
+      document.getElementById('inspectorBody').innerHTML = `
+    <div class="ifn">📋 ${f.label}</div>
+    <div class="ir"><div class="irl">🖥️ PDA UI (源码ID)</div><div class="irv">${f.ui || '—'}</div></div>
+    ${f.wcf ? `<div class="ir"><div class="irl">🔌 WCF</div><div class="irv">${f.wcf}</div></div>` : ''}
+    <div class="ir"><div class="irl">📊 数据库</div><div class="irv">${f.db || '—'} <span style="color:#94a3b8;font-size:10px">${f.type || ''}</span></div></div>
+    <div class="ir"><div class="irl">🔗 路径</div><div class="ch">${(f.chain || []).map((c, i) => { let cls = 'ci-u'; if (c.includes('WCF')) cls = 'ci-w'; else if (c.includes('BLL')) cls = 'ci-b'; else if (c.includes('Pro_')) cls = 'ci-s'; else if (c.includes('.') && !c.includes('→')) cls = 'ci-d'; const a = i < (f.chain.length - 1) ? '<span class="ca">→</span>' : ''; return `<span class="ci ${cls}">${c}</span>${a}` }).join('')}</div></div>`;
+      document.getElementById('inspectorOverlay').classList.add('show');
+    }
+    function cl() { document.getElementById('inspectorOverlay').classList.remove('show') }
+    function t(m, tp) { const e = document.getElementById('toast'); e.textContent = m; e.className = 'toast ' + (tp || ''); e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 2500) }
+
+    render();
+  </script>
+</body>
+
+</html>

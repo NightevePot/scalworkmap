@@ -1,0 +1,107 @@
+{
+  "project": "SCAL",
+  "version": 1,
+  "macroSequence": [
+    "procurement",
+    "receipt",
+    "quality",
+    "loading",
+    "weighing",
+    "output",
+    "closure"
+  ],
+  "stages": [
+    {
+      "id": "procurement",
+      "label": "采购",
+      "systems": ["MES-BS", "数据库"],
+      "nodes": [
+        { "id": "purchase-order", "label": "采购单/采购明细", "evidence": ["PurchaseOrder", "PurchaseOrderDetail"] },
+        { "id": "barcode-apply", "label": "采购条码申请", "evidence": ["CKZY_LotApplyController", "Pro_LotApply_GetPurchaseOrderDetailList_New", "Pro_LotApply_AddPurchaseOrderLotApplyOutPackage"], "demo": "business/sample.html" },
+        { "id": "label-print", "label": "标签生成/打印", "evidence": ["PurchaseOrderLotApply", "BarCodeDef", "Zebra ZPL"] }
+      ]
+    },
+    {
+      "id": "receipt",
+      "label": "入库",
+      "systems": ["PDA", "PDA-B", "数据库"],
+      "nodes": [
+        { "id": "temporary-receipt", "label": "暂存收料", "evidence": ["ZanShouFramgnet_A", "ZanShouFramgnet_B", "AddTemporaryReceiptOrder", "AddTemporaryReceiptOrderDetail"] },
+        { "id": "receipt-complete", "label": "扫码入库/收料完成", "evidence": ["CompliteTemporaryReceipt", "Pro_PDA_Tran_TemporaryReceiptLotStart_Basic", "Lot"] }
+      ]
+    },
+    {
+      "id": "quality",
+      "label": "质检",
+      "systems": ["MES-BS", "PDA", "数据库"],
+      "nodes": [
+        { "id": "sampling-label", "label": "抽样标签生成", "evidence": ["ZLKZ_SamplingLabelDAL", "Pro_CreateSample_GetReceivedLotList_YL_New", "Pro_CreateSampleLot_New"], "demo": "business/sampling-label.html" },
+        { "id": "inspection", "label": "检验记录/判定", "evidence": ["MESZLKZ_InspectionDAL", "InspectionHistory"] },
+        { "id": "quality-release", "label": "放行/扣留/不合格", "evidence": ["MESZLKZ_ReleaseHoldController", "Pro_HoldRelease_QualityChangeStatus_New", "Lot.QCState"] }
+      ]
+    },
+    {
+      "id": "loading",
+      "label": "上料",
+      "systems": ["PDA", "PDA-B", "数据库"],
+      "nodes": [
+        { "id": "dispatch", "label": "发料扫描", "evidence": ["FaLiaoDanXuanZe", "FaLiaoThread", "B_FaLiaoThread", "Pro_PDA_DispatcheOrder_DispatchLot", "CurrentStatus2"] },
+        { "id": "dispatch-confirm", "label": "领料确认", "evidence": ["DispatchHistory", "DispatchConfirmHistory"] },
+        { "id": "line-load", "label": "产线上料", "evidence": ["DoProductLineLoadMaterialLoad", "Pro_PDA_ProductLineLoadMaterial_DoLoad", "ProductLineLoadedMaterial", "LOADMA"] }
+      ]
+    },
+    {
+      "id": "weighing",
+      "label": "称料",
+      "systems": ["MES-BS", "MES-CS", "数据库"],
+      "nodes": [
+        { "id": "weighing-context", "label": "工单/工艺步骤/设备", "evidence": ["frmME_IssueMaterial", "frmME_IssueMaterial_Weighting", "ProcessSpecStep"] },
+        { "id": "weighing-split", "label": "实称或免称并拆分 W 批次", "evidence": ["Pro_IssueMaterial_Confirm_News", "Pro_IssueMaterial_Confirm2_News", "Pro_Tran_WeightingSplitIssueMaterial"] },
+        { "id": "weighing-history", "label": "称量历史/复核", "evidence": ["Pro_Tran_Weighing_News", "WeighingHistory", "frmME_IssueMaterialCheck"] }
+      ]
+    },
+    {
+      "id": "output",
+      "label": "配置产出",
+      "systems": ["MES-CS", "MES-BS", "数据库"],
+      "nodes": [
+        { "id": "preparation-output", "label": "配制产出称量", "evidence": ["frmME_PZOutput", "MESZZZX_PZOutputDAL", "Pro_PZOutput_Packing_New"] },
+        { "id": "output-lot", "label": "产出批次与 START/InStock 历史", "evidence": ["Lot", "CurrentStatus", "HistoryMainLine", "StartHistory", "WareHouseHistory"] },
+        { "id": "output-receipt-order", "label": "配制产出入库单", "evidence": ["MfgInWHOrder", "MfgInWHOrderDetail", "IQCOrderNM=配制产出入库单"] }
+      ]
+    },
+    {
+      "id": "closure",
+      "label": "结案",
+      "systems": ["MES-BS", "数据库"],
+      "nodes": [
+        { "id": "close-check", "label": "结案前校验", "evidence": ["CKZY_WorkOrder", "Pro_MfgOrder_Close_Check", "MfgOrderStart", "ProductLineReturnOrderDetail"] },
+        { "id": "close", "label": "正常/强制结案", "evidence": ["Pro_MfgOrder_Close", "Pro_Tran_OpenCloseMO", "MfgOrder.MOStatus=2"] },
+        { "id": "close-archive", "label": "线边物料归档/ERP接口", "evidence": ["LotDeduction", "InterfaceBusiness", "Pro_MfgOrder_UnClose_New"] }
+      ]
+    }
+  ],
+  "links": [
+    { "from": "label-print", "to": "temporary-receipt", "kind": "solid" },
+    { "from": "receipt-complete", "to": "sampling-label", "kind": "solid" },
+    { "from": "quality-release", "to": "dispatch", "kind": "solid" },
+    { "from": "dispatch", "to": "dispatch-confirm", "kind": "solid" },
+    { "from": "dispatch-confirm", "to": "line-load", "kind": "solid" },
+    { "from": "line-load", "to": "weighing-context", "kind": "business-assumption", "note": "宏观顺序按需求展示；代码强制前置是发料记录和线边状态，不是 LOADMA。" },
+    { "from": "weighing-history", "to": "preparation-output", "kind": "solid" },
+    { "from": "output-receipt-order", "to": "close-check", "kind": "solid" },
+    { "from": "close-check", "to": "close", "kind": "solid" },
+    { "from": "close", "to": "close-archive", "kind": "solid" }
+  ],
+  "demos": [
+    { "path": "business/sample.html", "label": "采购条码申请示例", "stage": "procurement", "node": "barcode-apply" },
+    { "path": "business/sampling-label.html", "label": "抽样标签示例", "stage": "quality", "node": "sampling-label" },
+    { "path": "business/index.html", "label": "DOC 业务示例首页", "stage": "procurement", "node": "purchase-order" }
+  ],
+  "evidenceDocuments": [
+    "SCAL_FLOW_VERIFICATION_01_PROCUREMENT_TO_QUALITY.md",
+    "SCAL_FLOW_VERIFICATION_02_MATERIAL_LOADING.md",
+    "SCAL_FLOW_VERIFICATION_03_WEIGHING.md",
+    "SCAL_FLOW_VERIFICATION_04_OUTPUT_AND_CLOSURE.md"
+  ]
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>数据链查询 · 字段血缘演示</title>
+<style>:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9}*{box-sizing:border-box;margin:0;padding:0}body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}.demo-main{flex:1;max-width:1100px}.bar{height:50px;display:flex;color:#fff;background:var(--green)}.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default;white-space:nowrap}.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}.sub-arr{color:#94a3b8;font-size:10px}.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line)}.toolbar table{width:100%}.toolbar th{text-align:right;font-size:12px;font-weight:600;padding:3px 6px}.toolbar td{padding:3px 12px 3px 4px}.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}.btn-pri{background:var(--blue);color:#fff}.content{padding:10px}.sec-title{font-size:12px;font-weight:700;padding:6px 0 4px}.dg{background:#fff;border:1px solid var(--line);margin-bottom:8px}.dg table{width:100%;border-collapse:collapse;font-size:11px}.dg th{background:var(--soft);padding:5px 8px;text-align:left;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;font-weight:700}.dg td{padding:4px 8px;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:10px}.dg td[data-k]:hover{background:#eff6ff}.tabs-row{display:flex;border-bottom:1px solid var(--line);margin-bottom:8px}.tab-item{padding:6px 16px;font-size:12px;font-weight:700;color:#4e5d67;cursor:default;border:1px solid transparent;border-bottom:0}.tab-item.active{color:#173f5f;border:1px solid var(--line);border-bottom:1px solid #fff;background:#fff}.detail-row{padding:6px 16px;margin:4px 0 8px;background:#f7faf8;border:1px dashed #c8d8d0;font-size:11px}.detail-row table{width:100%;border-collapse:collapse}.detail-row th{text-align:left;padding:2px 8px;background:#e8f0ec;font-size:10px;font-weight:700}.detail-row td{padding:2px 8px;font-size:10px;cursor:pointer}.detail-row td:hover{background:#eff6ff}.card{position:fixed;z-index:5;right:24px;bottom:24px;width:620px;min-height:300px;max-height:calc(100vh-40px);overflow:auto;border:1px solid #b7c9d2;border-radius:6px;background:#fff;box-shadow:0 15px 36px rgba(24,53,70,.26);opacity:0;visibility:hidden;transform:scale(.98);transition:.16s}.card.show{opacity:1;visibility:visible;transform:scale(1)}.card-head{display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:0 17px;color:#fff;background:#245f84;cursor:move}.card-body{padding:16px}.pth{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}.pth span{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;background:#e8edf0}.pth .ar{background:none;padding:0 2px;color:#94a3b8}.meta dt{font-size:10px;color:#64748b;font-weight:700;margin-top:10px}.meta dd{font-family:Consolas,monospace;font-size:12px;margin:4px 0 0}.stats-panel{width:280px;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1);flex-shrink:0;position:sticky;top:12px;max-height:calc(100vh-24px);display:flex;flex-direction:column;font-size:12px}.stats-panel .sh{background:var(--blue);color:#fff;padding:8px 12px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-radius:8px 8px 0 0;flex-shrink:0}.stats-body{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}.stats-panel .sh .badge{font-size:9px;background:#fff3;padding:1px 6px;border-radius:10px}.stats-panel .ss{padding:6px 8px;border-bottom:1px solid #e8edf0}.stats-panel .ss h4{font-size:9px;color:#64748b;margin-bottom:4px;display:flex;align-items:center;gap:4px}.stats-panel .si{font-size:11px;padding:2px 4px;margin-bottom:1px;border-radius:3px;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px}.stats-panel .si .sn{flex:1 1 auto;font-family:Consolas,monospace;font-size:9px;line-height:1.35}.stats-panel .st{font-size:8px;padding:0 3px;border-radius:2px;font-weight:600;flex-shrink:0;white-space:nowrap}.stats-panel .st.tbl{background:#d1fae5;color:#065f46}.stats-panel .st.bll{background:#fef3c7;color:#92400e}.stats-panel .st.api{background:#dbeafe;color:#1d4ed8}.stats-count-row{display:flex;gap:8px;text-align:center;padding:8px 12px}.stats-count-row>div{flex:1}.stats-count-row .scn{font-size:20px;font-weight:800;color:var(--blue)}.stats-count-row .scl{font-size:10px;color:#94a3b8}</style></head><body>
+<div class="demo-main">
+<header class="bar"><div class="brand">ⓘ MES制造执行系统</div><nav class="nav"><span>工艺流程</span><span>企业架构</span><span class="active">生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span></nav><div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| 数据链查询 · 字段血缘演示</span></div></header>
+<div class="sub-tabs"><span class="sub-tab">生产模型</span><span class="sub-arr">▸</span><span class="sub-tab">批次工具</span><span class="sub-arr">▸</span><span class="sub-tab active">数据链查询</span></div>
+
+<div class="toolbar"><table><tr>
+<th>查询条件：</th><td><input data-k="sQueryWhere" value="005226290006001" style="width:250px"></td>
+<td style="padding-left:10px"><button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button></td>
+</tr></table></div>
+
+<div class="content">
+<div class="tabs-row"><span class="tab-item active">批次历史</span></div>
+
+<div class="sec-title">📊 A — 批次列表（ListPCLSOne · 勾选行加载明细和子数据链）</div>
+<div class="dg"><table><thead><tr><th>☐</th><th>流水号</th><th>数量</th><th>生产批号</th><th>物料编号</th><th>状态</th><th>品质状态</th><th>重检日期</th><th>有效日期</th><th>品名</th><th>规格描述</th><th>工单编号</th><th>储位编码</th><th>供应商编码</th></tr></thead><tbody>
+<tr><td><input type="checkbox" checked></td><td data-k="LotNM">005226290006001</td><td data-k="Qty">4000</td><td data-k="MFGBatch">2630</td><td data-k="ProductNM">2969341</td><td data-k="Status">已放行</td><td data-k="QCState">合格</td><td data-k="ReinspectionDate">—</td><td data-k="ExpirationDate">2027-07-23</td><td data-k="Note">ZW_NE OP SER SUD 29597</td><td data-k="Description">500ml</td><td data-k="MfgOrderNM">MO2026070008</td><td data-k="StorageLocationCode">A-01-03</td><td data-k="VendorCode">V001</td></tr>
+</tbody></table></div>
+
+<div class="sec-title">📊 B — 批次历史明细（ListPCLSTwo · detailview 可展开查看子数据）</div>
+<div class="dg"><table><thead><tr><th>动作</th><th>作业时间</th><th>用户名</th><th>电脑名</th></tr></thead><tbody>
+<tr><td data-k="TxnId1">条码申请</td><td data-k="TxnDate1">2026-07-23 08:00</td><td data-k="UserNM1">超级管理员</td><td data-k="StationNM1">BS-WEB</td></tr>
+<tr><td data-k="TxnId2">暂收入库</td><td data-k="TxnDate2">2026-07-23 09:00</td><td data-k="UserNM2">仓库员A</td><td data-k="StationNM2">PDA-01</td></tr>
+<tr><td data-k="TxnId3">送检</td><td data-k="TxnDate3">2026-07-23 10:00</td><td data-k="UserNM3">质检员B</td><td data-k="StationNM3">BS-WEB</td></tr>
+<tr><td data-k="TxnId4">放行</td><td data-k="TxnDate4">2026-07-23 14:30</td><td data-k="UserNM4">超级管理员</td><td data-k="StationNM4">BS-WEB</td></tr>
+</tbody></table></div>
+
+<div class="sec-title">📊 展开明细 → 放行操作的数据链子数据（GetConfigurableReportList API · 动态列）</div>
+<div class="detail-row">
+<table><thead><tr><th>LotNM</th><th>Qty</th><th>MFGBatch</th><th>ProductNM</th><th>Note</th><th>MfgOrderNM</th><th>VendorCode</th></tr></thead><tbody>
+<tr><td data-k="subLotNM">005226290006001</td><td data-k="subQty">4000</td><td data-k="subMFGBatch">2630</td><td data-k="subProductNM">2969341</td><td data-k="subNote">ZW_NE OP SER SUD 29597</td><td data-k="subMfgOrderNM">MO2026070008</td><td data-k="subVendorCode">V001</td></tr>
+</tbody></table>
+</div>
+</div></div>
+
+<aside class="card" id="card"><div class="card-head"><div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div><button class="close-btn" onclick="cl()">×</button></div><div class="card-body"><div class="pth" id="pth"></div><dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl><dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl><dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl><dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl></div></aside>
+
+<div class="stats-panel"><div class="sh">📊 调用统计<span class="badge">BS·数据链 | MESBT_DataLink</span></div><div class="stats-body">
+<div class="stats-count-row"><div><div class="scn">4</div><div class="scl">数据库表</div></div><div><div class="scn">1</div><div class="scl">BLL</div></div><div><div class="scn">3</div><div class="scl">API</div></div></div>
+<div class="ss"><h4>📊 数据库表</h4>
+<div class="si"><span class="sn" title="Lot">Lot</span><span class="st tbl">批次</span></div><div class="si"><span class="sn" title="HistoryMainLine">HistoryMainLine</span><span class="st tbl">历史主线</span></div><div class="si"><span class="sn" title="Product">Product</span><span class="st tbl">产品</span></div><div class="si"><span class="sn" title="MfgOrder">MfgOrder</span><span class="st tbl">工单</span></div></div>
+<div class="ss"><h4>🧩 BLL</h4>
+<div class="si"><span class="sn" title="MESBT_DataLinkBLL">MESBT_DataLinkBLL</span><span class="st bll">数据链追溯</span></div></div>
+<div class="ss"><h4>🔌 API</h4>
+<div class="si"><span class="sn" title="GetHistoryQueryLotInfo">GetHistoryQueryLotInfo</span><span class="st api">批次列表A</span></div><div class="si"><span class="sn" title="GetLotHistoryMainLineInfoByLotId">GetLotHistoryMainLineInfoByLotId</span><span class="st api">历史明细B</span></div><div class="si"><span class="sn" title="GetConfigurableReportList">GetConfigurableReportList</span><span class="st api">展开子数据</span></div></div></div></div>
+
+<script>
+const map={
+sQueryWhere:['查询条件','Lot.LotNM','nvarchar(50)','textbox→输入流水号','查询',['LotNM']],
+LotNM:['流水号','Lot.LotNM','nvarchar(50)','ListPCLSOne','列表',['GetHistoryQueryLotInfo','Lot']],
+Qty:['数量','Lot.Qty','decimal','ListPCLSOne','列表',['Lot']],
+MFGBatch:['生产批号','Lot.MFGBatch','nvarchar(80)','ListPCLSOne','列表',['Lot']],
+ProductNM:['物料编号','Product.ProductNM','nvarchar(50)','ListPCLSOne','列表',['Product']],
+Status:['状态','Lot.Status→字典','nvarchar(50)','ListPCLSOne','列表',['Lot']],
+QCState:['品质状态','Lot.QCState→字典','nvarchar(50)','ListPCLSOne','列表',['Lot']],
+ReinspectionDate:['重检日期','Lot.ReInspectionDate','date','ListPCLSOne','列表',['Lot']],
+ExpirationDate:['有效日期','Lot.ExpirationDate','date','ListPCLSOne','列表',['Lot']],
+Note:['品名','Product.Note','nvarchar(300)','ListPCLSOne','列表',['Product']],
+Description:['规格描述','Product.Description','nvarchar(300)','ListPCLSOne','列表',['Product']],
+MfgOrderNM:['工单编号','MfgOrder.MfgOrderNM','nvarchar(50)','ListPCLSOne','列表',['MfgOrder']],
+StorageLocationCode:['储位编码','Lot.StorageLocationCode','nvarchar(50)','ListPCLSOne','列表',['Lot']],
+VendorCode:['供应商编码','Vendor.VendorCode','nvarchar(50)','ListPCLSOne','列表',['Vendor']],
+TxnId1:['动作','HistoryMainLine.TxnId','nvarchar(50)','ListPCLSTwo','明细',['GetLotHistoryMainLineInfoByLotId','HistoryMainLine']],
+TxnDate1:['作业时间','HistoryMainLine.TxnDate','datetime','ListPCLSTwo','明细',['HistoryMainLine']],
+UserNM1:['用户名','HistoryMainLine.UserNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+StationNM1:['电脑名','HistoryMainLine.StationNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+TxnId2:['动作','HistoryMainLine.TxnId','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+TxnDate2:['作业时间','HistoryMainLine.TxnDate','datetime','ListPCLSTwo','明细',['HistoryMainLine']],
+UserNM2:['用户名','HistoryMainLine.UserNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+StationNM2:['电脑名','HistoryMainLine.StationNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+TxnId3:['动作','HistoryMainLine.TxnId','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+TxnDate3:['作业时间','HistoryMainLine.TxnDate','datetime','ListPCLSTwo','明细',['HistoryMainLine']],
+UserNM3:['用户名','HistoryMainLine.UserNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+StationNM3:['电脑名','HistoryMainLine.StationNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+TxnId4:['动作','HistoryMainLine.TxnId','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+TxnDate4:['作业时间','HistoryMainLine.TxnDate','datetime','ListPCLSTwo','明细',['HistoryMainLine']],
+UserNM4:['用户名','HistoryMainLine.UserNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+StationNM4:['电脑名','HistoryMainLine.StationNM','nvarchar(50)','ListPCLSTwo','明细',['HistoryMainLine']],
+subLotNM:['LotNM','Lot.LotNM','nvarchar(50)','detailview·GetConfigurableReportList','子数据',['GetConfigurableReportList','HistoryMainLine→业务表']],
+subQty:['Qty','Lot.Qty','decimal','detailview','子数据',['Lot']],
+subMFGBatch:['MFGBatch','Lot.MFGBatch','nvarchar(80)','detailview','子数据',['Lot']],
+subProductNM:['ProductNM','Product.ProductNM','nvarchar(50)','detailview','子数据',['Product']],
+subNote:['Note','Product.Note','nvarchar(300)','detailview','子数据',['Product']],
+subMfgOrderNM:['MfgOrderNM','MfgOrder.MfgOrderNM','nvarchar(50)','detailview','子数据',['MfgOrder']],
+subVendorCode:['VendorCode','Vendor.VendorCode','nvarchar(50)','detailview','子数据',['Vendor']],
+btnQuery:['⌕ 查询','API:GetHistoryQueryLotInfo→ListPCLSOne','—','流水号→批次列表A→勾选→GetLotHistoryMainLineInfoByLotId→历史明细B→展开→GetConfigurableReportList→动态子数据','查询',['Controller','MESBT_DataLinkBLL','API→DAL','Lot+HistoryMainLine']],
+};
+const card=document.getElementById('card');
+function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');var r=n?n.getBoundingClientRect():null;var mx=window.innerWidth/2,my=window.innerHeight/2;card.style.left='';card.style.top='';card.style.right='';card.style.bottom='';if(!r){card.style.right='24px';card.style.bottom='24px'}else{if(r.left+r.width/2<mx){card.style.right='24px'}else{card.style.left='24px'}if(r.top+r.height/2<my){card.style.bottom='24px'}else{card.style.top='24px'}}card.classList.add('show')}function cl(){card.classList.remove('show')}
+document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));document.querySelectorAll('.close-btn').forEach(b=>b.onclick=()=>card.classList.remove('show'));
+let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=`${Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))}px`;card.style.top=`${Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))}px`};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
+</script></body></html>

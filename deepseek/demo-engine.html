@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MES Demo Engine · 字段血缘演示</title>
+  <style>
+    /* ===== MES Design System ===== */
+    :root {
+      --mes-green: #00a65a;
+      --mes-blue: #2779c6;
+      --mes-ink: #23303c;
+      --mes-line: #d6dce1;
+      --mes-soft: #f5f7f9;
+      --mes-highlight: #fff5ca;
+      --mes-bg: #eef1f3;
+      --mes-table-blue: #0349ff;
+      --mes-row-highlight: #e8edf0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      color: var(--mes-ink);
+      background: var(--mes-bg);
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      font-size: 12px;
+      min-width: 800px
+    }
+
+    /* Appbar */
+    .mes-appbar {
+      height: 50px;
+      display: flex;
+      align-items: stretch;
+      color: #fff;
+      background: var(--mes-green);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .22)
+    }
+
+    .mes-brand {
+      width: 215px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(255, 255, 255, .2);
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .mes-nav {
+      display: flex;
+      flex: 0 0 auto
+    }
+
+    .mes-nav span {
+      width: 70px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .11);
+      font-size: 12px
+    }
+
+    .mes-nav span.active {
+      background: rgba(0, 0, 0, .16);
+      box-shadow: inset 0 -3px 0 #fff
+    }
+
+    .mes-nav b {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 15px;
+      text-align: center
+    }
+
+    /* Workflow bar */
+    .mes-workflow {
+      min-width: 250px;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border-left: 1px solid rgba(0, 0, 0, .12);
+      background: #e8f0ec
+    }
+
+    .mes-wf-step {
+      position: relative;
+      min-width: 90px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px 0 10px;
+      border: 0;
+      color: #426858;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    .mes-wf-step::after {
+      content: "";
+      position: absolute;
+      right: 6px;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid #83a897
+    }
+
+    .mes-wf-step.active {
+      color: #fff;
+      background: #287460;
+      box-shadow: inset 0 -3px 0 #b6d3c5
+    }
+
+    .mes-wf-step.active::after {
+      border-left-color: #d3e4db
+    }
+
+    /* Tabs */
+    .mes-tabs {
+      height: 37px;
+      display: flex;
+      align-items: end;
+      padding-left: 4px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #cfd4d7
+    }
+
+    .mes-tab {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 13px;
+      border: 1px solid #d5d9dc;
+      border-bottom: 0;
+      color: #4e5d67;
+      background: #fff
+    }
+
+    .mes-tab.active {
+      border-top: 3px solid var(--mes-green);
+      color: #173f5f;
+      font-weight: 700
+    }
+
+    /* Query bar */
+    .mes-query {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-height: 35px;
+      padding: 6px 12px;
+      flex-wrap: wrap
+    }
+
+    .mes-qlabel {
+      font-weight: 700;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .mes-qinput {
+      display: flex;
+      align-items: center;
+      height: 30px;
+      border: 1px solid #cbd2d7;
+      border-radius: 4px;
+      background: #fff;
+      padding: 0 8px;
+      min-width: 160px;
+      cursor: default;
+      transition: .15s
+    }
+
+    .mes-qinput:hover {
+      border-color: var(--mes-blue);
+      box-shadow: 0 0 0 2px rgba(39, 121, 198, .15)
+    }
+
+    .mes-qinput .val {
+      color: #2b4d6e;
+      flex: 1
+    }
+
+    .mes-qinput .icon {
+      color: #6c7780;
+      font-size: 14px;
+      margin-left: 4px
+    }
+
+    .mes-btn {
+      padding: 5px 14px;
+      border: 1px solid #bfc8cf;
+      border-radius: 4px;
+      color: #263c4f;
+      background: linear-gradient(#fff, #edf0f1);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .mes-btn:hover {
+      background: #f0f4f7
+    }
+
+    .mes-btn.primary {
+      color: #fff;
+      background: var(--mes-green);
+      border-color: #008a4a
+    }
+
+    /* Panel */
+    .mes-panel {
+      border: 1px solid #cdd3d6;
+      background: #fff;
+      margin: 8px
+    }
+
+    .mes-ptitle {
+      height: 27px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      color: #34424d;
+      background: linear-gradient(#fdfdfd, #e6e8ea);
+      border-bottom: 1px solid #cdd3d6;
+      font-weight: 700
+    }
+
+    .mes-grid {
+      overflow: auto;
+      max-height: 200px;
+      padding: 8px;
+      background: #fafafa
+    }
+
+    .mes-table {
+      border-collapse: collapse;
+      width: 100%;
+      background: #fff
+    }
+
+    .mes-table th,
+    .mes-table td {
+      height: 30px;
+      padding: 0 8px;
+      border: 1px dotted #ccd3d7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 11px
+    }
+
+    .mes-table th {
+      color: #273c4d;
+      background: #fafafa;
+      font-weight: 700;
+      text-align: left
+    }
+
+    .mes-table td {
+      color: var(--mes-table-blue);
+      cursor: pointer;
+      transition: background .12s
+    }
+
+    .mes-table td:hover {
+      background: var(--mes-highlight)
+    }
+
+    .mes-table td.clickable {
+      text-decoration: underline;
+      text-decoration-color: #b0c4d9;
+      text-underline-offset: 3px
+    }
+
+    .mes-table tr:nth-child(3) td {
+      background: var(--mes-row-highlight)
+    }
+
+    /* Workspace */
+    .mes-workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px
+    }
+
+    .mes-wp-title {
+      height: 29px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border-bottom: 1px solid #d4dade;
+      background: #f4f6f7;
+      color: #30404c;
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .mes-wp-area {
+      padding: 10px 12px
+    }
+
+    .mes-row {
+      display: grid;
+      grid-template-columns: 80px minmax(0, 1fr);
+      align-items: center;
+      gap: 6px;
+      min-height: 35px
+    }
+
+    .mes-row label {
+      color: #222;
+      font-weight: 700;
+      text-align: right;
+      font-size: 11px
+    }
+
+    .mes-field {
+      height: 29px;
+      display: flex;
+      align-items: center;
+      border: 1px solid #d3d8dc;
+      border-radius: 4px;
+      background: #fff;
+      padding: 0 8px;
+      cursor: pointer;
+      transition: .15s;
+      position: relative
+    }
+
+    .mes-field:hover {
+      border-color: #2b92d2;
+      box-shadow: 0 0 0 2px rgba(43, 146, 210, .13)
+    }
+
+    .mes-field::after {
+      content: "";
+      position: absolute;
+      right: 6px;
+      bottom: 5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #3b96d3
+    }
+
+    .mes-field .fv {
+      color: #0751e4;
+      font-size: 11px;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .mes-field.readonly {
+      background: #fafafa
+    }
+
+    /* CS Desktop style */
+    .cs-style .mes-appbar {
+      background: #2c3e50
+    }
+
+    .cs-style .mes-brand {
+      font-size: 16px
+    }
+
+    .cs-style .mes-wf-step {
+      min-width: 70px;
+      font-size: 10px
+    }
+
+    .cs-style .mes-btn {
+      border-radius: 2px
+    }
+
+    /* PDA style */
+    .pda-style .mes-appbar {
+      background: #1a73e8;
+      height: 40px
+    }
+
+    .pda-style .mes-brand {
+      font-size: 14px;
+      width: 140px
+    }
+
+    .pda-style .mes-wf-step {
+      min-width: 50px;
+      font-size: 9px;
+      padding: 0 10px
+    }
+
+    .pda-style .mes-row {
+      grid-template-columns: 65px minmax(0, 1fr)
+    }
+
+    .pda-style body {
+      max-width: 480px;
+      margin: 0 auto
+    }
+
+    /* Inspector */
+    .mes-inspector {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 999;
+      width: 580px;
+      max-height: 70vh;
+      overflow: auto;
+      border: 1px solid #b8c8d2;
+      border-radius: 7px;
+      background: #fff;
+      box-shadow: 0 16px 38px rgba(22, 49, 66, .24);
+      display: none
+    }
+
+    .mes-inspector.open {
+      display: block;
+      animation: mesInspIn .18s ease
+    }
+
+    @keyframes mesInspIn {
+      from {
+        transform: scale(.95);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .mes-insp-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      color: #fff;
+      background: #1f557a
+    }
+
+    .mes-insp-head .eyebrow {
+      font-size: 10px;
+      color: #b9d9eb;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 3px
+    }
+
+    .mes-insp-head h2 {
+      font-size: 18px;
+      margin: 0
+    }
+
+    .mes-insp-close {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 4px;
+      color: #d9edf8;
+      background: transparent;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1
+    }
+
+    .mes-insp-close:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, .16)
+    }
+
+    .mes-insp-body {
+      padding: 18px
+    }
+
+    .mes-path {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 12px;
+      border: 1px solid #d6e5ed;
+      border-radius: 5px;
+      background: #f4fafc;
+      color: #1e5274;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.7
+    }
+
+    .mes-path .arrow {
+      color: #6d9cb7;
+      margin: 0 4px
+    }
+
+    .mes-meta {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 8px 12px;
+      margin: 14px 0 0;
+      font-size: 12px;
+      line-height: 1.6
+    }
+
+    .mes-meta dt {
+      color: #667682
+    }
+
+    .mes-meta dd {
+      color: #1f303c
+    }
+
+    .mes-formula {
+      margin-top: 14px;
+      padding: 12px;
+      border-left: 3px solid #4a9ad0;
+      color: #40515c;
+      background: #f7f9fa;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      white-space: pre-wrap
+    }
+
+    .mes-tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 3px 7px;
+      border-radius: 3px;
+      color: #26668b;
+      background: #e8f4fa;
+      font-size: 10px;
+      font-weight: 700
+    }
+
+    /* Page container */
+    .demo-page {
+      padding: 4px
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 8px;
+      color: var(--mes-blue);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    .back-link:hover {
+      text-decoration: underline
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="demoRoot"></div>
+  <div id="mesInspector" class="mes-inspector">
+    <div class="mes-insp-head">
+      <div>
+        <p class="eyebrow">FIELD DATA LINEAGE</p>
+        <h2 id="inspTitle">字段说明</h2>
+      </div>
+      <button class="mes-insp-close" onclick="closeInspector()">×</button>
+    </div>
+    <div class="mes-insp-body">
+      <div class="mes-path" id="inspPath"></div>
+      <dl class="mes-meta">
+        <dt>页面字段</dt>
+        <dd id="inspLabel"></dd>
+        <dt>数据库来源</dt>
+        <dd id="inspSource"></dd>
+        <dt>数据类型</dt>
+        <dd id="inspType"></dd>
+        <dt>查询过程</dt>
+        <dd id="inspSP"></dd>
+      </dl>
+      <div class="mes-formula" id="inspFormula"></div>
+      <span class="mes-tag" id="inspKind"></span>
+    </div>
+  </div>
+
+  <script>
+    // ===== LINEAGE ENGINE =====
+    // Usage: renderDemo(config) where config = { system, pageTitle, workflow, fields, layout }
+
+    function renderDemo(config) {
+      const root = document.getElementById('demoRoot');
+      const sys = config.system || 'bs';
+      let cls = sys === 'cs' ? ' cs-style' : sys === 'pda' ? ' pda-style' : '';
+
+      // Workflow bar
+      let wfHtml = '';
+      if (config.workflow) {
+        wfHtml = config.workflow.map((w, i) => {
+          const active = w.active ? ' active' : '';
+          return `<button class="mes-wf-step${active}" type="button">${w.label}</button>`;
+        }).join('');
+      }
+
+      // Layout
+      let layoutHtml = '';
+      if (config.layout) {
+        layoutHtml = config.layout.map(section => {
+          if (section.type === 'query') {
+            return `<div class="mes-query">${section.items.map(q =>
+              `<div class="mes-qlabel">${q.label}<div class="mes-qinput" data-field="${q.field || ''}" onclick="showLineage('${q.field || ''}')"><span class="val">${q.value || ''}</span><span class="icon">⌄</span></div></div>`
+            ).join('')}<button class="mes-btn">⌕ 查询</button></div>`;
+          }
+          if (section.type === 'table') {
+            return `<div class="mes-panel"><div class="mes-ptitle"><span>${section.title}</span><span>⌃</span></div><div class="mes-grid"><table class="mes-table"><thead><tr>${section.columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${(section.rows || []).map(row => `<tr>${row.map((cell, i) => `<td class="clickable" data-field="${section.colFields?.[i] || ''}" onclick="showLineage('${section.colFields?.[i] || ''}')">${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+          }
+          if (section.type === 'workspace') {
+            return `<div class="mes-workspace">${(section.panels || []).map(p => `<div style="border:1px solid #cdd3d6;background:#fff"><div class="mes-wp-title">${p.title}</div><div class="mes-wp-area">${(p.rows || []).map(r => `<div class="mes-row"><label>${r.label}</label><div class="mes-field${r.readonly ? ' readonly' : ''}" data-field="${r.field || ''}" onclick="showLineage('${r.field || ''}')"><span class="fv">${r.value || ''}</span></div></div>`).join('')}${p.actions ? `<div style="margin-top:8px;display:flex;gap:8px">${p.actions.map(a => `<button class="mes-btn${a.primary ? ' primary' : ''}">${a.label}</button>`).join('')}</div>` : ''}</div></div>`).join('')}</div>`;
+          }
+          return '';
+        }).join('');
+      }
+
+      // System badge
+      const sysLabel = sys === 'bs' ? 'Web MES (BS)' : sys === 'cs' ? '桌面MES (CS)' : 'PDA手持终端';
+
+      root.innerHTML = `
+    <div class="${cls.trim()}">
+      <div class="mes-appbar">
+        <div class="mes-brand">ⓘ MES制造执行系统</div>
+        <nav class="mes-nav">
+          <span><b>♜</b>工艺</span><span><b>♟</b>架构</span><span><b>◆</b>模型</span><span class="active"><b>▣</b>${config.navTab || '作业'}</span>
+        </nav>
+        <div class="mes-workflow">${wfHtml}</div>
+        <div style="display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;white-space:nowrap">${sysLabel}</div>
+      </div>
+      <div class="mes-tabs"><div class="mes-tab active">♟ ${config.pageTitle || '操作页面'} ×</div></div>
+      <div class="demo-page">
+        ${layoutHtml}
+      </div>
+    </div>
+  `;
+
+      // Store field definitions
+      window._lineageData = {};
+      if (config.fields) {
+        for (const [key, val] of Object.entries(config.fields)) {
+          window._lineageData[key] = val;
+        }
+      }
+    }
+
+    function showLineage(fieldKey) {
+      if (!fieldKey || !window._lineageData[fieldKey]) return;
+      const f = window._lineageData[fieldKey];
+      document.getElementById('inspTitle').textContent = f.label || fieldKey;
+      document.getElementById('inspLabel').textContent = f.label || '';
+      document.getElementById('inspSource').textContent = f.source || '';
+      document.getElementById('inspType').textContent = f.type || '';
+      document.getElementById('inspSP').textContent = f.sp || '';
+      document.getElementById('inspFormula').textContent = f.formula || '';
+      document.getElementById('inspKind').textContent = f.kind || '';
+
+      // Path
+      let pathHtml = '';
+      if (f.path) {
+        pathHtml = f.path.map((p, i) => {
+          const sep = i > 0 ? '<span class="arrow">→</span>' : '';
+          return sep + `<span>${p}</span>`;
+        }).join('');
+      }
+      document.getElementById('inspPath').innerHTML = pathHtml;
+
+      document.getElementById('mesInspector').classList.add('open');
+    }
+
+    function closeInspector() {
+      document.getElementById('mesInspector').classList.remove('open');
+    }
+
+    // Close inspector on ESC and click outside
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInspector(); });
+    document.addEventListener('click', e => {
+      const insp = document.getElementById('mesInspector');
+      if (insp.classList.contains('open') && !insp.contains(e.target) && !e.target.closest('.mes-field') && !e.target.closest('.mes-qinput') && !e.target.closest('.mes-table td')) {
+        closeInspector();
+      }
+    });
+  </script>
+</body>
+
+</html>

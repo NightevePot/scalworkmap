@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>条码申请 · 字段血缘演示</title>
+  <style>
+    :root {
+  --green: #00a65a;
+  --deep: #287460;
+  --line: #d3dce1;
+  --soft: #f5f8f9;
+  --blue: #1688ca;
+  --g: #00a65a;
+  --b: #2779c6;
+  --ink: #23303c;
+  --ln: #d6dce1;
+  --hl: #fff5ca;
+  --bg: #eef1f3;
+  --tb: #0349ff;
+  --rh: #e8edf0
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-width:960px;color:var(--ink);background:var(--bg);font:12px "Microsoft YaHei",Arial,sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}
+.demo-main{flex:1;max-width:1050px;min-width:0}
+button,input,select,textarea{font:inherit}
+
+/* ===== BS Header ===== */
+.bar{height:50px;display:flex;color:#fff;background:var(--green)}
+.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}
+.nav{display:flex;flex:0 0 auto}
+.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}
+.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}
+.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;white-space:nowrap;gap:8px;margin-left:auto}
+.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}
+/* Sub-tabs: MES 入口路径 */
+.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}
+.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default;white-space:nowrap}
+.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}
+.sub-arr{color:#94a3b8;font-size:10px}
+
+/* ===== Toolbar ===== */
+.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line)}
+.toolbar table{width:100%}.toolbar th{text-align:right;font-size:12px;font-weight:600;padding:3px 6px}.toolbar td{padding:3px 12px 3px 4px}
+.toolbar input,.toolbar select{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none}
+.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}
+.btn-pri{background:var(--blue);color:#fff}.btn-sec{background:#fff;color:#17232d;border:1px solid var(--line)}
+
+/* ===== Content ===== */
+.content{padding:10px}
+.sec-title{font-size:12px;font-weight:700;padding:6px 0 4px;display:flex;align-items:center;gap:8px}
+.dg{background:#fff;border:1px solid var(--line);margin-bottom:8px}
+.dg table{width:100%;border-collapse:collapse;font-size:11px}
+.dg th{background:var(--soft);padding:5px 8px;text-align:left;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;font-weight:700}
+.dg td{padding:4px 8px;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;cursor:pointer;color:var(--tb)}
+.dg td[data-k]:hover{background:#eff6ff}
+
+    .stats-panel {
+      width: 280px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .1);
+      flex-shrink: 0;
+      position: sticky;
+      top: 12px;
+      max-height: calc(100vh - 24px);
+      display: flex;
+      flex-direction: column;
+      font-size: 12px
+    }
+    .stats-panel .sh {
+      background: var(--b);
+      color: #fff;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px 8px 0 0;
+      flex-shrink: 0
+    }
+    .stats-body {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 4px
+    }
+
+    .stats-panel .sh .badge {
+      font-size: 9px;
+      background: #fff3;
+      padding: 1px 6px;
+      border-radius: 10px
+    }
+
+    .stats-panel .ss {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e8edf0
+    }
+
+    .stats-panel .ss:last-child {
+      border-bottom: none
+    }
+
+    .stats-panel .ss h4 {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #64748b;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .stats-panel .ss h4 .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block
+    }
+
+    .stats-panel .si {
+      font-size: 11px;
+      padding: 2px 4px;
+      margin-bottom: 1px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 3px
+    }
+
+    .stats-panel .si:hover {
+      background: #f0f6ff
+    }
+
+    .stats-panel .si .sn {
+      flex: 1 1 auto;
+      font-family: Consolas, monospace;
+      font-size: 9px;
+      line-height: 1.35;
+      word-break: normal;
+      overflow-wrap: break-word
+    }
+
+    .stats-panel .st {
+      font-size: 8px;
+      padding: 0 3px;
+      border-radius: 2px;
+      font-weight: 600;
+      flex-shrink: 0;
+      white-space: nowrap;
+      line-height: 1.4
+    }
+
+    .stats-panel .st.tbl {
+      background: #d1fae5;
+      color: #065f46
+    }
+
+    .stats-panel .st.sp {
+      background: #ede9fe;
+      color: #6d28d9
+    }
+
+    .stats-panel .st.wcf {
+      background: #fce7f3;
+      color: #be185d
+    }
+
+    .stats-panel .st.bll {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    .stats-count-row {
+      display: flex;
+      gap: 8px;
+      text-align: center;
+      padding: 10px 14px
+    }
+
+    .stats-count-row>div {
+      flex: 1
+    }
+
+    .stats-count-row .scn {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--b)
+    }
+
+    .stats-count-row .scl {
+      font-size: 10px;
+      color: #94a3b8
+    }
+
+    /* 展开血缘表 */
+    .card-detail {
+      display: none;
+      border-top: 2px solid #e2e8f0;
+      margin-top: 10px;
+      padding-top: 10px
+    }
+
+    .card-detail.show {
+      display: block
+    }
+
+    .lineage-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px
+    }
+
+    .lineage-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 480px
+    }
+
+    .lineage-table th {
+      background: #f1f5f9;
+      padding: 8px 10px;
+      text-align: left;
+      color: #475569;
+      font-weight: 700;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      font-size: 11px
+    }
+
+    .lineage-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b
+    }
+
+    .lineage-table td:nth-child(2) {
+      font-family: monospace;
+      font-size: 11px
+    }
+
+    .lineage-table tbody tr {
+      cursor: pointer
+    }
+
+    .lineage-table tbody tr:hover td {
+      background: #eff6ff
+    }
+
+    .lineage-table tbody tr:last-child td {
+      border-bottom: none
+    }
+
+    .cd-hint {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 8px
+    }
+
+
+    .appbar {
+      height: 50px;
+      display: flex;
+      align-items: stretch;
+      color: #fff;
+      background: var(--g);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .22)
+    }
+
+    .brand {
+      width: 215px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(255, 255, 255, .2);
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .nav {
+      display: flex;
+      flex: 0 0 auto
+    }
+
+    .nav span {
+      width: 70px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .11);
+      font-size: 12px
+    }
+
+    .nav span.on {
+      background: rgba(0, 0, 0, .16);
+      box-shadow: inset 0 -3px 0 #fff
+    }
+
+    .nav b {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 15px;
+      text-align: center
+    }
+
+    .wf {
+      min-width: 200px;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border-left: 1px solid rgba(0, 0, 0, .12);
+      background: #e8f0ec
+    }
+
+    .wf-s {
+      position: relative;
+      min-width: 80px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px 0 8px;
+      border: 0;
+      color: #426858;
+      background: 0 0;
+      cursor: pointer;
+      font: inherit;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    .wf-s::after {
+      content: "";
+      position: absolute;
+      right: 5px;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid #83a897
+    }
+
+    .wf-s.on {
+      color: #fff;
+      background: #287460;
+      box-shadow: inset 0 -3px 0 #b6d3c5
+    }
+
+    .wf-s.on::after {
+      border-left-color: #d3e4db
+    }
+
+    .tabs {
+      height: 37px;
+      display: flex;
+      align-items: end;
+      padding-left: 4px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #cfd4d7
+    }
+
+    .tab {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 13px;
+      border: 1px solid #d5d9dc;
+      border-bottom: 0;
+      color: #4e5d67;
+      background: #fff
+    }
+
+    .tab.on {
+      border-top: 3px solid var(--g);
+      color: #173f5f;
+      font-weight: 700
+    }
+
+    .page {
+      padding: 4px
+    }
+
+    .qbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 35px;
+      padding: 6px 12px;
+      flex-wrap: wrap
+    }
+
+    .ql {
+      font-weight: 700;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .qi {
+      display: flex;
+      align-items: center;
+      height: 30px;
+      border: 1px solid #cbd2d7;
+      border-radius: 4px;
+      background: #fff;
+      padding: 0 8px;
+      min-width: 150px;
+      cursor: default;
+      transition: .15s
+    }
+
+    .qi:hover {
+      border-color: var(--b);
+      box-shadow: 0 0 0 2px rgba(39, 121, 198, .15)
+    }
+
+    .qi .vv {
+      color: #2b4d6e;
+      flex: 1;
+      font-size: 11px
+    }
+
+    .qi .ic {
+      color: #6c7780;
+      font-size: 14px;
+      margin-left: 4px
+    }
+
+    .btn {
+      padding: 5px 14px;
+      border: 1px solid #bfc8cf;
+      border-radius: 4px;
+      color: #263c4f;
+      background: linear-gradient(#fff, #edf0f1);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .btn:hover {
+      background: #f0f4f7
+    }
+
+    .btn.pri {
+      color: #fff;
+      background: var(--g);
+      border-color: #008a4a
+    }
+
+    .pnl {
+      border: 1px solid #cdd3d6;
+      background: #fff;
+      margin: 8px
+    }
+
+    .ptt {
+      height: 27px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      color: #34424d;
+      background: linear-gradient(#fdfdfd, #e6e8ea);
+      border-bottom: 1px solid #cdd3d6;
+      font-weight: 700
+    }
+
+    .grd {
+      overflow: auto;
+      max-height: 200px;
+      padding: 8px;
+      background: #fafafa
+    }
+
+    .tbl {
+      border-collapse: collapse;
+      width: 100%;
+      background: #fff
+    }
+
+    .tbl th,
+    .tbl td {
+      height: 30px;
+      padding: 0 8px;
+      border: 1px dotted #ccd3d7;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 11px
+    }
+
+    .tbl th {
+      color: #273c4d;
+      background: #fafafa;
+      font-weight: 700;
+      text-align: left
+    }
+
+    .tbl td {
+      color: var(--tb);
+      cursor: pointer;
+      transition: background .12s
+    }
+
+    .tbl td:hover {
+      background: var(--hl)
+    }
+
+    .tbl tr:nth-child(3) td {
+      background: var(--rh)
+    }
+
+    .wks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px
+    }
+
+    .wp {
+      border: 1px solid #cdd3d6;
+      background: #fff
+    }
+
+    .wpt {
+      height: 29px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border-bottom: 1px solid #d4dade;
+      background: #f4f6f7;
+      color: #30404c;
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .wpa {
+      padding: 10px 12px
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr);
+      align-items: center;
+      gap: 6px;
+      min-height: 35px
+    }
+
+    .row label {
+      color: #222;
+      font-weight: 700;
+      text-align: right;
+      font-size: 11px
+    }
+
+    .fld {
+      height: 29px;
+      display: flex;
+      align-items: center;
+      border: 1px solid #d3d8dc;
+      border-radius: 4px;
+      background: #fff;
+      padding: 0 8px;
+      cursor: pointer;
+      transition: .15s;
+      position: relative
+    }
+
+    .fld:hover {
+      border-color: #2b92d2;
+      box-shadow: 0 0 0 2px rgba(43, 146, 210, .13)
+    }
+
+    .fld::after {
+      content: "";
+      position: absolute;
+      right: 6px;
+      bottom: 5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #3b96d3
+    }
+
+    .fld .fv {
+      color: #0751e4;
+      font-size: 11px;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .fld.ro {
+      background: #fafafa
+    }
+
+    .tb2 {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .tb2 th,
+    .tb2 td {
+      height: 27px;
+      padding: 0 6px;
+      border: 1px solid #d6dce0;
+      font-size: 11px
+    }
+
+    .tb2 th {
+      background: #fafafa;
+      color: #273c4d
+    }
+
+    .tb2 td {
+      color: #0751e4;
+      cursor: pointer
+    }
+
+    .tb2 td:hover {
+      background: var(--hl)
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    /* ===== Movable Card ===== */
+.card{position:fixed;z-index:5;right:24px;bottom:24px;width:620px;min-height:300px;max-height:calc(100vh-40px);overflow:auto;border:1px solid #b7c9d2;border-radius:6px;background:#fff;box-shadow:0 15px 36px rgba(24,53,70,.26);opacity:0;visibility:hidden;transform:scale(.98);transition:.16s}
+.card.show{opacity:1;visibility:visible;transform:scale(1)}
+.card-head{display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:0 17px;color:#fff;background:#245f84;cursor:move}
+.card-head small{color:#c8e1ed;font-weight:700;letter-spacing:1px}
+.card-head h3{margin:3px 0 0;font-size:18px}
+.close{border:0;color:#fff;background:transparent;font-size:22px;cursor:pointer}
+.card-body{padding:16px}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px;border:1px solid #d8e5df;background:#f7faf8}
+.flow span{display:grid;place-items:center;min-height:30px;padding:4px;border:1px solid #c8d8d0;color:#61766c;background:#fff;font-size:10px;font-weight:700;text-align:center}
+.flow span.active{color:#fff;border-color:var(--deep);background:var(--deep)}
+.meta dt{font-size:10px;color:#64748b;font-weight:700;margin-top:10px;text-transform:uppercase}
+.meta dd{font-family:Consolas,monospace;font-size:12px;margin:4px 0 0;line-height:1.5}
+.pth{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-bottom:8px}
+.pth span{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;white-space:nowrap;background:#e8edf0}
+.pth .ar{background:none;padding:0 2px;color:#94a3b8}
+.lx-toggle{cursor:pointer;font-size:11px;color:var(--blue);font-weight:600;padding:8px 0}
+.card-detail{display:none;border-top:2px solid #e2e8f0;margin-top:8px;padding-top:8px}
+.card-detail.show{display:block}
+.lineage-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:4px}
+.lxt{width:100%;border-collapse:collapse;font-size:11px;min-width:400px}
+.lxt th{background:#f1f5f9;padding:6px 8px;text-align:left;color:#475569;font-weight:700;border-bottom:2px solid #e2e8f0;font-size:10px}
+.lxt td{padding:6px 8px;border-bottom:1px solid #f1f5f9;color:#1e293b}
+.lxt tbody tr{cursor:pointer}.lxt tbody tr:hover td{background:#eff6ff}
+      margin-top: 10px;
+      padding: 3px 7px;
+      border-radius: 3px;
+      color: #26668b;
+      background: #e8f4fa;
+      font-size: 10px;
+      font-weight: 700
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="demo-main">
+
+    <header class="bar">
+      <div class="brand">ⓘ MES制造执行系统</div>
+      <nav class="nav">
+        <span>工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span class="active">仓库作业</span><span>计划任务</span><span>批次工具</span>
+      </nav>
+      <div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| 条码申请 · 字段血缘演示</span></div>
+    </header>
+
+    <div class="sub-tabs">
+    <span class="sub-tab">仓库作业</span><span class="sub-arr">▸</span><span class="sub-tab active">条码申请</span>
+    </div>
+
+    <!-- Toolbar (from CKZY_LotApply Index.cshtml) -->
+    <div class="toolbar">
+      <table><tr>
+        <th>采购单编号：</th><td><input value="RE2026070008" data-k="purchaseOrderInput" style="width:200px;height:28px"></td>
+        <th style="padding-left:20px">物料编号：</th><td><input value="" data-k="productInput" style="width:200px;height:28px"></td>
+        <th style="padding-left:20px">客户订单号：</th><td><input value="" data-k="customerInput" style="width:200px;height:28px"></td>
+        <td style="padding-left:20px"><button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button> <button class="btn btn-sec" data-k="btnExport">📥 导出</button> <button class="btn btn-sec" data-k="btnReset">↻ 重置</button></td>
+      </tr></table>
+    </div>
+
+    <div class="content">
+      <!-- Table -->
+      <div class="pnl">
+        <div class="ptt"><span>明细列表</span><span>⌃</span></div>
+        <div class="grd">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th onclick="sh('purchaseOrder')">采购单号</th>
+                <th onclick="sh('item')">项次</th>
+                <th onclick="sh('product')">物料编号</th>
+                <th onclick="sh('note')">品名</th>
+                <th onclick="sh('qty')">数量</th>
+                <th onclick="sh('uom')">单位</th>
+                <th onclick="sh('batch')">批号</th>
+                <th onclick="sh('minPackage')">最小包装</th>
+                <th onclick="sh('allowReceiveDate')">预计交货</th>
+                <th onclick="sh('received')">已收</th>
+                <th onclick="sh('unreceived')">未交</th>
+                <th onclick="sh('iqc')">在验</th>
+                <th onclick="sh('unpacked')">未包</th>
+                <th onclick="sh('printed')">已包装</th>
+                <th onclick="sh('iqcReturn')">判退</th>
+                <th onclick="sh('stockReturn')">退仓</th>
+                <th onclick="sh('vendor')">供应商</th>
+                <th onclick="sh('status')">状态</th>
+                <th onclick="sh('closed')">关闭</th>
+                <th onclick="sh('vendorOrder')">供应商订单号</th>
+                <th onclick="sh('salesOrder')">销售订单号</th>
+                <th onclick="sh('memo')">备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td></td>
+                <td>☐</td>
+                <td>RE2026070008</td>
+                <td>90</td>
+                <td>2969341</td>
+                <td>ZW_NE OP SER SUD 29597...</td>
+                <td>4000</td>
+                <td>PCS</td>
+                <td></td>
+                <td>100</td>
+                <td>2026-07-23</td>
+                <td>0</td>
+                <td>4000</td>
+                <td>0</td>
+                <td>4000</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>汉高股份有限公司</td>
+                <td>普通</td>
+                <td>否</td>
+                <td>2969341</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div
+            style="padding:8px 0;border-top:1px solid #e8edf0;cursor:pointer;font-size:12px;color:var(--b);font-weight:600"
+            onclick="toggleLineage('detailLineage')">
+            📋 查看所有字段 → 数据库血缘 <span style="font-size:10px">(24个字段)</span>
+          </div>
+          <div class="card-detail" id="detailLineage" style="margin:0;padding:0">
+            <div class="lineage-wrap">
+              <table class="lineage-table">
+                <thead>
+                  <tr>
+                    <th>显示字段</th>
+                    <th>数据库来源</th>
+                    <th>数据类型</th>
+                    <th>查询过程</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr onclick="sh('purchaseOrder')">
+                    <td>采购单号</td>
+                    <td>PurchaseOrder.PurchaseOrderNM</td>
+                    <td>nvarchar(50)</td>
+                    <td>CKZY_LotApplyBLL → DAL</td>
+                  </tr>
+                  <tr onclick="sh('item')">
+                    <td>项次</td>
+                    <td>PurchaseOrderDetail.Item</td>
+                    <td>int</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('product')">
+                    <td>物料编号</td>
+                    <td>Product.ProductNM</td>
+                    <td>varchar(50)</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('note')">
+                    <td>品名</td>
+                    <td>Product.ProductName</td>
+                    <td>nvarchar(100)</td>
+                    <td>料号→本地映射</td>
+                  </tr>
+                  <tr onclick="sh('qty')">
+                    <td>数量</td>
+                    <td>PurchaseOrderDetail.Qty</td>
+                    <td>decimal</td>
+                    <td>CKZY_LotApplyBLL</td>
+                  </tr>
+                  <tr onclick="sh('uom')">
+                    <td>单位</td>
+                    <td>UOM.UOMNM</td>
+                    <td>varchar(50)</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('batch')">
+                    <td>批号</td>
+                    <td>Lot.LotNM</td>
+                    <td>nvarchar(50)</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('minPackage')">
+                    <td>最小包装</td>
+                    <td>Product.MinPackageQty</td>
+                    <td>decimal</td>
+                    <td>Product表</td>
+                  </tr>
+                  <tr onclick="sh('allowReceiveDate')">
+                    <td>预计交货</td>
+                    <td>PurchaseOrderDetail.DeliveryDate</td>
+                    <td>datetime</td>
+                    <td>CKZY_LotApplyBLL</td>
+                  </tr>
+                  <tr onclick="sh('received')">
+                    <td>已收</td>
+                    <td>MfgInWHOrder.QtyReceived (汇总)</td>
+                    <td>decimal</td>
+                    <td>InWHBll 汇总查询</td>
+                  </tr>
+                  <tr onclick="sh('unreceived')">
+                    <td>未交</td>
+                    <td>PurchaseOrderDetail.Qty - 已收</td>
+                    <td>decimal</td>
+                    <td>计算字段</td>
+                  </tr>
+                  <tr onclick="sh('iqc')">
+                    <td>在验</td>
+                    <td>SampleLot.QtyInspecting (汇总)</td>
+                    <td>decimal</td>
+                    <td>检验状态汇总</td>
+                  </tr>
+                  <tr onclick="sh('unpacked')">
+                    <td>未包</td>
+                    <td>PurchaseOrderLotApply.Qty (汇总)</td>
+                    <td>decimal</td>
+                    <td>条码申请汇总</td>
+                  </tr>
+                  <tr onclick="sh('printed')">
+                    <td>已包装</td>
+                    <td>PurchaseOrderLotApply.Qty 已打印</td>
+                    <td>decimal</td>
+                    <td>条码申请汇总</td>
+                  </tr>
+                  <tr onclick="sh('iqcReturn')">
+                    <td>判退</td>
+                    <td>InspectionHistory.QtyReturned</td>
+                    <td>decimal</td>
+                    <td>MESZLKZ_InspectionBLL</td>
+                  </tr>
+                  <tr onclick="sh('stockReturn')">
+                    <td>退仓</td>
+                    <td>ReturnMaterialOrder.Qty</td>
+                    <td>decimal</td>
+                    <td>退仓汇总</td>
+                  </tr>
+                  <tr onclick="sh('vendor')">
+                    <td>供应商</td>
+                    <td>Vendor.VendorName</td>
+                    <td>nvarchar(100)</td>
+                    <td>CKZY_LotApplyBLL</td>
+                  </tr>
+                  <tr onclick="sh('status')">
+                    <td>状态</td>
+                    <td>PurchaseOrderDetail.Status</td>
+                    <td>int</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('closed')">
+                    <td>关闭</td>
+                    <td>PurchaseOrderDetail.IsClosed</td>
+                    <td>bit</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('vendorOrder')">
+                    <td>供应商订单号</td>
+                    <td>PurchaseOrderDetail.VendorOrderNM</td>
+                    <td>nvarchar(50)</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('salesOrder')">
+                    <td>销售订单号</td>
+                    <td>PurchaseOrder.SalesOrderNM</td>
+                    <td>nvarchar(50)</td>
+                    <td>同上</td>
+                  </tr>
+                  <tr onclick="sh('memo')">
+                    <td>备注</td>
+                    <td>PurchaseOrderDetail.Memo</td>
+                    <td>nvarchar(200)</td>
+                    <td>同上</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="cd-hint">💡 横向滚动查看 · 点击行查看完整数据路径</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workspace -->
+      <div class="wks">
+        <div class="wp">
+          <div class="wpt">条码申请作业区</div>
+          <div class="wpa">
+            <div class="row"><label>采购单-项次：</label>
+              <div class="fld ro" onclick="sh('selectedPurchaseItem')"><span class="fv">RE2026070008#90</span></div>
+            </div>
+            <div class="row"><label>客户料号：</label>
+              <div class="fld ro" onclick="sh('customerMaterial')"><span class="fv"></span></div>
+            </div>
+            <div class="row"><label>未包数量：</label>
+              <div class="fld ro" onclick="sh('unpacked')"><span class="fv">4000</span></div>
+            </div>
+            <div class="row"><label>单位：</label>
+              <div class="fld ro" onclick="sh('uom2')"><span class="fv">PCS</span></div>
+            </div>
+            <div class="row"><label>DateCode：</label>
+              <div class="fld" onclick="sh('dateCode')"><span class="fv">2630</span></div>
+            </div>
+            <div class="row"><label>是否有COA：</label>
+              <div class="fld ro" onclick="sh('hasCOA')"><span class="fv">☑ 是</span></div>
+            </div>
+
+            <!-- Applied lots table -->
+            <div style="margin:8px 0;font-weight:700;font-size:11px;color:#172b3a">已申请批次</div>
+            <div style="overflow:auto;max-height:100px;border:1px solid #d3dade">
+              <table class="tb2">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th onclick="sh('appliedDateCode')">DateCode</th>
+                    <th onclick="sh('appliedLot')">流水号</th>
+                    <th onclick="sh('appliedQty')">数量</th>
+                    <th onclick="sh('appliedCopies')">外包装个数</th>
+                    <th onclick="sh('appliedTime')">包装时间</th>
+                    <th onclick="sh('appliedProduct')">物料编号</th>
+                    <th onclick="sh('appliedVendor')">供应商名</th>
+                    <th onclick="sh('appliedUser')">用户名</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>☐</td>
+                    <td>2629</td>
+                    <td>005226290006001</td>
+                    <td>4000</td>
+                    <td>1</td>
+                    <td>2026-07-23</td>
+                    <td>2969341</td>
+                    <td>汉高股份有限公司</td>
+                    <td>超级管理员</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="row" style="margin-top:8px"><label>打印机：</label>
+              <div class="fld" onclick="sh('printer')"><span class="fv">ZDesigner ZT210-200dpi ZPL</span></div>
+            </div>
+            <div class="row"><label>标签类型：</label>
+              <div class="fld ro" onclick="sh('labelType')"><span class="fv">物料标签</span></div>
+            </div>
+            <div class="actions"><button class="btn">删除</button><button class="btn">供应商修改</button></div>
+          </div>
+        </div>
+
+        <div class="wp">
+          <div class="wpt">包装信息</div>
+          <div class="wpa">
+            <!-- 基本信息行 -->
+            <div class="row"><label>物料编号：</label><div class="fld ro" onclick="sh('product')"><span class="fv">2969341</span></div></div>
+            <div class="row"><label>品名：</label><div class="fld ro" onclick="sh('note')"><span class="fv">ZW_NE OP SER SUD 29597...</span></div></div>
+            <div class="row"><label>采购数量：</label><div class="fld ro" onclick="sh('qty')"><span class="fv">4000</span></div></div>
+            <div class="row"><label>已收数量：</label><div class="fld ro" onclick="sh('received')"><span class="fv">0</span></div></div>
+            <div class="row"><label>未交数量：</label><div class="fld ro" onclick="sh('unreceived')"><span class="fv">4000</span></div></div>
+
+            <!-- 设备与供应商 -->
+            <div style="margin:8px 0;font-weight:700;font-size:11px;color:#172b3a;border-bottom:1px solid #d4dade;padding-bottom:4px">📟 设备信息</div>
+            <div class="row"><label>设备名：</label><div class="fld" onclick="sh('equipmentNM')"><span class="fv">粘度计-Brookfield</span></div></div>
+            <div class="row"><label>供应商订单号：</label><div class="fld ro" onclick="sh('vendorOrder')"><span class="fv">2969341</span></div></div>
+            <div class="row"><label>供应商：</label><div class="fld ro" onclick="sh('vendor')"><span class="fv">汉高股份有限公司</span></div></div>
+            <div class="row"><label>* 仓库号：</label><div class="fld" onclick="sh('warehouse')"><span class="fv">WH-MAIN-01</span></div></div>
+            <div style="margin:4px 0;overflow:auto;max-height:80px;border:1px solid #d3dade">
+              <table class="tb2"><thead><tr><th>设备编号</th><th>设备名称</th><th>状态</th></tr></thead>
+                <tbody><tr><td>EQ001</td><td>粘度计-Brookfield</td><td>运行中</td></tr></tbody></table>
+            </div>
+
+            <!-- 生产批号 -->
+            <div class="row" style="margin-top:8px"><label>* 生产批号：</label><div class="fld" onclick="sh('mfgBatch')"><span class="fv"></span></div></div>
+
+            <!-- ===== 外包 ===== -->
+            <div style="margin:10px 0 4px;font-weight:700;font-size:12px;color:#287460;border-bottom:2px solid var(--green);padding-bottom:3px">📦 外包</div>
+            <div class="row"><label>交货数量：</label><div class="fld" onclick="sh('printQty')"><span class="fv">4000</span></div></div>
+            <div class="row"><label>生产日期：</label><div class="fld" onclick="sh('productionDate')"><span class="fv">2026-07-23</span></div></div>
+            <div class="row"><label>有效日期：</label><div class="fld" onclick="sh('expirationDate')"><span class="fv"></span></div></div>
+            <div class="row"><label>外包尾数：</label><div class="fld" onclick="sh('outTail')"><span class="fv"></span></div></div>
+            <div class="row"><label>* 外包数量：</label><div class="fld" onclick="sh('outQty')"><span class="fv">100</span></div></div>
+            <div class="row"><label>外包皮重：</label><div class="fld ro" onclick="sh('outSkin')"><span class="fv"></span></div></div>
+            <div style="margin:4px 0;overflow:auto;max-height:80px;border:1px solid #d3dade">
+              <table class="tb2"><thead><tr><th>箱号</th><th>数量</th><th>皮重</th><th>毛重</th></tr></thead>
+                <tbody><tr><td>1</td><td>100</td><td>0.5</td><td>100.5</td></tr></tbody></table>
+            </div>
+            <div class="row"><label>* 外包装个数：</label><div class="fld ro" onclick="sh('outCopies')"><span class="fv">40</span></div></div>
+            <div class="row"><label>外包毛重：</label><div class="fld" onclick="sh('outGross')"><span class="fv"></span></div></div>
+            <div class="row"><label>描述：</label><div class="fld" onclick="sh('remarks')"><span class="fv"></span></div></div>
+            <div class="row"><label>预计交货时间：</label><div class="fld" onclick="sh('sendDatetime')"><span class="fv">2026-07-23</span></div></div>
+            <div class="actions"><button class="btn pri">🖨 打印外包</button><button class="btn sec">⚖ 外包称重</button></div>
+
+            <!-- ===== 内包 ===== -->
+            <div style="margin:14px 0 4px;font-weight:700;font-size:12px;color:#287460;border-bottom:2px solid var(--green);padding-bottom:3px">📦 内包</div>
+            <div class="row"><label>外包流水号：</label><div class="fld ro" onclick="sh('lotNMUpLevel')"><span class="fv">005226290006001</span></div></div>
+            <div class="row"><label>外包生产批号：</label><div class="fld ro" onclick="sh('mfgBatchUpLevel')"><span class="fv"></span></div></div>
+            <div class="row"><label>外包数量：</label><div class="fld ro" onclick="sh('qtyUpLevel')"><span class="fv">4000</span></div></div>
+            <div class="row"><label>内包尾数：</label><div class="fld" onclick="sh('innerTail')"><span class="fv"></span></div></div>
+            <div class="row"><label>* 内包数量：</label><div class="fld" onclick="sh('innerQty')"><span class="fv">20</span></div></div>
+            <div class="row"><label>内包皮重：</label><div class="fld ro" onclick="sh('innerSkin')"><span class="fv"></span></div></div>
+            <div style="margin:4px 0;overflow:auto;max-height:80px;border:1px solid #d3dade">
+              <table class="tb2"><thead><tr><th>箱号</th><th>数量</th><th>皮重</th><th>毛重</th></tr></thead>
+                <tbody><tr><td>1-1</td><td>20</td><td>0.3</td><td>20.3</td></tr></tbody></table>
+            </div>
+            <div class="row"><label>* 内包装个数：</label><div class="fld ro" onclick="sh('innerCopies')"><span class="fv">200</span></div></div>
+            <div class="row"><label>内包毛重：</label><div class="fld" onclick="sh('innerGross')"><span class="fv"></span></div></div>
+            <div class="actions"><button class="btn pri">🖨 打印内包</button><button class="btn sec">⚖ 内包称重</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /content -->
+
+  <!-- Movable Card -->
+<aside class="card" id="card">
+  <div class="card-head">
+    <div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div>
+    <button class="close" onclick="cl()">×</button>
+  </div>
+  <div class="card-body">
+    <div class="pth" id="ip"></div>
+    <dl class="meta"><dt>页面字段名</dt><dd id="it"></dd></dl>
+    <dl class="meta"><dt>数据库来源</dt><dd id="is"></dd></dl>
+    <dl class="meta"><dt>数据类型</dt><dd id="ity"></dd></dl>
+    <dl class="meta"><dt>查询过程</dt><dd id="isp"></dd></dl>
+    <dl class="meta"><dt>详细说明</dt><dd id="ifm" style="white-space:pre-wrap"></dd></dl>
+    <span id="ik" style="display:inline-block;margin-top:8px;font-size:10px;padding:2px 6px;border-radius:4px;background:#fef3c7;color:#92400e;font-weight:600"></span>
+  </div>
+</aside>
+
+    <script>
+      // Field lineage data (from sample.html analysis)
+      const F = {
+        purchaseOrderInput: { l: '采购单编号（查询条件）', s: 'dbo.PurchaseOrder.PurchaseOrderNM', t: 'NVARCHAR', k: '直接读取 / 下拉显示', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder', 'PurchaseOrderNM'], f: '下拉列表返回 PurchaseOrderId 与 PurchaseOrderNM；\n页面显示 PurchaseOrderNM，查询明细时提交 PurchaseOrderId。' },
+        productInput: { l: '物料编号（查询条件）', s: 'dbo.ProductBase.ProductNM', t: 'NVARCHAR', k: '关联读取 / 下拉显示', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail.ProductId', 'Product.ProductId', 'Product.ProductBaseId', 'ProductBase.ProductNM'], f: '页面选择物料后提交 ProductId；\n明细过程按 PurchaseOrderDetail.ProductId = @ProductId 筛选。' },
+        customerInput: { l: '客户订单号（查询条件）', s: 'dbo.PurchaseOrder.CustomerPO', t: 'NVARCHAR', k: '直接读取 / 筛选条件', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder', 'CustomerPO'], f: "PurchaseOrder.CustomerPO LIKE '%' + @CustomerPO + '%'" },
+        purchaseOrder: { l: '采购单号', s: 'dbo.PurchaseOrder.PurchaseOrderNM', t: 'NVARCHAR', k: '直接字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder', 'PurchaseOrderNM'], f: 'SELECT PurchaseOrder.PurchaseOrderNM\n采购单表头通过 PurchaseOrderId 与采购单明细关联。' },
+        item: { l: '项次', s: 'dbo.PurchaseOrderDetail.Item', t: 'INT', k: '直接字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'Item'], f: 'SELECT PurchaseOrderDetail.Item' },
+        product: { l: '物料编号', s: 'dbo.ProductBase.ProductNM', t: 'NVARCHAR', k: '多表关联字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail.ProductId', 'Product.ProductId', 'Product.ProductBaseId', 'ProductBase.ProductNM'], f: 'PurchaseOrderDetail.ProductId → Product.ProductId\nProduct.ProductBaseId → ProductBase.ProductBaseId\nSELECT ProductBase.ProductNM' },
+        note: { l: '品名', s: 'dbo.Product.Note + dbo.Product.Description', t: 'NVARCHAR（计算）', k: 'SQL 拼接字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['Product', 'Note', 'Description'], f: "REPLACE(Product.Note, '''', '''')\n+ ' 存放温度:' + REPLACE(Product.Description, '；', '')" },
+        qty: { l: '数量', s: 'dbo.PurchaseOrderDetail.Qty', t: 'DECIMAL', k: '直接字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'Qty'], f: 'SELECT PurchaseOrderDetail.Qty' },
+        uom: { l: '单位', s: 'dbo.UOM.UOMNM', t: 'NVARCHAR', k: '关联读取字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail.UOMId', 'UOM.UOMId', 'UOM.UOMNM'], f: 'PurchaseOrderDetail.UOMId = UOM.UOMId\nSELECT UOM.UOMNM' },
+        batch: { l: '批号', s: 'dbo.PurchaseOrderDetail.BatchCode', t: 'NVARCHAR', k: '直接字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'BatchCode'], f: 'SELECT PurchaseOrderDetail.BatchCode' },
+        minPackage: { l: '最小包装', s: 'dbo.Product.MinPackageQty', t: 'DECIMAL', k: '关联读取字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail.ProductId', 'Product.ProductId', 'Product.MinPackageQty'], f: 'SELECT Product.MinPackageQty' },
+        allowReceiveDate: { l: '预计交货日期', s: 'dbo.PurchaseOrderDetail.AllowReceiveDate', t: 'DATETIME', k: '格式化字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'AllowReceiveDate'], f: "CONVERT(CHAR(13), ISNULL(AllowReceiveDate, '1900-01-01'), 121)" },
+        received: { l: '已收数量', s: 'dbo.PurchaseOrderDetail.RecievedQty', t: 'DECIMAL', k: '空值处理字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'RecievedQty'], f: 'ISNULL(PurchaseOrderDetail.RecievedQty, 0)' },
+        unreceived: { l: '未交数量', s: 'dbo.PurchaseOrderDetail.UnReceivedQty', t: 'DECIMAL', k: '空值处理字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'UnReceivedQty'], f: 'ISNULL(PurchaseOrderDetail.UnReceivedQty, 0)' },
+        iqc: { l: '在验数量', s: 'dbo.PurchaseOrderDetail.IQCQty', t: 'DECIMAL', k: '空值处理字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'IQCQty'], f: 'ISNULL(PurchaseOrderDetail.IQCQty, 0)' },
+        unpacked: { l: '未包数量', s: '采购明细 + 条码申请记录的计算结果', t: 'DECIMAL（计算）', k: 'SQL 跨表计算字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail.Qty', 'PurchaseOrderLotApply.Qty', 'IQCReturnQty', 'StockReturnQty'], f: "Qty - SUM(PurchaseOrderLotApply.Qty WHERE Level='001')\n+ IQCReturnQty + StockReturnQty\n\n⚠️ 跨 PurchaseOrderDetail 和 PurchaseOrderLotApply 两张表计算" },
+        printed: { l: '已包装数量', s: 'dbo.PurchaseOrderLotApply.Qty', t: 'DECIMAL（汇总）', k: '聚合字段', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderId + Item', 'PurchaseOrderLotApply', 'SUM(Qty)'], f: "SUM(PurchaseOrderLotApply.Qty)\nWHERE PurchaseOrderId 相同 AND Item 相同 AND Level = '001'" },
+        iqcReturn: { l: '判退数量', s: 'dbo.PurchaseOrderDetail.IQCReturnQty', t: 'DECIMAL', k: '空值处理字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'IQCReturnQty'], f: 'ISNULL(PurchaseOrderDetail.IQCReturnQty, 0)' },
+        stockReturn: { l: '退仓数量', s: 'dbo.PurchaseOrderDetail.StockReturnQty', t: 'DECIMAL', k: '空值处理字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'StockReturnQty'], f: 'ISNULL(PurchaseOrderDetail.StockReturnQty, 0)' },
+        vendor: { l: '供应商名', s: 'dbo.Vendor.VendorNM', t: 'NVARCHAR', k: '关联读取字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder.VendorId', 'Vendor.VendorId', 'Vendor.VendorNM'], f: 'PurchaseOrder.VendorId = Vendor.VendorId\nSELECT Vendor.VendorNM' },
+        status: { l: '状态', s: 'dbo.PurchaseOrderDetail.UrgentFlag', t: 'NVARCHAR（计算）', k: '条件计算字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail', 'UrgentFlag'], f: "CASE UrgentFlag WHEN 'True' THEN '紧急' ELSE '普通' END" },
+        closed: { l: '关闭', s: 'dbo.PurchaseOrder.CloseFlag / dbo.PurchaseOrderDetail.CloseFlag', t: 'NVARCHAR（计算）', k: '条件计算字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder.CloseFlag', 'PurchaseOrderDetail.CloseFlag'], f: "任一 CloseFlag = 'Y' 时显示 '是'；否则显示 '否'" },
+        vendorOrder: { l: '供应商订单号', s: 'dbo.PurchaseOrder.CustomerPO', t: 'NVARCHAR', k: '别名字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder', 'CustomerPO', 'VendorOrderNO'], f: 'SELECT PurchaseOrder.CustomerPO AS VendorOrderNO\n此页面列名与源字段语义不同，按过程现有别名展示。' },
+        salesOrder: { l: '销售订单号', s: 'dbo.SalesOrder.SalesOrderNM', t: 'NVARCHAR', k: '关联读取字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail.SalesOrderId', 'SalesOrder.SalesOrderId', 'SalesOrder.SalesOrderNM'], f: 'LEFT JOIN SalesOrder ON SalesOrder.SalesOrderId = PurchaseOrderDetail.SalesOrderId' },
+        memo: { l: '备注', s: 'dbo.PurchaseOrder.Description + dbo.PurchaseOrderDetail.Memo', t: 'NVARCHAR（计算）', k: 'SQL 拼接字段', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder.Description', 'PurchaseOrderDetail.Memo'], f: "PurchaseOrder.Description + '|' + PurchaseOrderDetail.Memo" },
+        selectedPurchaseItem: { l: '采购单-项次', s: 'dbo.PurchaseOrder.PurchaseOrderNM + dbo.PurchaseOrderDetail.Item', t: 'NVARCHAR（页面拼接）', k: '选中明细回填', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrder.PurchaseOrderNM', 'PurchaseOrderDetail.Item'], f: "选中明细后，由页面组合为 PurchaseOrderNM + '#' + Item" },
+        customerMaterial: { l: '客户料号', s: '当前 SP 未返回独立来源字段', t: 'NVARCHAR', k: '待补充映射', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['页面只读回填', 'ProductLH'], f: '原页面将该控件设为只读；当前 SP 的 SELECT 未输出 ProductLH' },
+        dateCode: { l: 'DateCode', s: 'dbo.PurchaseOrderLotApply.DateCode', t: 'NVARCHAR', k: '用户输入 / 打印写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面输入', 'PurchaseOrderLotApply.DateCode'], f: '打印外包时将页面 DateCode 写入基础、外包和内包申请记录；\n用于后续批次号生成。' },
+        uom2: { l: '单位（作业区回填）', s: 'dbo.UOM.UOMNM', t: 'NVARCHAR', k: '选中明细后自动回填', p: 'Pro_LotApply_GetPurchaseOrderDetailList_New', pa: ['PurchaseOrderDetail.UOMId', 'UOM.UOMId', 'UOM.UOMNM'], f: '选中采购明细后自动回填对应的单位' },
+        printer: { l: '打印机', s: '打印机配置接口（MESBT_LotReprint/GetPrinter）', t: '配置数据', k: '配置选择 / 不写申请表', p: '', pa: ['打印机下拉', 'PrinterStyleId', '本机打印服务'], f: '页面选择打印机配置；该值用于打印命令与样式，不是 PurchaseOrderLotApply 的持久化业务字段。' },
+        labelType: { l: '标签类型', s: 'dbo.LableDef.LableDefNM', t: 'NVARCHAR', k: '配置读取字段', p: '', pa: ['LableDef', 'LableDefId', 'LableDefNM'], f: '页面标签类型下拉来自 LableDef 有效记录；当前页面默认"物料标签"。' },
+        printQty: { l: '交货数量', s: '页面初值来自未包数量；写入 PurchaseOrderLotApply.Qty', t: 'DECIMAL', k: '回填后用户输入 / 写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['DidNotPackQty', 'PrintQty', 'PurchaseOrderLotApply.Qty'], f: '选中采购明细后默认取未包数量；\n打印外包时作为本次申请总量并生成基础行/外包行。' },
+        mfgBatch: { l: '生产批号', s: 'dbo.PurchaseOrderLotApply.MFGBatch', t: 'NVARCHAR', k: '用户输入 / 打印写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面输入 MFGBatch', 'PurchaseOrderLotApply.MFGBatch'], f: '外包打印时清理首尾空格、回车和 Tab 后写入；\n内包从父外包记录继承。' },
+        productionDate: { l: '生产日期', s: 'dbo.PurchaseOrderLotApply.ProductionDate', t: 'DATETIME', k: '用户输入 / 打印写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面日期', 'ProductionDate'], f: '外包打印写入；内包继承父外包。' },
+        expirationDate: { l: '有效日期', s: 'dbo.PurchaseOrderLotApply.ExpirationDate', t: 'DATETIME', k: '用户输入 / 打印写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面日期', 'ExpirationDate'], f: '外包打印写入；内包继承父外包。PDA 暂收入库会读取该字段。' },
+        sendDatetime: { l: '预计交货时间', s: 'dbo.PurchaseOrderLotApply.SendDatetime', t: 'DATETIME', k: '条件写入字段', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面日期', 'IsSaveSD', 'PurchaseOrderLotApply.SendDatetime'], f: '外包页面勾选保存日期时保留；未勾选过程置空。内包从父外包记录继承。' },
+        outTail: { l: '外包尾数', s: '浏览器临时表 outPackageTable', t: 'DECIMAL（临时）', k: '前端临时数据', p: 'Pro_LotApply_CheckOutPackageTailQty_New', pa: ['页面输入', 'outPackageTable'], f: '输入后仅校验并追加浏览器临时行；点击打印外包后才拆分为多条 PurchaseOrderLotApply。' },
+        outQty: { l: '外包数量', s: 'dbo.PurchaseOrderLotApply.Qty', t: 'DECIMAL', k: '用户输入 / 拆分写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面输入 outPackageQty', '计算包装份数', 'PurchaseOrderLotApply.Qty'], f: '用于计算标准外箱数量；保存时按标准箱和尾箱生成 Level=001 的实际包装行。' },
+        outSkin: { l: '外包皮重', s: 'dbo.PurchaseOrderLotApply.SkinWeight', t: 'DECIMAL（计算）', k: '计算后写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['outGrossWeight', 'outPackageQty', 'SkinWeight'], f: '外包皮重 = 外包毛重 - 外包数量\n打印外包后写入申请记录。' },
+        outCopies: { l: '外包装个数', s: 'dbo.PurchaseOrderLotApply.Copies', t: 'INT（计算）', k: '前端计算后写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['PrintQty', 'outPackageQty', 'OutPackageTailQtyList', 'Copies'], f: '普通箱数 = ceil((交货数量 - 尾数合计) / 外包数量)\n总标签数 = 普通箱数 + 尾箱数。' },
+        outGross: { l: '外包毛重', s: '页面输入；保存时推导 GrossWeight', t: 'DECIMAL', k: '用户输入 / 计算依据', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面输入 outGrossWeight', 'SkinWeight', 'GrossWeight'], f: '用于计算皮重；外包明细最终毛重按皮重 + 本箱数量写入。' },
+        remarks: { l: '描述', s: 'dbo.PurchaseOrderLotApply.Remarks', t: 'NVARCHAR', k: '用户输入 / 打印写入', p: 'AddPurchaseOrderLotApplyOutPackage', pa: ['页面输入 Remarks', 'PurchaseOrderLotApply.Remarks'], f: '打印外包、内包时将当前描述写入申请记录。' },
+        appliedDateCode: { l: '已申请批次·DateCode', s: 'dbo.PurchaseOrderLotApply.DateCode', t: 'NVARCHAR', k: '申请记录读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply', 'DateCode'], f: '已申请批次列表读取；仅展示 BasicLotId ≠ \'\' 的实际包装行。' },
+        appliedLot: { l: '已申请批次·流水号', s: 'dbo.PurchaseOrderLotApply.LotNM', t: 'NVARCHAR', k: '申请记录读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply', 'LotNM'], f: '打印外包或内包时生成；外包 Level=001，内包 Level=002。' },
+        appliedQty: { l: '已申请批次·数量', s: 'dbo.PurchaseOrderLotApply.Qty', t: 'DECIMAL', k: '申请记录读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply', 'Qty'], f: '每条实际包装记录保存该箱净数量；不是采购单原始采购数量。' },
+        appliedCopies: { l: '已申请批次·外包装个数', s: 'dbo.PurchaseOrderLotApply.Copies', t: 'INT', k: '申请记录读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply', 'Copies'], f: '外包装实际记录通常为 1；基础申请行保存本次计算的外包装总个数。' },
+        appliedTime: { l: '已申请批次·包装时间', s: 'dbo.PurchaseOrderLotApply.LastModifyTime', t: 'DATETIME', k: '申请记录读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply', 'LastModifyTime', 'PackingTime'], f: '列表按申请记录的最后修改时间显示包装时间。' },
+        appliedProduct: { l: '已申请批次·物料编号', s: 'dbo.PurchaseOrderLotApply.ProductNMERP', t: 'NVARCHAR', k: '申请记录读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply', 'ProductNMERP'], f: '过程实际写入页面物料编号；字段名带 ERP，但其值为当前 MES 物料编号。' },
+        appliedVendor: { l: '已申请批次·供应商名', s: 'dbo.PurchaseOrderLotApply.DeliverNM', t: 'NVARCHAR', k: '申请记录读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply', 'DeliverNM'], f: '供应商名称快照；"供应商修改"操作会更新此字段及关联历史快照。' },
+        appliedUser: { l: '已申请批次·用户名', s: 'dbo.User.UserNM', t: 'NVARCHAR', k: '关联读取', p: 'Pro_LotApply_GetLotAppliedList_New', pa: ['PurchaseOrderLotApply.LastModifyBy', 'User.UserId', 'User.UserNM'], f: '已申请批次列表以最后操作人关联用户主数据后展示。' }
+      };
+
+      const card=document.getElementById('card');
+      function sh(k) {
+        const f = F[k]; if (!f) return;
+        document.getElementById('title').textContent = f.l || k;
+        document.getElementById('it').textContent = f.l || '';
+        document.getElementById('is').textContent = f.s || '';
+        document.getElementById('ity').textContent = f.t || '';
+        document.getElementById('isp').textContent = f.p || '';
+        document.getElementById('ifm').textContent = f.f || '';
+        document.getElementById('ik').textContent = f.k || '';
+        let ph = '';
+        if (f.pa) { ph = f.pa.map((p, i) => (i > 0 ? '<span class="ar">→</span>' : '') + `<span>${p}</span>`).join('') }
+        document.getElementById('ip').innerHTML = ph;
+        // Smart positioning
+        var n=event&&event.target?event.target:null;
+        var r=n?n.getBoundingClientRect():null;
+        var midX=window.innerWidth/2, midY=window.innerHeight/2;
+        card.style.left='';card.style.top='';card.style.right='';card.style.bottom='';
+        if(!r){card.style.right='24px';card.style.bottom='24px';}
+        else{
+          if(r.left+r.width/2 < midX){card.style.right='24px';}else{card.style.left='24px';}
+          if(r.top+r.height/2 < midY){card.style.bottom='24px';}else{card.style.top='24px';}
+        }
+        card.classList.add('show');
+      }
+      function cl() { card.classList.remove('show') }
+      // Drag support
+      let drag=null;const head=card.querySelector('.card-head');
+      head.onpointerdown=e=>{if(e.target.closest('.close')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};head.setPointerCapture(e.pointerId)};
+      head.onpointermove=e=>{if(!drag)return;card.style.left=`${Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))}px`;card.style.top=`${Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))}px`};
+      head.onpointerup=()=>drag=null;
+      document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]')&&!e.target.closest('.fld')&&!e.target.closest('.qi')&&!e.target.closest('th')&&!e.target.closest('td'))cl()});
+      function toggleLineage(id) { document.getElementById(id).classList.toggle('show') }
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') cl() });
+      // data-k click handler
+      document.querySelectorAll('[data-k]').forEach(n=>{n.addEventListener('click',function(e){e.stopPropagation();sh(this.dataset.k)})});
+      document.querySelectorAll('.fld').forEach(n=>{if(n.getAttribute('onclick')){const m=n.getAttribute('onclick').match(/sh\('(\w+)'\)/);if(m)n.addEventListener('click',function(e){e.stopPropagation();sh(m[1])})}});
+    </script>
+  </div><!-- /demo-main -->
+
+  <!-- ===== 右侧统计面板 ===== -->
+  <div class="stats-panel">
+    <div class="sh">📊 调用统计<span class="badge">BS·条码申请</span></div>
+    <div class="stats-body">
+    <div class="stats-count-row"><div><div class="scn">11</div><div class="scl">数据库表</div></div><div><div class="scn">2</div><div class="scl">存储过程</div></div><div><div class="scn">2</div><div class="scl">BLL类</div></div></div>
+    <div class="ss"><h4><span class="dot" style="background:#10b981"></span>📊 数据库表</h4>
+      <div class="si"><span class="sn" title="PurchaseOrder">PurchaseOrder</span><span class="st tbl">采购单</span></div>
+      <div class="si"><span class="sn" title="PurchaseOrderDetail">PurchaseOrderDetail</span><span class="st tbl">采购明细</span></div>
+      <div class="si"><span class="sn" title="PurchaseOrderLotApply">PurchaseOrderLotApply</span><span class="st tbl">条码申请</span></div>
+      <div class="si"><span class="sn" title="BarCodeDef">BarCodeDef</span><span class="st tbl">条码定义</span></div>
+      <div class="si"><span class="sn" title="Product / ProductBase">Product / ProductBase</span><span class="st tbl">物料/料号</span></div>
+      <div class="si"><span class="sn" title="ProductVendorPN">ProductVendorPN</span><span class="st tbl">供应商料号</span></div>
+      <div class="si"><span class="sn" title="Vendor">Vendor</span><span class="st tbl">供应商</span></div>
+      <div class="si"><span class="sn" title="Lot">Lot</span><span class="st tbl">批次</span></div>
+      <div class="si"><span class="sn" title="UOM">UOM</span><span class="st tbl">单位</span></div>
+      <div class="si"><span class="sn" title="PrinterStyle / LableDef">PrinterStyle / LableDef</span><span class="st tbl">打印模板</span></div>
+      <div class="si"><span class="sn" title="Warehouse">Warehouse</span><span class="st tbl">仓库</span></div>
+    </div>
+    <div class="ss"><h4><span class="dot" style="background:#7c3aed"></span>⚙️ 存储过程</h4>
+      <div class="si"><span class="sn" title="Pro_LotApply_GetPurchaseOrderDetailList_New">Pro_LotApply_GetPurchaseOrderDetailList_New</span><span class="st sp">采购明细查询</span></div>
+      <div class="si"><span class="sn" title="Pro_LotApply_GetLotAppliedList_New">Pro_LotApply_GetLotAppliedList_New</span><span class="st sp">已申请批次</span></div>
+    </div>
+    <div class="ss"><h4><span class="dot" style="background:#f59e0b"></span>🧩 BLL 业务层</h4>
+      <div class="si"><span class="sn" title="CKZY_LotApplyBLL">CKZY_LotApplyBLL</span><span class="st bll">条码申请</span></div>
+      <div class="si"><span class="sn" title="BarCodeDefBll">BarCodeDefBll</span><span class="st bll">条码定义</span></div>
+    </div>
+    </div><!-- /stats-body -->
+  </div>
+
+</body>
+
+</html>

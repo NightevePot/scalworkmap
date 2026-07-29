@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>工单 · 字段血缘演示</title>
+<style>
+:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}
+.demo-main{flex:1;max-width:1100px}
+.bar{height:50px;display:flex;color:#fff;background:var(--green)}
+.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}
+.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}
+.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}
+.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}
+.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}
+.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}
+.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default;white-space:nowrap}
+.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}
+.sub-arr{color:#94a3b8;font-size:10px}
+.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line)}
+.toolbar table{width:100%}.toolbar th{text-align:right;font-size:12px;font-weight:600;padding:3px 6px}.toolbar td{padding:3px 12px 3px 4px}
+.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}
+.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}
+.btn-pri{background:var(--blue);color:#fff}
+.btn-sec{background:#fff;color:#17232d;border:1px solid var(--line)}
+.content{padding:8px 10px}
+.section{margin-bottom:10px}
+.section-hd{display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:11px;font-weight:700;color:#64748b}
+.dg{background:#fff;border:1px solid var(--line)}
+.dg table{width:100%;border-collapse:collapse;font-size:10px}
+.dg th{background:var(--soft);padding:4px 6px;text-align:left;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;font-weight:700}
+.dg td{padding:3px 6px;border-right:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0;cursor:pointer;font-size:10px}
+.dg td[data-k]:hover{background:#eff6ff}
+.form-grid{display:grid;grid-template-columns:90px 1fr 90px 1fr 90px 1fr;gap:2px 8px;padding:6px 12px;background:#fafbfc;border:1px solid var(--line);font-size:11px}
+.form-grid .fl{text-align:right;font-weight:600;color:#64748b;padding:3px 0;white-space:nowrap}
+.form-grid .fv{padding:3px 0;cursor:pointer;font-family:Consolas,monospace;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.form-grid .fv:hover{background:#eff6ff}
+.row2{display:flex;gap:8px}.row2>div{flex:1;min-width:0}
+.card{position:fixed;z-index:5;right:24px;bottom:24px;width:620px;min-height:300px;max-height:calc(100vh-40px);overflow:auto;border:1px solid #b7c9d2;border-radius:6px;background:#fff;box-shadow:0 15px 36px rgba(24,53,70,.26);opacity:0;visibility:hidden;transform:scale(.98);transition:.16s}
+.card.show{opacity:1;visibility:visible;transform:scale(1)}
+.card-head{display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:0 17px;color:#fff;background:#245f84;cursor:move}
+.card-body{padding:16px}
+.pth{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}.pth span{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;background:#e8edf0}.pth .ar{background:none;padding:0 2px;color:#94a3b8}
+.meta dt{font-size:10px;color:#64748b;font-weight:700;margin-top:10px}
+.meta dd{font-family:Consolas,monospace;font-size:12px;margin:4px 0 0}
+.stats-panel{width:280px;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1);flex-shrink:0;position:sticky;top:12px;max-height:calc(100vh-24px);display:flex;flex-direction:column;font-size:12px}
+.stats-panel .sh{background:var(--blue);color:#fff;padding:8px 12px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;border-radius:8px 8px 0 0;flex-shrink:0}
+.stats-body{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
+.stats-panel .sh .badge{font-size:9px;background:#fff3;padding:1px 6px;border-radius:10px}
+.stats-panel .ss{padding:6px 8px;border-bottom:1px solid #e8edf0}
+.stats-panel .ss h4{font-size:9px;color:#64748b;margin-bottom:4px}
+.stats-panel .si{font-size:11px;padding:2px 4px;margin-bottom:1px;border-radius:3px;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:3px}
+.stats-panel .si .sn{flex:1 1 auto;font-family:Consolas,monospace;font-size:9px;line-height:1.35}
+.stats-panel .st{font-size:8px;padding:0 3px;border-radius:2px;font-weight:600;flex-shrink:0;white-space:nowrap}
+.stats-panel .st.tbl{background:#d1fae5;color:#065f46}
+.stats-panel .st.bll{background:#fef3c7;color:#92400e}
+.stats-panel .st.sp{background:#fce7f3;color:#9d174d}
+.stats-count-row{display:flex;gap:8px;text-align:center;padding:8px 12px}
+.stats-count-row>div{flex:1}.stats-count-row .scn{font-size:20px;font-weight:800;color:var(--blue)}.stats-count-row .scl{font-size:10px;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<div class="demo-main">
+
+<!-- ====== 绿色顶栏 ====== -->
+<header class="bar">
+  <div class="brand">ⓘ MES制造执行系统</div>
+  <nav class="nav">
+    <span>工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span class="active">计划任务</span><span>批次工具</span>
+  </nav>
+  <div class="bar-info">
+    <span class="bar-badge">BS · Web MES</span><span>| 工单 · 字段血缘演示</span>
+  </div>
+</header>
+<div class="sub-tabs">
+  <span class="sub-tab">计划任务</span><span class="sub-arr">▸</span><span class="sub-tab active">工单</span>
+</div>
+
+<!-- ====== ① 查询栏 ====== -->
+<div class="toolbar"><table><tr>
+  <th>工单/物料编号：</th><td><input data-k="sWorkOrder" value="MO-SO251206750-02" style="width:200px"></td>
+  <th style="padding-left:15px">客户订单号：</th><td><input data-k="queryCustomerOrderNo" value="PO2026070008" style="width:200px"></td>
+  <td style="padding-left:15px">
+    <button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button>
+    <button class="btn btn-sec" data-k="btnCaseClosed">🔒 结案</button>
+    <button class="btn btn-sec" data-k="btnReduction">↩ 结案还原</button>
+    <button class="btn btn-sec" data-k="btnExport">📥 导出</button>
+  </td>
+</tr></table></div>
+
+<div class="content">
+
+<!-- ====== ② TopList 工单列表 ====== -->
+<div class="section">
+  <div class="section-hd">TopList · 工单列表（选中行加载下方详情）</div>
+  <div class="dg"><table>
+    <thead><tr><th>工单号</th><th>物料编号</th><th>数量</th><th>完成数</th><th>抽样数量</th><th>计划开工</th><th>计划完工</th><th>状态</th><th>修改人</th><th>修改时间</th><th>产品类型</th><th>采购类型</th><th>返工原因</th></tr></thead>
+    <tbody><tr>
+      <td data-k="MfgOrderNM">MO-SO251206750-02</td>
+      <td data-k="ProductNM">ON25F0021N5</td>
+      <td data-k="NewQty">1760</td>
+      <td data-k="NewCompliteQty">150</td>
+      <td data-k="SampleQty">0</td>
+      <td data-k="ReleaseDate">2026-07-23</td>
+      <td data-k="PlanFinishDate">2026-08-15</td>
+      <td data-k="State">正常</td>
+      <td data-k="LastModifyBy">超级管理员</td>
+      <td data-k="LastModifyTime">2026-07-23 08:30</td>
+      <td data-k="ProductTypeId">BCP</td>
+      <td data-k="PurchaseType">自产</td>
+      <td data-k="Reason">—</td>
+    </tr></tbody>
+  </table></div>
+</div>
+
+<!-- ====== ③ CenterTab 工单详情 ====== -->
+<div class="section">
+  <div class="section-hd">CenterTab · 工单详情（API：GetMainData）</div>
+  <div class="form-grid">
+    <span class="fl">工单编号：</span><span class="fv" data-k="sMfgOrderNM">MO-SO251206750-02</span>
+    <span class="fl">物料编号：</span><span class="fv" data-k="sProductNM">ON25F0021N5</span>
+    <span class="fl">完成数：</span><span class="fv" data-k="sCompleteNum">150</span>
+    <span class="fl">规格描述：</span><span class="fv" data-k="sDescription">示例洗发水 500ml</span>
+    <span class="fl">销售单：</span><span class="fv" data-k="sSalesOrder">SO2026070012</span>
+    <span class="fl">客户：</span><span class="fv" data-k="sCustomer">示例客户</span>
+    <span class="fl">客户订单号：</span><span class="fv" data-k="sCustomerOrderNo">PO2026070008</span>
+    <span class="fl">计划开工：</span><span class="fv" data-k="sPlannedStartDate">2026-07-23</span>
+    <span class="fl">计划完工：</span><span class="fv" data-k="sPlannedEndDate">2026-08-15</span>
+    <span class="fl">生产批号：</span><span class="fv" data-k="sProductionBatch">2630</span>
+    <span class="fl">数量：</span><span class="fv" data-k="sNumber">1760</span>
+    <span class="fl">单位：</span><span class="fv" data-k="sUnit">kg</span>
+    <span class="fl">工单状态：</span><span class="fv" data-k="sTicketStatus">正常</span>
+    <span class="fl">修改人：</span><span class="fv" data-k="sModifier">超级管理员</span>
+    <span class="fl">修改时间：</span><span class="fv" data-k="sModifyTime">2026-07-23 08:30</span>
+  </div>
+</div>
+
+<!-- ====== ④ 已发料明细 ====== -->
+<div class="section">
+  <div class="section-hd">
+    <span>ListLeft1 · 已发料明细（treegrid · API：GetDispatchedListViewnew）</span>
+    <span style="font-weight:400;font-size:10px">📥 导出Excel</span>
+  </div>
+  <div class="dg"><table>
+    <thead><tr><th>项次</th><th>物料编号</th><th>品名</th><th>需求数量</th><th>线边数量</th><th>差异</th><th>实发数量</th><th>发料数量</th><th>退回数量</th><th>未收退料</th><th>生产批号</th><th>流水号</th><th>单位</th><th>标准用量</th></tr></thead>
+    <tbody><tr>
+      <td>10</td><td data-k="dispProductNM">ON25F0021N5</td><td data-k="dispNote">示例洗发水</td><td data-k="RequireQty">1760</td><td data-k="LineQty">0</td><td data-k="differenceQty">0</td><td data-k="ActDispatchedQty">1760</td><td data-k="DispatchQty">1760</td><td data-k="ReturnQty">0</td><td data-k="ReturnApplyQty">0</td><td data-k="dispMFGBatch">2630</td><td data-k="dispLotNM">005226290006001</td><td data-k="UOMNM">kg</td><td data-k="RequireStdQty">1760</td>
+    </tr></tbody>
+  </table></div>
+</div>
+
+<!-- ====== ⑤ 产出批次明细 + 生产批次汇总 ====== -->
+<div class="section">
+<div class="row2">
+  <div>
+    <div class="section-hd">ListLeft2 · 产出批次明细<span style="font-weight:400;font-size:10px;margin-left:8px">📥 导出Excel</span></div>
+    <div class="dg"><table>
+      <thead><tr><th>生产批号</th><th>流水号</th><th>原数量</th><th>数量</th><th>产线</th><th>设备</th></tr></thead>
+      <tbody><tr><td data-k="outMFGBatch">2630</td><td data-k="outLotNM">OP20260723001</td><td data-k="OriginalQty">1760</td><td data-k="outQty">150</td><td data-k="ProductLineNM">L01</td><td data-k="EquipmentNM">Tank-3</td></tr></tbody>
+    </table></div>
+  </div>
+  <div>
+    <div class="section-hd">ListRight2 · 生产批次汇总</div>
+    <div class="dg"><table>
+      <thead><tr><th>生产批号</th><th>在库状态</th><th>原数量</th><th>数量</th></tr></thead>
+      <tbody><tr><td data-k="sumMFGBatch">2630</td><td data-k="LotEstate">在库</td><td data-k="sumOriginalQty">1760</td><td data-k="sumQty">150</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+</div>
+
+<!-- ====== ⑥ 结案还原列表 + 工单启动历史 ====== -->
+<div class="section">
+<div class="row2">
+  <div>
+    <div class="section-hd">BottomList · 结案还原列表</div>
+    <div class="dg"><table>
+      <thead><tr><th>操作</th><th>操作时间</th><th>操作人</th><th>操作设备</th></tr></thead>
+      <tbody><tr><td data-k="TxnId">CloseMO</td><td data-k="TxnTime">2026-07-25 14:00</td><td data-k="TxnUserNM">超级管理员</td><td data-k="TxnStationNM">BS-WEB</td></tr></tbody>
+    </table></div>
+  </div>
+  <div>
+    <div class="section-hd">StartHistoryList · 工单启动历史</div>
+    <div class="dg"><table>
+      <thead><tr><th>产线号</th><th>班次</th><th>操作时间</th><th>状态</th><th>操作人</th></tr></thead>
+      <tbody><tr><td data-k="shProductLineNM">L01</td><td data-k="ShiftName">白班</td><td data-k="shTxnDatetime">2026-07-23 09:00</td><td data-k="TxnName">START</td><td data-k="shUserNM">操作员A</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+</div>
+
+<!-- ====== ⑦ 工单启动列表 ====== -->
+<div class="section">
+  <div class="section-hd">StartList · 工单启动列表</div>
+  <div class="dg"><table>
+    <thead><tr><th>产线号</th><th>启动时间</th><th>结束时间</th><th>状态</th><th>操作人</th><th>资源名称</th></tr></thead>
+    <tbody><tr><td data-k="slProductLineNM">L01</td><td data-k="StartDatetime">2026-07-23 09:00</td><td data-k="EndDatetimeNew">—</td><td data-k="StateDesc">运行中</td><td data-k="slUserNM">操作员A</td><td data-k="ResourceNM">配制罐-3</td></tr></tbody>
+  </table></div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /demo-main -->
+
+<!-- ====== 字段血缘弹出卡片 ====== -->
+<aside class="card" id="card">
+  <div class="card-head">
+    <div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div>
+    <button class="close-btn" onclick="cl()">×</button>
+  </div>
+  <div class="card-body">
+    <div class="pth" id="pth"></div>
+    <dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl>
+    <dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl>
+    <dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl>
+    <dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl>
+  </div>
+</aside>
+
+<!-- ====== 右侧统计面板 ====== -->
+<div class="stats-panel">
+  <div class="sh">📊 调用统计<span class="badge">BS·工单 | CKZY_WorkOrder</span></div>
+  <div class="stats-body">
+    <div class="stats-count-row">
+      <div><div class="scn">10</div><div class="scl">数据库表</div></div>
+      <div><div class="scn">1</div><div class="scl">BLL</div></div>
+      <div><div class="scn">17</div><div class="scl">API</div></div>
+      <div><div class="scn">3</div><div class="scl">存储过程</div></div>
+    </div>
+    <div class="ss"><h4>📊 数据库表</h4>
+      <div class="si"><span class="sn" title="MfgOrder">MfgOrder</span><span class="st tbl">工单主表</span></div>
+      <div class="si"><span class="sn" title="MfgOrderBOM">MfgOrderBOM</span><span class="st tbl">工单BOM</span></div>
+      <div class="si"><span class="sn" title="DispatchMaterialOrder">DispatchMaterialOrder</span><span class="st tbl">派工发料单</span></div>
+      <div class="si"><span class="sn" title="Lot">Lot</span><span class="st tbl">批次</span></div>
+      <div class="si"><span class="sn" title="MfgOrderStart">MfgOrderStart</span><span class="st tbl">工单启动</span></div>
+      <div class="si"><span class="sn" title="HistoryMainLine">HistoryMainLine</span><span class="st tbl">历史主线</span></div>
+      <div class="si"><span class="sn" title="Product">Product</span><span class="st tbl">产品</span></div>
+      <div class="si"><span class="sn" title="Customer">Customer</span><span class="st tbl">客户</span></div>
+      <div class="si"><span class="sn" title="SalesOrder">SalesOrder</span><span class="st tbl">销售单</span></div>
+      <div class="si"><span class="sn" title="UOM">UOM</span><span class="st tbl">计量单位</span></div>
+    </div>
+    <div class="ss"><h4>🧩 BLL</h4>
+      <div class="si"><span class="sn" title="CKZY_WorkOrderBLL">CKZY_WorkOrderBLL</span><span class="st bll">工单业务</span></div>
+    </div>
+    <div class="ss"><h4>🔌 API（下拉 4 + 数据 8 + 操作 5）</h4>
+      <div class="si"><span class="sn" title="GetMfgOrderList">GetMfgOrderList</span><span class="st api">工单列表</span></div>
+      <div class="si"><span class="sn" title="GetMainData">GetMainData</span><span class="st api">工单详情</span></div>
+      <div class="si"><span class="sn" title="GetDispatchedListViewnew">GetDispatchedListViewnew</span><span class="st api">已发料明细</span></div>
+      <div class="si"><span class="sn" title="GetLotListView">GetLotListView</span><span class="st api">产出批次</span></div>
+      <div class="si"><span class="sn" title="GetLotSummaryListView">GetLotSummaryListView</span><span class="st api">批次汇总</span></div>
+      <div class="si"><span class="sn" title="GetReductionListView">GetReductionListView</span><span class="st api">结案还原</span></div>
+      <div class="si"><span class="sn" title="GetMfgStartHistory">GetMfgStartHistory</span><span class="st api">启动历史</span></div>
+      <div class="si"><span class="sn" title="GetMfgStart">GetMfgStart</span><span class="st api">启动列表</span></div>
+      <div class="si"><span class="sn" title="CloseCheck">CloseCheck</span><span class="st api">结案检查</span></div>
+      <div class="si"><span class="sn" title="CloseButton">CloseButton</span><span class="st api">执行结案</span></div>
+      <div class="si"><span class="sn" title="UnCloseButton">UnCloseButton</span><span class="st api">结案还原</span></div>
+      <div class="si"><span class="sn" title="GetCustomerList+GetUOMNM+...">GetCustomerList/GetUOMNM/...</span><span class="st api">4个下拉API</span></div>
+    </div>
+    <div class="ss"><h4>⚙ 存储过程</h4>
+      <div class="si"><span class="sn" title="Pro_MfgOrder_Close_Check">Pro_MfgOrder_Close_Check</span><span class="st sp">结案前检查</span></div>
+      <div class="si"><span class="sn" title="Pro_MfgOrder_Close">Pro_MfgOrder_Close</span><span class="st sp">执行结案</span></div>
+      <div class="si"><span class="sn" title="Pro_MfgOrder_UnClose_New">Pro_MfgOrder_UnClose_New</span><span class="st sp">结案还原</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const map={
+sWorkOrder:['工单/物料编号','textbox→MfgOrder.MfgOrderNM|Product.ProductNM','nvarchar(50)','查询条件','查询',['MfgOrder','Product']],
+queryCustomerOrderNo:['客户订单号','textbox→MfgOrder.CustomerOrderNM','nvarchar(50)','查询条件','查询',['MfgOrder']],
+MfgOrderNM:['工单号','MfgOrder.MfgOrderNM','nvarchar(50)','TopList','列表',['GetMfgOrderList','MfgOrder']],
+ProductNM:['物料编号','Product.ProductNM','nvarchar(50)','TopList','列表',['Product']],
+NewQty:['数量','MfgOrder.Qty','decimal','TopList','列表',['MfgOrder']],
+NewCompliteQty:['完成数','MfgOrder.CompliteQty','decimal','TopList','列表',['MfgOrder']],
+SampleQty:['抽样数量','MfgOrder.SampleQty','decimal','TopList','列表',['MfgOrder','SampleLotDetail']],
+ReleaseDate:['计划开工','MfgOrder.ReleaseDate','datetime','TopList','列表',['MfgOrder']],
+PlanFinishDate:['计划完工','MfgOrder.PlanFinishDate','datetime','TopList','列表',['MfgOrder']],
+State:['工单状态','MfgOrder.MOStatus→字典','nvarchar(20)','TopList','列表',['MfgOrder']],
+LastModifyBy:['修改人','MfgOrder.LastModifyBy','nvarchar(50)','TopList','列表',['MfgOrder']],
+LastModifyTime:['修改时间','MfgOrder.LastModifyTime','datetime','TopList','列表',['MfgOrder']],
+ProductTypeId:['产品类型','MfgOrder.ProductTypeId→字典','nvarchar(50)','TopList','列表',['MfgOrder']],
+PurchaseType:['采购类型','MfgOrder.PurchaseType','nvarchar(50)','TopList','列表',['MfgOrder']],
+Reason:['返工原因','MfgOrder.Reason','nvarchar(200)','TopList','列表',['MfgOrder']],
+sMfgOrderNM:['工单编号','API:GetMainData→MfgOrder','nvarchar(50)','CenterTab','详情',['GetMainData','MfgOrder']],
+sProductNM:['物料编号','API:GetMainData→Product','nvarchar(50)','CenterTab','详情',['Product']],
+sCompleteNum:['完成数','API:GetMainData→MfgOrder.CompliteQty','decimal','CenterTab','详情',['MfgOrder']],
+sDescription:['规格描述','API:GetMainData→Product.Description','nvarchar(300)','CenterTab','详情',['Product']],
+sSalesOrder:['销售单','API:GetMainData→SalesOrder','nvarchar(50)','CenterTab','详情',['SalesOrder']],
+sCustomer:['客户','API:GetMainData→Customer','nvarchar(100)','CenterTab','详情',['Customer']],
+sCustomerOrderNo:['客户订单号','API:GetMainData→MfgOrder.CustomerOrderNM','nvarchar(50)','CenterTab','详情',['MfgOrder']],
+sPlannedStartDate:['计划开工','API:GetMainData→MfgOrder.ReleaseDate','datetime','CenterTab','详情',['MfgOrder']],
+sPlannedEndDate:['计划完工','API:GetMainData→MfgOrder.PlanFinishDate','datetime','CenterTab','详情',['MfgOrder']],
+sProductionBatch:['生产批号','API:GetMainData→MfgOrder.MFGBatch','nvarchar(80)','CenterTab','详情',['MfgOrder']],
+sNumber:['数量','API:GetMainData→MfgOrder.Qty','decimal','CenterTab','详情',['MfgOrder']],
+sUnit:['单位','API:GetMainData→UOM','nvarchar(20)','CenterTab','详情',['UOM']],
+sTicketStatus:['工单状态','API:GetMainData→MOStatus','nvarchar(10)','CenterTab','详情',['MfgOrder']],
+sModifier:['修改人','API:GetMainData→MfgOrder.LastModifyBy','nvarchar(50)','CenterTab','详情',['MfgOrder']],
+sModifyTime:['修改时间','API:GetMainData→MfgOrder.LastModifyTime','datetime','CenterTab','详情',['MfgOrder']],
+dispProductNM:['物料编号','DispatchMaterialOrder.ProductNM','nvarchar(50)','ListLeft1','发料',['GetDispatchedListViewnew','DispatchMaterialOrder','MfgOrderBOM']],
+dispNote:['品名','Product.Note','nvarchar(300)','ListLeft1','发料',['Product']],
+RequireQty:['需求数量','MfgOrderBOM.RequireQty','decimal','ListLeft1','发料',['MfgOrderBOM']],
+LineQty:['线边数量','Lot.Qty(LotEstate=10)','decimal','ListLeft1','发料',['Lot']],
+differenceQty:['差异','RequireQty - ActDispatchedQty','decimal','ListLeft1','计算',['MfgOrderBOM','DispatchMaterialOrder']],
+ActDispatchedQty:['实发数量','DispatchMaterialOrder.ActDispatchedQty','decimal','ListLeft1','发料',['DispatchMaterialOrder']],
+DispatchQty:['发料数量','DispatchMaterialOrder.DispatchQty','decimal','ListLeft1','发料',['DispatchMaterialOrder']],
+ReturnQty:['退回数量','DispatchMaterialOrder.ReturnQty','decimal','ListLeft1','发料',['DispatchMaterialOrder']],
+ReturnApplyQty:['未收退料','DispatchMaterialOrder.ReturnApplyQty','decimal','ListLeft1','发料',['DispatchMaterialOrder']],
+dispMFGBatch:['生产批号','DispatchMaterialOrder.MFGBatch','nvarchar(80)','ListLeft1','发料',['DispatchMaterialOrder']],
+dispLotNM:['流水号','DispatchMaterialOrder.LotNM','nvarchar(50)','ListLeft1','发料',['DispatchMaterialOrder','Lot']],
+UOMNM:['单位','UOM.UOMNM','nvarchar(20)','ListLeft1','发料',['UOM']],
+RequireStdQty:['标准用量','MfgOrderBOM.RequireStdQty','decimal','ListLeft1','发料',['MfgOrderBOM']],
+outMFGBatch:['生产批号','Lot.MFGBatch','nvarchar(80)','ListLeft2','产出',['GetLotListView','Lot']],
+outLotNM:['流水号','Lot.LotNM','nvarchar(50)','ListLeft2','产出',['Lot']],
+OriginalQty:['原数量','Lot.OriginalQty','decimal','ListLeft2','产出',['Lot']],
+outQty:['数量','Lot.Qty','decimal','ListLeft2','产出',['Lot']],
+ProductLineNM:['产线','Lot.ProductLineNM','nvarchar(50)','ListLeft2','产出',['Lot']],
+EquipmentNM:['设备','Lot.EquipmentNM','nvarchar(50)','ListLeft2','产出',['Lot','CurrentStatus']],
+sumMFGBatch:['生产批号','Lot.MFGBatch(汇总)','nvarchar(80)','ListRight2','汇总',['GetLotSummaryListView','Lot']],
+LotEstate:['在库状态','Lot.LotEstate','nvarchar(20)','ListRight2','汇总',['Lot']],
+sumOriginalQty:['原数量','SUM(Lot.OriginalQty)','decimal','ListRight2','汇总',['Lot']],
+sumQty:['数量','SUM(Lot.Qty)','decimal','ListRight2','汇总',['Lot']],
+TxnId:['操作','HistoryMainLine.TxnId','nvarchar(50)','BottomList','还原',['GetReductionListView','HistoryMainLine']],
+TxnTime:['操作时间','HistoryMainLine.TxnDatetime','datetime','BottomList','还原',['HistoryMainLine']],
+TxnUserNM:['操作人','HistoryMainLine.UserNM','nvarchar(50)','BottomList','还原',['HistoryMainLine']],
+TxnStationNM:['操作设备','HistoryMainLine.StationNM','nvarchar(50)','BottomList','还原',['HistoryMainLine']],
+shProductLineNM:['产线号','MfgOrderStart.ProductLineNM','nvarchar(50)','StartHistoryList','历史',['GetMfgStartHistory','MfgOrderStart']],
+ShiftName:['班次','MfgOrderStart.ShiftName','nvarchar(50)','StartHistoryList','历史',['MfgOrderStart']],
+shTxnDatetime:['操作时间','MfgOrderStart.TxnDatetime','datetime','StartHistoryList','历史',['MfgOrderStart']],
+TxnName:['状态','MfgOrderStart.TxnName','nvarchar(50)','StartHistoryList','历史',['MfgOrderStart']],
+shUserNM:['操作人','MfgOrderStart.UserNM','nvarchar(50)','StartHistoryList','历史',['MfgOrderStart']],
+slProductLineNM:['产线号','MfgOrderStart.ProductLineNM','nvarchar(50)','StartList','启动',['GetMfgStart','MfgOrderStart']],
+StartDatetime:['启动时间','MfgOrderStart.StartDatetime','datetime','StartList','启动',['MfgOrderStart']],
+EndDatetimeNew:['结束时间','MfgOrderStart.EndDatetime','datetime','StartList','启动',['MfgOrderStart']],
+StateDesc:['状态','MfgOrderStart.State→字典','nvarchar(50)','StartList','启动',['MfgOrderStart']],
+slUserNM:['操作人','MfgOrderStart.UserNM','nvarchar(50)','StartList','启动',['MfgOrderStart']],
+ResourceNM:['资源名称','MfgOrderStart.ResourceNM','nvarchar(100)','StartList','启动',['MfgOrderStart']],
+btnQuery:['⌕ 查询','API:GetMfgOrderList','—','输入条件→CKZY_WorkOrderBLL→MfgOrder','查询',['CKZY_WorkOrderBLL','MfgOrder']],
+btnCaseClosed:['🔒 结案','Pro_MfgOrder_Close_Check→Pro_MfgOrder_Close','—','选中工单→结案前检查→双人复核→MOStatus=2','结案',['ESignature','Pro_MfgOrder_Close_Check','Pro_MfgOrder_Close']],
+btnReduction:['↩ 结案还原','Pro_MfgOrder_UnClose_New','—','已结案工单→填写原因→审计追踪→还原MOStatus=1','还原',['Pro_MfgOrder_UnClose_New']],
+btnExport:['📥 导出','datagrid-export.js→Excel','—','前端导出TopList为xls','导出',['jquery.datagrid-export']],
+};
+const card=document.getElementById('card');
+function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');var r=n?n.getBoundingClientRect():null;var mx=window.innerWidth/2,my=window.innerHeight/2;card.style.left='';card.style.top='';card.style.right='';card.style.bottom='';if(!r){card.style.right='24px';card.style.bottom='24px'}else{if(r.left+r.width/2<mx){card.style.right='24px'}else{card.style.left='24px'}if(r.top+r.height/2<my){card.style.bottom='24px'}else{card.style.top='24px'}}card.classList.add('show')}function cl(){card.classList.remove('show')}
+document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));document.querySelectorAll('.close-btn').forEach(b=>b.onclick=()=>card.classList.remove('show'));
+let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=`${Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))}px`;card.style.top=`${Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))}px`};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
+</script>
+</body>
+</html>

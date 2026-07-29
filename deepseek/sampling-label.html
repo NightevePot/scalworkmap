@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>抽样标签 - 字段链路演示</title>
+  <style>
+    :root {
+      --green: #00a65a;
+      --deep: #287460;
+      --line: #d3dce1;
+      --soft: #f5f8f9;
+      --blue: #1688ca;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #17232d;
+      background: #fff;
+      font: 12px "Microsoft YaHei", Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px
+    }
+
+    .demo-main {
+      flex: 1;
+      max-width: 1050px;
+      min-width: 0
+    }
+
+    .stats-panel {
+      width: 250px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .1);
+      flex-shrink: 0;
+      position: sticky;
+      top: 12px;
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      font-size: 12px
+    }
+
+    .stats-panel .sh {
+      background: var(--blue);
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px 8px 0 0
+    }
+
+    .stats-panel .sh .badge {
+      font-size: 10px;
+      background: #fff3;
+      padding: 2px 8px;
+      border-radius: 10px
+    }
+
+    .stats-panel .ss {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9
+    }
+
+    .stats-panel .ss:last-child {
+      border-bottom: none
+    }
+
+    .stats-panel .ss h4 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .stats-panel .ss h4 .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block
+    }
+
+    .stats-panel .si {
+      font-size: 11px;
+      padding: 3px 6px;
+      margin-bottom: 2px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .stats-panel .si:hover {
+      background: #f0f6ff
+    }
+
+    .stats-panel .si .sn {
+      flex: 1;
+      word-break: break-all
+    }
+
+    .stats-panel .st {
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 600;
+      flex-shrink: 0
+    }
+
+    .stats-panel .st.tbl {
+      background: #d1fae5;
+      color: #065f46
+    }
+
+    .stats-panel .st.sp {
+      background: #ede9fe;
+      color: #6d28d9
+    }
+
+    .stats-panel .st.wcf {
+      background: #fce7f3;
+      color: #be185d
+    }
+
+    .stats-panel .st.bll {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    .stats-count-row {
+      display: flex;
+      gap: 8px;
+      text-align: center;
+      padding: 10px 14px
+    }
+
+    .stats-count-row>div {
+      flex: 1
+    }
+
+    .stats-count-row .scn {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--blue)
+    }
+
+    .stats-count-row .scl {
+      font-size: 10px;
+      color: #94a3b8
+    }
+
+    /* 展开血缘表 */
+    .card-detail {
+      display: none;
+      border-top: 2px solid #e2e8f0;
+      margin-top: 10px;
+      padding-top: 10px
+    }
+
+    .card-detail.show {
+      display: block
+    }
+
+    .lineage-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px
+    }
+
+    .lineage-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 480px
+    }
+
+    .lineage-table th {
+      background: #f1f5f9;
+      padding: 8px 10px;
+      text-align: left;
+      color: #475569;
+      font-weight: 700;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      font-size: 11px
+    }
+
+    .lineage-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b
+    }
+
+    .lineage-table td:nth-child(2) {
+      font-family: monospace;
+      font-size: 11px
+    }
+
+    .lineage-table tbody tr {
+      cursor: pointer
+    }
+
+    .lineage-table tbody tr:hover td {
+      background: #eff6ff
+    }
+
+    .lineage-table tbody tr:last-child td {
+      border-bottom: none
+    }
+
+    .cd-hint {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 8px
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .bar {
+      height: 50px;
+      display: flex;
+      color: #fff;
+      background: var(--green);
+    }
+
+    .brand {
+      width: 215px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .nav {
+      display: flex;
+      flex: 0 0 auto;
+    }
+
+    .nav span {
+      width: 70px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-weight: 700;
+    }
+
+    .nav span.active {
+      background: rgba(0, 0, 0, .16);
+      box-shadow: inset 0 -3px 0 #fff;
+    }
+
+    .workflow {
+      min-width: 250px;
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border-left: 1px solid rgba(0, 0, 0, .12);
+      background: #e8f0ec;
+    }
+
+    .workflow-step {
+      position: relative;
+      min-width: 116px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 21px 0 11px;
+      border: 0;
+      color: #426858;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .workflow-step::after {
+      content: "";
+      position: absolute;
+      right: 7px;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid #83a897;
+    }
+
+    .workflow-step.active {
+      color: #fff;
+      background: #287460;
+      box-shadow: inset 0 -3px 0 #b6d3c5;
+    }
+
+    .workflow-step.active::after {
+      border-left-color: #d3e4db;
+    }
+
+    .workflow-step:hover {
+      color: #1d5747;
+      background: rgba(255, 255, 255, .45);
+    }
+
+    .workflow-step.active:hover {
+      color: #fff;
+      background: #287460;
+    }
+
+    .user {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      font-weight: 700;
+    }
+
+    .crumb {
+      height: 37px;
+      display: flex;
+      align-items: end;
+      padding-left: 220px;
+      border-bottom: 1px solid #ccd4d8;
+      background: #f6f7f8;
+    }
+
+    .tab {
+      height: 31px;
+      padding: 8px 14px;
+      border: 1px solid #d1d7da;
+      border-bottom: 0;
+      background: #fff;
+      color: #2b4a5d;
+      font-weight: 700;
+    }
+
+    .page {
+      padding: 6px 10px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 120px 200px 120px 200px 120px 200px;
+      gap: 8px 10px;
+      align-items: center;
+      max-width: 1100px;
+    }
+
+    .filters label,
+    .row label {
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .hot {
+      position: relative;
+      min-height: 27px;
+      display: flex;
+      align-items: center;
+      border: 1px solid #cdd7dc;
+      border-radius: 3px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .hot::after {
+      content: "";
+      position: absolute;
+      right: 6px;
+      bottom: 5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .hot:hover,
+    .hot.active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(22, 136, 202, .13);
+    }
+
+    .hot input {
+      width: 100%;
+      height: 25px;
+      padding: 0 7px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #344c5b;
+    }
+
+    .readonly {
+      background: #f1f1f1;
+    }
+
+    .query {
+      height: 27px;
+      padding: 0 13px;
+      border: 1px solid #b7c4cb;
+      border-radius: 3px;
+      background: linear-gradient(#fff, #edf1f3);
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 10px 0 4px;
+      font-size: 13px;
+    }
+
+    .grid {
+      overflow: auto;
+      min-height: 300px;
+      border: 1px solid var(--line);
+    }
+
+    table {
+      width: 1660px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      height: 28px;
+      padding: 0 8px;
+      overflow: hidden;
+      border: 1px dotted #ced7dc;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    th {
+      padding: 0;
+      background: #fafafa;
+      text-align: left;
+    }
+
+    td {
+      color: #0349ff;
+    }
+
+    .head-hot {
+      width: 100%;
+      height: 100%;
+      padding: 0 7px;
+      border: 0;
+      color: #233b4a;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .bottom {
+      display: grid;
+      grid-template-columns: 40% 52%;
+      gap: 5%;
+      margin-top: 8px;
+    }
+
+    .bottom-grid {
+      height: 198px;
+      overflow: auto;
+      border: 1px solid var(--line);
+    }
+
+    .bottom-grid table {
+      width: 760px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 26px;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: 86px 190px 86px 190px;
+      gap: 7px 8px;
+      align-items: center;
+      padding-top: 6px;
+    }
+
+    .form .wide {
+      grid-column: span 3;
+    }
+
+    .print-config {
+      display: grid;
+      grid-template-columns: 86px 210px;
+      gap: 7px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .print-actions {
+      grid-column: 2 / span 2;
+      display: flex;
+      gap: 28px;
+      justify-content: center;
+      padding-top: 8px;
+    }
+
+    .card {
+      position: fixed;
+      z-index: 5;
+      right: 24px;
+      bottom: 24px;
+      width: 620px;
+      min-height: 410px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      border: 1px solid #b7c9d2;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 15px 36px rgba(24, 53, 70, .26);
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(.98);
+      transition: .16s;
+    }
+
+    .card.show {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 60px;
+      padding: 0 17px;
+      color: #fff;
+      background: #245f84;
+      cursor: move;
+    }
+
+    .card-head small {
+      color: #c8e1ed;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .card-head h3 {
+      margin: 3px 0 0;
+      font-size: 20px;
+    }
+
+    .close {
+      border: 0;
+      color: #fff;
+      background: transparent;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      padding: 12px;
+      border: 1px solid #d8e5df;
+      background: #f7faf8;
+    }
+
+    .flow span {
+      display: grid;
+      place-items: center;
+      min-height: 34px;
+      padding: 4px;
+      border: 1px solid #c8d8d0;
+      color: #61766c;
+      background: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .flow span.active {
+      color: #fff;
+      border-color: var(--deep);
+      background: var(--deep);
+    }
+
+    .path {
+      margin-top: 14px;
+      padding: 11px;
+      border: 1px solid #d3e2eb;
+      border-radius: 4px;
+      color: #1d5478;
+      background: #f4fafc;
+      font: 13px Consolas, monospace;
+      line-height: 1.7;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 9px 12px;
+      margin: 16px 0 0;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .meta dt {
+      color: #687986;
+    }
+
+    .meta dd {
+      margin: 0;
+    }
+
+    .formula {
+      margin-top: 16px;
+      padding: 12px;
+      border-left: 3px solid #4c9bd0;
+      background: #f6f8f9;
+      font: 13px Consolas, monospace;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="demo-main">
+
+    <header class="bar">
+      <div class="brand">ⓘ MES制造执行系统</div>
+      <nav class="nav">
+        <span>工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span
+          class="active">质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span>
+      </nav>
+      <div
+        style="display:flex;align-items:center;padding:0 22px;font-weight:700;font-size:11px;white-space:nowrap;gap:8px;margin-left:auto">
+        <span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:10px">BS · Web MES</span><span
+          style="color:#94a3b8">|</span><span>抽样标签 · 字段血缘演示</span>
+      </div>
+    </header>
+    <div class="crumb">
+      <div class="tab">♟ 抽样标签 ×</div>
+    </div>
+    <main class="page">
+      <section class="filters">
+        <label>物料类别：</label>
+        <div class="hot" data-k="productType"><input value="原料" readonly></div><label>物料编号：</label>
+        <div class="hot" data-k="product"><input value="2969341" readonly></div><label>生产批号：</label>
+        <div class="hot" data-k="mfgBatch"><input value="" readonly></div>
+        <label>客户编号：</label>
+        <div class="hot" data-k="customer"><input value="" readonly></div><label>工单：</label>
+        <div class="hot" data-k="mfgOrder"><input value="" readonly></div><button class="query">⌕ 查询</button>
+      </section>
+      <h2>已收料列表:</h2>
+      <section class="grid">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th><button class="head-hot" data-k="sn">编号</button></th>
+              <th><button class="head-hot" data-k="customerOrder">客户订单号</button></th>
+              <th><button class="head-hot" data-k="order">单据编号</button></th>
+              <th><button class="head-hot" data-k="product">物料编号</button></th>
+              <th><button class="head-hot" data-k="note">品名</button></th>
+              <th><button class="head-hot" data-k="customer">客户编码</button></th>
+              <th><button class="head-hot" data-k="lot">流水号</button></th>
+              <th><button class="head-hot" data-k="mfgBatch">生产批号</button></th>
+              <th><button class="head-hot" data-k="qty">数量</button></th>
+              <th><button class="head-hot" data-k="uom">单位</button></th>
+              <th><button class="head-hot" data-k="outerCount">外包个数</button></th>
+              <th><button class="head-hot" data-k="innerCount">内包个数</button></th>
+              <th><button class="head-hot" data-k="qcDate">送检日期</button></th>
+              <th><button class="head-hot" data-k="coa">是否有COA</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>1</td>
+              <td></td>
+              <td></td>
+              <td>2969341</td>
+              <td>ZW_NE OP SER SUD 29597...</td>
+              <td></td>
+              <td>005226290006001</td>
+              <td></td>
+              <td>4000</td>
+              <td>PCS</td>
+              <td>1</td>
+              <td>0</td>
+              <td>2026-07-23</td>
+              <td>否</td>
+            </tr>
+          </tbody>
+        </table>
+        <div
+          style="padding:8px 0;border-top:1px solid #e8edf0;cursor:pointer;font-size:12px;color:var(--blue);font-weight:600"
+          onclick="toggleLineage('slLineage')">
+          📋 查看所有字段 → 数据库血缘 <span style="font-size:10px">(15个字段)</span>
+        </div>
+        <div class="card-detail" id="slLineage" style="margin:0;padding:0">
+          <div class="lineage-wrap">
+            <table class="lineage-table">
+              <thead>
+                <tr>
+                  <th>显示字段</th>
+                  <th>数据库来源</th>
+                  <th>数据类型</th>
+                  <th>查询过程</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="insp('sn')">
+                  <td>编号</td>
+                  <td>SampleLot.SampleLotNM</td>
+                  <td>nvarchar(50)</td>
+                  <td>SamplingLabelQueriesBLL</td>
+                </tr>
+                <tr onclick="insp('customerOrder')">
+                  <td>客户订单号</td>
+                  <td>SalesOrder.SalesOrderNM</td>
+                  <td>nvarchar(50)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('order')">
+                  <td>单据编号</td>
+                  <td>PurchaseOrder.PurchaseOrderNM</td>
+                  <td>nvarchar(50)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('product')">
+                  <td>物料编号</td>
+                  <td>Product.ProductNM</td>
+                  <td>varchar(50)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('note')">
+                  <td>品名</td>
+                  <td>Product.ProductName</td>
+                  <td>nvarchar(100)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('customer')">
+                  <td>客户编码</td>
+                  <td>Customer.CustomerCode</td>
+                  <td>nvarchar(50)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('lot')">
+                  <td>流水号</td>
+                  <td>PurchaseOrderLotApply.LotNM</td>
+                  <td>nvarchar(50)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('mfgBatch')">
+                  <td>生产批号</td>
+                  <td>Lot.MFGBatch</td>
+                  <td>nvarchar(80)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('qty')">
+                  <td>数量</td>
+                  <td>SampleLotDetail.Qty</td>
+                  <td>decimal</td>
+                  <td>SamplingLabelQueriesBLL</td>
+                </tr>
+                <tr onclick="insp('uom')">
+                  <td>单位</td>
+                  <td>UOM.UOMNM</td>
+                  <td>varchar(50)</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('outerCount')">
+                  <td>外包个数</td>
+                  <td>PurchaseOrderLotApply.Copies</td>
+                  <td>int</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('innerCount')">
+                  <td>内包个数</td>
+                  <td>SampleLot.InnerPackageCount</td>
+                  <td>int</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('qcDate')">
+                  <td>送检日期</td>
+                  <td>SampleLot.SendDatetime</td>
+                  <td>datetime</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('coa')">
+                  <td>是否有COA</td>
+                  <td>PurchaseOrderLotApply.HasCOA</td>
+                  <td>bit</td>
+                  <td>同上</td>
+                </tr>
+                <tr onclick="insp('vendor')">
+                  <td>供应商</td>
+                  <td>Vendor.VendorName</td>
+                  <td>nvarchar(100)</td>
+                  <td>同上</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="cd-hint">💡 横向滚动查看 · 点击行查看完整数据路径</div>
+        </div>
+      </section>
+      <div>已申请样品批次列表:</div>
+      <section class="bottom">
+        <div>
+          <div class="bottom-grid">
+            <table>
+              <thead>
+                <tr>
+                  <th><button class="head-hot" data-k="sampleLot">样品批次</button></th>
+                  <th><button class="head-hot" data-k="sampleTime">抽样时间</button></th>
+                  <th><button class="head-hot" data-k="qty">数量</button></th>
+                  <th><button class="head-hot" data-k="uom">单位</button></th>
+                  <th><button class="head-hot" data-k="lot">流水号</button></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SL2607230001</td>
+                  <td>2026-07-23</td>
+                  <td>10</td>
+                  <td>PCS</td>
+                  <td>005226290006001</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="actions"><button class="query">重印</button><button class="query">取消</button></div>
+          <div class="print-config"><label>打印机：</label>
+            <div class="hot" data-k="printer"><input value="ZDesigner ZT210-200dpi ZPL" readonly></div>
+            <label>打印机类型：</label>
+            <div class="hot" data-k="printerType"><input value="样品标签打印机" readonly></div><label>标签定义：</label>
+            <div class="hot readonly" data-k="labelStyle"><input value="样品标签" readonly></div>
+          </div>
+        </div>
+        <form class="form"><label>物料编号：</label>
+          <div class="hot readonly" data-k="product"><input value="2969341" readonly></div><label>客户料号：</label>
+          <div class="hot readonly" data-k="customerCode"><input value="" readonly></div><label>品名规格：</label>
+          <div class="hot readonly" data-k="note"><input value="ZW_NE OP SER SUD 29597..." readonly></div><label>*
+            抽样流水号：</label>
+          <div class="hot" data-k="samplingLot"><input value="SL2607230001" readonly></div><label>流水号：</label>
+          <div class="hot readonly" data-k="lot"><input value="005226290006001" readonly></div><label>生产批号：</label>
+          <div class="hot readonly" data-k="mfgBatch"><input value="" readonly></div><label>数量：</label>
+          <div class="hot readonly" data-k="qty"><input value="4000" readonly></div><label>* 单位：</label>
+          <div class="hot readonly" data-k="uom"><input value="PCS" readonly></div><label>* 单个样品抽样量：</label>
+          <div class="hot" data-k="sampleQty"><input value="10" readonly></div><label>* 样品单位：</label>
+          <div class="hot readonly" data-k="sampleUom"><input value="PCS" readonly></div><label>* 抽样数：</label>
+          <div class="hot" data-k="sampleCount"><input value="1" readonly></div><label>* 打印份数：</label>
+          <div class="hot" data-k="copies"><input value="1" readonly></div>
+          <div class="print-actions"><button class="query" type="button">免检</button><button class="query"
+              type="button">打印抽样标签</button></div>
+        </form>
+      </section>
+    </main>
+    <aside class="card" id="card">
+      <div class="card-head">
+        <div><small>FIELD DATA LINEAGE</small>
+          <h3 id="title">字段说明</h3>
+        </div><button class="close" id="close">×</button>
+      </div>
+      <div class="card-body">
+        <div class="flow" id="flow"></div>
+        <div class="path" id="path"></div>
+        <dl class="meta">
+          <dt>页面字段</dt>
+          <dd id="label"></dd>
+          <dt>数据库来源</dt>
+          <dd id="source"></dd>
+          <dt>数据类型</dt>
+          <dd id="type"></dd>
+          <dt>数据处理</dt>
+          <dd>质量控制 → 抽样标签</dd>
+        </dl>
+        <div class="formula" id="formula"></div>
+      </div>
+    </aside>
+    <script>
+      const map = { productType: ['物料类别', 'Product.ProductTypeId → ProductType.ProductTypeNM', '关联读取字段', '查询已收料时按 ProductTypeId 筛选', '查询已收料', 'ProductTypeId → ProductTypeNM'], product: ['物料编号', 'Product.ProductNM', '直接/关联读取字段', '查询过程按 ProductId 筛选，列表与抽样表单显示 ProductNM。', '查询已收料', 'ProductId → ProductNM'], mfgBatch: ['生产批号', 'Lot.MFGBatch', '直接字段', '作为已收料查询条件，并在选中流水号后回填。', '查询已收料', 'Lot → MFGBatch'], customer: ['客户编号', 'Customer.CustomerId / Customer.CustomerCode', '关联读取字段', '查询条件 CustomerId；列表展示 CustomerCode。', '查询已收料', 'CustomerId → CustomerCode'], mfgOrder: ['工单', 'MfgOrder.MfgOrderNM', '关联读取字段', '按 MfgOrderId 查询已收料列表。', '查询已收料', 'MfgOrderId → MfgOrderNM'], sn: ['编号', '结果集 SN', '序号字段', '已收料列表返回的行序号。', '查询已收料', 'Received lot result → SN'], customerOrder: ['客户订单号', 'SalesOrder.CustomerPO', '关联读取字段', '由已收料查询过程返回客户订单号。', '查询已收料', 'Lot / SalesOrder → CustomerPO'], order: ['单据编号', '业务单据结果字段 OrderNM', '展示字段', '由已收料查询过程返回。', '查询已收料', 'Received lot result → OrderNM'], note: ['品名规格', 'Product.ProductDesc / Product.Note', '关联读取字段', '选中已收料行后回填至打印表单。', '选择收料批次', 'Product → ProductDesc'], lot: ['流水号', 'Lot.LotNM', '直接字段', '选中已收料记录后作为样品批次创建的父流水号。', '选择收料批次', 'Lot → LotNM'], qty: ['数量', 'Lot.Qty', '直接字段', '打印抽样标签时作为原批次数量参数。', '选择收料批次', 'Lot → Qty'], uom: ['单位', 'UOM.UOMNM', '关联读取字段', '从收料批次的单位关联显示；用于创建样品批次。', '选择收料批次', 'Lot.UOMId → UOM.UOMNM'], outerCount: ['外包个数', '已收料结果 PackageCount', '展示字段', '由已收料查询过程返回包装统计。', '查询已收料', 'Received lot result → PackageCount'], innerCount: ['内包个数', '已收料结果 InnerPackageCount', '展示字段', '由已收料查询过程返回内包装统计。', '查询已收料', 'Received lot result → InnerPackageCount'], qcDate: ['送检日期', 'Lot.QCDatetime', '直接字段', '已收料查询结果中的送检日期。', '查询已收料', 'Lot → QCDatetime'], coa: ['是否有COA', 'Lot.HasCOA', '直接字段', '已收料查询结果中的 COA 标记。', '查询已收料', 'Lot → HasCOA'], sampleLot: ['样品批次 / 抽样流水号', 'SampleLot.SampleLotNM', '创建后写入字段', '打印抽样标签调用 Pro_CreateSampleLot_New 创建样品批次。', '创建样品批次', 'LotNM → SubitemNM → SampleLotNM'], sampleTime: ['抽样时间', 'SampleLot.SampleCreateTime', '申请记录读取字段', '已申请样品批次列表返回创建时间。', '查看样品批次', 'SampleLot → SampleCreateTime'], printer: ['打印机', '打印机配置接口', '配置选择', '选择本机打印设备，不写入抽样业务记录。', '填写打印参数', 'Printer configuration'], printerType: ['打印机类型', '打印样式配置', '配置选择', '确定打印机类型和模板兼容性。', '填写打印参数', 'PrinterStyleId'], labelStyle: ['标签定义', 'LableDef.LableDefNM', '配置读取字段', '当前页面固定使用样品标签定义。', '填写打印参数', 'LableDef → LableDefNM'], customerCode: ['客户料号', '结果集 CustomerCode', '回填展示字段', '选中已收料行后回填。', '选择收料批次', 'CustomerCode'], samplingLot: ['抽样流水号', 'SampleLot.SubitemNM', '选择/写入字段', '选择或创建关联的抽样流水号。', '创建样品批次', 'SubitemNM'], sampleQty: ['单个样品抽样量', 'SampleLot.SampleQty', '用户输入 / 写入', '作为创建样品批次过程的 @SampleQty 参数。', '创建样品批次', 'SampleQty → Pro_CreateSampleLot_New'], sampleUom: ['样品单位', 'UOM.UOMNM', '关联读取/写入参数', '页面从单位选择结果回填 SampleUOMNM。', '填写打印参数', 'SampleUOMId → SampleUOMNM'], sampleCount: ['抽样数', 'SampleLot.SampleCount', '用户输入 / 写入', '作为创建样品批次过程的 @SampleCount 参数。', '创建样品批次', 'SampleCount → Pro_CreateSampleLot_New'], copies: ['打印份数', 'SampleLot.LableCopies', '用户输入 / 写入', '作为 @LableCopies 参数控制标签打印份数。', '填写打印参数', 'LableCopies → Print'] };
+      const stages = ['查询已收料', '选择收料批次', '填写打印参数', '创建样品批次', '查看样品批次', '打印抽样标签']; const stageIndex = {}; stages.forEach((x, i) => stageIndex[x] = i); const card = document.getElementById('card');
+      function show(k, n) { const f = map[k]; if (!f) return; document.querySelectorAll('.active').forEach(x => x.classList.remove('active')); n.classList.add('active'); document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; document.getElementById('path').textContent = f[5]; document.getElementById('flow').innerHTML = stages.map((s, i) => `<span class="${i === stageIndex[f[4]] ? 'active' : ''}">${s}</span>`).join(''); const r = n.getBoundingClientRect(); card.style.left = `${r.left < innerWidth / 2 ? innerWidth - card.offsetWidth - 22 : 22}px`; card.style.top = `${r.top < innerHeight / 2 ? Math.max(22, innerHeight - card.offsetHeight - 22) : 22}px`; card.style.right = 'auto'; card.style.bottom = 'auto'; card.classList.add('show') }
+      document.querySelectorAll('[data-k]').forEach(n => n.onclick = () => show(n.dataset.k, n)); document.getElementById('close').onclick = () => card.classList.remove('show');
+      document.querySelectorAll('.workflow-step[data-step]').forEach(n => n.addEventListener('click', () => { if (n.dataset.step !== 'barcode') document.querySelectorAll('.workflow-step').forEach(x => x.classList.toggle('active', x === n)) }));
+      let drag = null; const head = card.querySelector('.card-head'); head.onpointerdown = e => { if (e.target.closest('.close') || !card.classList.contains('show')) return; const r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; head.setPointerCapture(e.pointerId) }; head.onpointermove = e => { if (!drag) return; card.style.left = `${Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x))}px`; card.style.top = `${Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y))}px` }; head.onpointerup = () => drag = null;
+      function toggleLineage(id) { document.getElementById(id).classList.toggle('show') }
+      function insp(k) { show(k, { getBoundingClientRect: () => ({ left: 200, top: 200 }) }) }
+    </script>
+  </div><!-- /demo-main -->
+
+  <!-- ===== 右侧统计面板 ===== -->
+  <div class="stats-panel">
+    <div class="sh">📊 调用统计<span class="badge">BS·抽样标签</span></div>
+    <div class="stats-count-row">
+      <div>
+        <div class="scn">8</div>
+        <div class="scl">数据库表</div>
+      </div>
+      <div>
+        <div class="scn">2</div>
+        <div class="scl">存储过程</div>
+      </div>
+      <div>
+        <div class="scn">4</div>
+        <div class="scl">BLL类</div>
+      </div>
+    </div>
+    <div class="ss">
+      <h4><span class="dot" style="background:#10b981"></span>📊 数据库表</h4>
+      <div class="si"><span class="sn">SampleLot</span><span class="st tbl">抽样批次</span></div>
+      <div class="si"><span class="sn">SampleLotDetail</span><span class="st tbl">抽样明细</span></div>
+      <div class="si"><span class="sn">Product</span><span class="st tbl">物料</span></div>
+      <div class="si"><span class="sn">Lot</span><span class="st tbl">批次</span></div>
+      <div class="si"><span class="sn">MfgOrder</span><span class="st tbl">工单</span></div>
+      <div class="si"><span class="sn">BarCodeDef</span><span class="st tbl">条码定义</span></div>
+      <div class="si"><span class="sn">ProductVendorPN</span><span class="st tbl">供应商料号</span></div>
+      <div class="si"><span class="sn">UOM</span><span class="st tbl">单位</span></div>
+    </div>
+    <div class="ss">
+      <h4><span class="dot" style="background:#7c3aed"></span>⚙️ 存储过程</h4>
+      <div class="si"><span class="sn">Pro_Inspection_GetSupplier</span><span class="st sp">SP</span></div>
+      <div class="si"><span class="sn">Pro_Inspection_GetSpecDetailList</span><span class="st sp">SP</span></div>
+    </div>
+    <div class="ss">
+      <h4><span class="dot" style="background:#d97706"></span>🧩 业务层 (BLL)</h4>
+      <div class="si"><span class="sn">SamplingLabelQueriesBLL</span><span class="st bll">抽样查询</span></div>
+      <div class="si"><span class="sn">ZLKZ_SamplingLabelBLL</span><span class="st bll">抽样标签</span></div>
+      <div class="si"><span class="sn">ZLKZ_BCPSamplingLabelBLL</span><span class="st bll">BCP抽样</span></div>
+      <div class="si"><span class="sn">SampleLabelQueryBLL</span><span class="st bll">标签查询</span></div>
+    </div>
+    <div class="ss">
+      <h4><span class="dot" style="background:#3b82f6"></span>🖥️ 前端</h4>
+      <div class="si"><span class="sn">SamplingLabelQueriesController</span><span class="st wcf">MVC控制器</span></div>
+      <div class="si"><span class="sn">Web MES · 质量控制模块</span><span class="st bll">BS端</span></div>
+      <div class="si"><span class="sn">ZDesigner ZT210 打印机</span><span class="st tbl">标签打印</span></div>
+    </div>
+  </div>
+
+</body>
+
+</html>

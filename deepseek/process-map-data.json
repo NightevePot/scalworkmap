@@ -1,0 +1,1239 @@
+{
+  "meta": {
+    "title": "SCAL 端到端流程地图",
+    "titleEn": "SCAL End-to-End Process Map",
+    "version": "1.0",
+    "generated": "2026-07-24",
+    "totalStages": 7,
+    "totalSubprocesses": 22,
+    "dataSources": [
+      {
+        "id": "db",
+        "name": "数据库快照",
+        "path": "E:\\code\\xxaedatabase"
+      },
+      {
+        "id": "bs",
+        "name": "Web MES (BS)",
+        "path": "E:\\code\\scal-mes"
+      },
+      {
+        "id": "cs",
+        "name": "桌面 MES (CS)",
+        "path": "E:\\code\\scal-mes-client"
+      },
+      {
+        "id": "pda-f",
+        "name": "PDA 前端",
+        "path": "E:\\code\\scal-pda-f"
+      },
+      {
+        "id": "pda-b",
+        "name": "PDA 后端",
+        "path": "E:\\code\\scal-pda-b"
+      },
+      {
+        "id": "doc",
+        "name": "文档与Demo",
+        "path": "E:\\code\\scal-mes（副本）\\TEMPS\\DOC"
+      }
+    ],
+    "systems": [
+      {
+        "id": "bs",
+        "name": "Web MES",
+        "abbr": "BS",
+        "color": "#3B82F6",
+        "swimlane": 1
+      },
+      {
+        "id": "cs",
+        "name": "桌面MES客户端",
+        "abbr": "CS",
+        "color": "#F59E0B",
+        "swimlane": 2
+      },
+      {
+        "id": "pda",
+        "name": "PDA",
+        "abbr": "PDA",
+        "color": "#10B981",
+        "swimlane": 3
+      },
+      {
+        "id": "db",
+        "name": "数据库",
+        "abbr": "DB",
+        "color": "#6B7280",
+        "swimlane": 4
+      }
+    ]
+  },
+  "stages": [
+    {
+      "id": "procurement",
+      "order": 1,
+      "name": "采购",
+      "nameEn": "Procurement",
+      "owner": "bs",
+      "color": "#2563EB",
+      "description": "采购单创建、条码申请与标签分发",
+      "subprocesses": [
+        {
+          "id": "proc-1",
+          "order": 1,
+          "name": "采购单创建",
+          "predecessor": null,
+          "successor": "proc-2",
+          "systems": [
+            "bs"
+          ],
+          "evidence": {
+            "bs": {
+              "bll": "CKZY_LotApplyBLL.GetPurchaseOrderListByPage()",
+              "controller": "CKZY_LotApplyController",
+              "dal": "CKZY_LotApplyDAL"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "PurchaseOrder",
+              "PurchaseOrderDetail"
+            ]
+          },
+          "demo": {
+            "file": "business/sample.html",
+            "label": "采购单示例页"
+          }
+        },
+        {
+          "id": "proc-2",
+          "order": 2,
+          "name": "条码申请",
+          "predecessor": "proc-1",
+          "successor": "proc-3",
+          "systems": [
+            "bs",
+            "pda",
+            "cs"
+          ],
+          "evidence": {
+            "bs": {
+              "bll": "CKZY_LotApplyBLL",
+              "controller": "CKZY_LotApplyController",
+              "reprint": [
+                "CKZY_LotApplyReprintBLL",
+                "CKZY_LotBatchRePrintBLL"
+              ]
+            },
+            "pda": {
+              "bll": "BarCodeDefBll",
+              "model": [
+                "BarCodeDef",
+                "BarCodeDefForTran"
+              ]
+            },
+            "cs": {
+              "form": "frmME_LotReprint"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "BarCodeDef",
+              "PurchaseOrderLotApply"
+            ]
+          },
+          "demo": {
+            "file": "business/sample.html",
+            "label": "条码申请示例页"
+          }
+        },
+        {
+          "id": "proc-3",
+          "order": 3,
+          "name": "标签分发",
+          "predecessor": "proc-2",
+          "successor": null,
+          "connectsTo": {
+            "stage": "receiving",
+            "subprocess": "recv-1"
+          },
+          "systems": [
+            "bs"
+          ],
+          "evidence": {
+            "bs": {
+              "bll": "SendLabelQueryBLL",
+              "controller": "SendLabelQueryController"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "PurchaseOrderLotApply"
+            ]
+          },
+          "pending": "标签分发完整数据流（申请→生成→打印→状态变更）待验证"
+        }
+      ]
+    },
+    {
+      "id": "receiving",
+      "order": 2,
+      "name": "入库",
+      "nameEn": "Receiving",
+      "owner": "pda",
+      "color": "#059669",
+      "description": "PDA扫码入库、入库单生成与暂收",
+      "subprocesses": [
+        {
+          "id": "recv-1",
+          "order": 1,
+          "name": "PDA扫码入库",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "procurement",
+            "subprocess": "proc-3"
+          },
+          "successor": "recv-2",
+          "systems": [
+            "pda",
+            "db"
+          ],
+          "evidence": {
+            "pda-f": {
+              "fragment": [
+                "JieShouFramgnet_A",
+                "JieShouFramgnet_B",
+                "RuKuFramgnet_A",
+                "RuKuFramgnet_B"
+              ],
+              "thread": [
+                "ScanReceiveThread",
+                "SaoMiaoJieShouThread",
+                "AddRukuDanThread",
+                "RukuThread",
+                "RukuThread2",
+                "RuKuThreadNew"
+              ]
+            },
+            "pda-b": {
+              "wcf": [
+                "GetProductInWarehouseOrderSumInfo",
+                "CheckInWHQty",
+                "AddProductInWarehouseOrder"
+              ],
+              "sp": [
+                "Pro_PDA_MfgInWHOrder_Add"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "MfgInWHOrder",
+              "InWH",
+              "InWHOrder",
+              "InWHDetail",
+              "Package"
+            ]
+          }
+        },
+        {
+          "id": "recv-2",
+          "order": 2,
+          "name": "入库单生成",
+          "predecessor": "recv-1",
+          "successor": "recv-3",
+          "systems": [
+            "pda",
+            "db"
+          ],
+          "evidence": {
+            "pda-b": {
+              "wcf": [
+                "DoInWH",
+                "AddProductInWarehouseOrderDetail",
+                "CompliteProductInWarehouseOrder",
+                "CompliteProductInWarehouseOrderNew"
+              ],
+              "bll": "InWHBll",
+              "dal": "InWHDal",
+              "sp": [
+                "Pro_PDA_MfgInWHOrder_AddDetail"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "InWH",
+              "InWHOrder",
+              "InWHDetail",
+              "CheckInHistory"
+            ]
+          }
+        },
+        {
+          "id": "recv-3",
+          "order": 3,
+          "name": "暂收入库",
+          "predecessor": "recv-1",
+          "successor": null,
+          "connectsTo": {
+            "stage": "quality",
+            "subprocess": "qual-1"
+          },
+          "systems": [
+            "pda",
+            "db"
+          ],
+          "isAlternatePath": true,
+          "evidence": {
+            "pda-f": {
+              "fragment": [
+                "ZanShouFramgnet_A",
+                "ZanShouFramgnet_B"
+              ],
+              "thread": [
+                "ZanShouThread",
+                "ZanShouMingXiThread"
+              ]
+            },
+            "pda-b": {
+              "wcf": [
+                "AddTemporaryReceiptOrder",
+                "CompliteTemporaryReceipt"
+              ],
+              "sp": [
+                "Pro_PDA_TemporaryReceiptOrder_Add"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "TemporaryReceiptOrder"
+            ]
+          }
+        },
+        {
+          "id": "recv-4",
+          "order": 4,
+          "name": "入库查询",
+          "predecessor": "recv-2",
+          "successor": null,
+          "systems": [
+            "bs"
+          ],
+          "isAuxiliary": true,
+          "evidence": {
+            "bs": {
+              "bll": [
+                "CKZY_RecieveMaterialQueryBLL",
+                "CKZY_TemporaryReceiptOrderBLL",
+                "CKZY_UnfinishedTempReceiptBLL"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "InWH",
+              "InWHOrder",
+              "TemporaryReceiptOrder"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "quality",
+      "order": 3,
+      "name": "质检",
+      "nameEn": "Quality Inspection",
+      "owner": "bs",
+      "color": "#7C3AED",
+      "description": "来料抽样、送检、判定、放行/滞留，及产中IPQC在线检测",
+      "subprocesses": [
+        {
+          "id": "qual-1",
+          "order": 1,
+          "name": "抽样标签",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "receiving",
+            "subprocess": "recv-3"
+          },
+          "successor": "qual-2",
+          "systems": [
+            "bs"
+          ],
+          "evidence": {
+            "bs": {
+              "bll": [
+                "SamplingLabelQueriesBLL",
+                "ZLKZ_SamplingLabelBLL",
+                "ZLKZ_BCPSamplingLabelBLL",
+                "ZLKZ_GZSamplingLabelBLL",
+                "ZLKZ_PZSamplingLabelBLL",
+                "ZLKZ_ProductRetentionSampleLabelBLL"
+              ],
+              "controller": "SamplingLabelQueriesController"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "SampleLot",
+              "SampleLotDetail"
+            ]
+          },
+          "demo": {
+            "file": "business/sampling-label.html",
+            "label": "抽样标签Demo",
+            "verified": true
+          }
+        },
+        {
+          "id": "qual-2",
+          "order": 2,
+          "name": "送检",
+          "predecessor": "qual-1",
+          "successor": "qual-3",
+          "systems": [
+            "bs"
+          ],
+          "evidence": {
+            "bs": {
+              "bll": "ZLKZ_SendBLL",
+              "methods": [
+                "LotNMKeydownFun",
+                "LoadDataCollector",
+                "MaterialIssueKeydownFun"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "SampleLot"
+            ]
+          }
+        },
+        {
+          "id": "qual-3",
+          "order": 3,
+          "name": "检验判定",
+          "predecessor": "qual-2",
+          "successor": "qual-4",
+          "systems": [
+            "bs"
+          ],
+          "evidence": {
+            "bs": {
+              "bll": [
+                "MESZLKZ_InspectionBLL",
+                "MESZLKZ_InspectionCPBLL",
+                "MESZLKZ_FinalInspectionBLL",
+                "MESZLKZ_ReInspecBLL",
+                "MESZLKZ_InspectionExemptionBLL"
+              ],
+              "aql": [
+                "ZLKZ_AQLSamplePlanBLL",
+                "ZLKZ_AQLCalculatorBLL"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "InspectionHistory"
+            ]
+          }
+        },
+        {
+          "id": "qual-4",
+          "order": 4,
+          "name": "放行/滞留",
+          "predecessor": "qual-3",
+          "successor": null,
+          "connectsTo": {
+            "stage": "weighing",
+            "subprocess": "weigh-1"
+          },
+          "systems": [
+            "bs",
+            "pda"
+          ],
+          "evidence": {
+            "bs": {
+              "bll": [
+                "MESZLKZ_ReleaseHoldBLL",
+                "HoldReleaseHistoryBLL"
+              ],
+              "controller": "HoldReleaseHistoryController"
+            },
+            "pda-b": {
+              "wcf": "DoHoldOrRelease"
+            },
+            "pda-f": {
+              "activity": "FragmentHoldReleaseActivity"
+            },
+            "bs-extreme": {
+              "bll": "ZLKZ_AbolishLotNMBLL",
+              "note": "批次号作废（极端场景）"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "HoldReleaseHistory"
+            ]
+          }
+        },
+        {
+          "id": "qual-5",
+          "order": 5,
+          "name": "IPQC在线检测",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "formula",
+            "subprocess": "form-1"
+          },
+          "successor": null,
+          "systems": [
+            "bs"
+          ],
+          "isParallel": true,
+          "description": "23+种产中在线检测，贯穿生产全程",
+          "evidence": {
+            "bs": {
+              "bllPrefix": "MESZLKZ_PAD_IPQC_",
+              "items": [
+                "FirstCheck (首检)",
+                "OnLineAppearanceInspection (外观)",
+                "OnLineSealingCheckForm (密封)",
+                "OnLineSealLeakageCheck (密封泄漏)",
+                "OnLineSealWidthCheck (密封宽度)",
+                "OnLineTorqueControl (扭矩)",
+                "HotTankCheck (热罐)",
+                "OnLinePressureLeakageCheck (压漏)",
+                "OnLineLableCheck (标签)",
+                "OnLineLengthCheckCheck (长度)",
+                "OnLineCodeDate (码日期)",
+                "OnLineSTMHeightCheck (STM高度)",
+                "OnLineTAMUCheck (TAMU)",
+                "OnLineBarCodeScanFoam (条码扫描)",
+                "OnLineCrimpVacuumCheck (Crimp真空)",
+                "OnLineActivationCheck (活化)",
+                "PackageMaterialChange (包材变更)",
+                "PackingMaterialPlan (包材计划)",
+                "PreparationBeforeProduction (产前准备)",
+                "EquipmentAjusting (设备调整)",
+                "TestReport (测试报告)",
+                "WeightingEquipmentFoam (称重设备)",
+                "CheckAgain (复查)"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "IPQCCheck",
+              "IPQCCheckDetail",
+              "IPQCCheckMaster"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "weighing",
+      "order": 4,
+      "name": "称料",
+      "nameEn": "Weighing",
+      "owner": "cs",
+      "color": "#D97706",
+      "description": "投前称重确认、称重测试与余料称重（上料的前置条件）",
+      "subprocesses": [
+        {
+          "id": "weigh-1",
+          "order": 1,
+          "name": "投前称重确认",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "quality",
+            "subprocess": "qual-4"
+          },
+          "successor": "weigh-2",
+          "systems": [
+            "cs",
+            "bs"
+          ],
+          "note": "物料在上料前必须先称重确认数量",
+          "evidence": {
+            "cs": {
+              "form": "frmME_IssueMaterial_Weighting"
+            },
+            "bs": {
+              "bll": "CKZY_MaterialWeighingBLL",
+              "controller": "CKZY_MaterialWeighingController"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "WeightingEquipmentContentList",
+              "WeightingEquipmentHanderList"
+            ]
+          }
+        },
+        {
+          "id": "weigh-2",
+          "order": 2,
+          "name": "称重测试",
+          "predecessor": "weigh-1",
+          "successor": null,
+          "connectsTo": {
+            "stage": "loading",
+            "subprocess": "load-1"
+          },
+          "systems": [
+            "cs"
+          ],
+          "evidence": {
+            "cs": {
+              "form": "frmME_WeightingTest"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "WeightingEquipmentValueView"
+            ]
+          }
+        },
+        {
+          "id": "weigh-3",
+          "order": 3,
+          "name": "余料称重",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "loading",
+            "subprocess": "load-2"
+          },
+          "successor": null,
+          "systems": [
+            "cs",
+            "bs"
+          ],
+          "isFeedback": true,
+          "note": "上料完成后，剩余物料退回称重",
+          "evidence": {
+            "cs": {
+              "form": [
+                "frmME_SurplusMaterial",
+                "frmME_SurplusMaterialGZ"
+              ]
+            },
+            "bs": {
+              "bll": "MESZZZX_SurplusMaterialBLL"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "WeightingEquipmentContentList"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "loading",
+      "order": 5,
+      "name": "上料",
+      "nameEn": "Material Loading",
+      "owner": "cs",
+      "color": "#DC2626",
+      "description": "称重确认后，工单领料并投入产线/设备",
+      "subprocesses": [
+        {
+          "id": "load-1",
+          "order": 1,
+          "name": "工单领料",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "weighing",
+            "subprocess": "weigh-2"
+          },
+          "successor": "load-2",
+          "systems": [
+            "pda"
+          ],
+          "evidence": {
+            "pda-f": {
+              "fragment": [
+                "GongDanLingLiaoFragment_A",
+                "GongDanLingLiaoFragment_B",
+                "GongDanLingLiaoFragment_C",
+                "Fragment_GongDanTouLiao_A",
+                "Fragment_GongDanTouLiao_B",
+                "Fragment_GongDanTouLiao_C",
+                "DiaoLiaoFramgnet_A"
+              ],
+              "thread": [
+                "GongDanLingLiaoThread",
+                "GongDanLingLiaoQueRenThread",
+                "FaLiaoThread",
+                "B_FaLiaoThread",
+                "TouLiaoItemThread",
+                "TouLiaoItemThread2",
+                "TouLiaoPiciHaoThread",
+                "YiFaLiaoMingXiThread",
+                "JieLiaoThread"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "DispatchMaterialOrder"
+            ]
+          }
+        },
+        {
+          "id": "load-2",
+          "order": 2,
+          "name": "发料/上料",
+          "predecessor": "load-1",
+          "successor": null,
+          "connectsTo": [
+            {
+              "stage": "weighing",
+              "subprocess": "weigh-3",
+              "label": "余料退回称重"
+            },
+            {
+              "stage": "formula",
+              "subprocess": "form-1",
+              "label": "上料完成→工单启动"
+            }
+          ],
+          "systems": [
+            "cs",
+            "bs",
+            "pda"
+          ],
+          "evidence": {
+            "cs": {
+              "form": [
+                "frmME_IssueMaterial",
+                "frmME_IssueMaterialCheck"
+              ]
+            },
+            "bs": {
+              "bll": "MESZZZX_IssueMaterialBLL",
+              "controller": "MESZZZX_IssueMaterialController"
+            },
+            "pda-b": {
+              "wcf": [
+                "DoLoadMaterial",
+                "CompliteLoadMaterial",
+                "CompliteLoadSMTMaterial",
+                "DoProductLineLoadMaterialLoad",
+                "DoProductLineLoadMaterialUnLoad",
+                "DoDispatchLot",
+                "DoDisptachLot",
+                "DoProductLineDispatchConfirm"
+              ],
+              "bll": "LoadMaterialBll",
+              "dal": [
+                "LoadMaterialDal",
+                "ResourceLoadedMaterial2Dal"
+              ],
+              "model": [
+                "LoadMaterial",
+                "ResourceLoadedMaterial2",
+                "CompltedLoadInfo"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "BPRLoadMaterial",
+              "ProductLineLoadMaterialHistory",
+              "V_ResourceLoadMaterial",
+              "DispatchMaterialOrder"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "formula",
+      "order": 6,
+      "name": "配置产出",
+      "nameEn": "Formula Output",
+      "owner": "cs",
+      "color": "#0891B2",
+      "description": "工单启动、设备启动、配方执行与多类型产出",
+      "subprocesses": [
+        {
+          "id": "form-1",
+          "order": 1,
+          "name": "工单启动",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "loading",
+            "subprocess": "load-2"
+          },
+          "successor": "form-2",
+          "systems": [
+            "pda",
+            "db"
+          ],
+          "evidence": {
+            "pda-f": {
+              "activity": [
+                "StartMfgOrder",
+                "StartMfgOrderLists"
+              ]
+            },
+            "pda-b": {
+              "wcf": [
+                "AddMfgOrderStart",
+                "DoMfgOrderStartStart",
+                "CheckThisResourceIsStarting"
+              ],
+              "bll": [
+                "MfgOrderStartBll",
+                "MfgOrderStartLotBll"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "MfgOrderStart",
+              "ResourceCurrentMfgOrderStartLot"
+            ]
+          }
+        },
+        {
+          "id": "form-2",
+          "order": 2,
+          "name": "设备启动",
+          "predecessor": "form-1",
+          "successor": "form-3",
+          "systems": [
+            "cs",
+            "pda"
+          ],
+          "evidence": {
+            "cs": {
+              "form": [
+                "frmME_EquipmentStart",
+                "frmME_StorageTankEquipmentStart",
+                "frmME_SteelTankEquipmentStart",
+                "frmME_PreplanTankEquipmentStart",
+                "frmME_TicketStart",
+                "frmME_EquipmentStopHistory"
+              ]
+            },
+            "pda-b": {
+              "wcf": [
+                "DoMachineBegain",
+                "DoMachineLeave"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "EquipmentStartHistory"
+            ]
+          }
+        },
+        {
+          "id": "form-3",
+          "order": 3,
+          "name": "配方管理",
+          "predecessor": "form-2",
+          "successor": "form-4",
+          "systems": [
+            "pda",
+            "bs"
+          ],
+          "evidence": {
+            "pda-b": {
+              "bll": "RecipeBll",
+              "dal": "RecipeDal"
+            },
+            "bs": {
+              "controller": "MESGYLC_RecipeController"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "Recipe",
+              "SpecRecipe",
+              "ProductRecipeAndWorkersSetting"
+            ]
+          }
+        },
+        {
+          "id": "form-4",
+          "order": 4,
+          "name": "产出",
+          "predecessor": "form-3",
+          "successor": "form-5",
+          "systems": [
+            "cs",
+            "bs",
+            "pda"
+          ],
+          "outputTypes": [
+            {
+              "type": "BCP半成品产出",
+              "cs": "frmME_BCPOutput",
+              "bs": "MESZZZX_BCPOutputBLL"
+            },
+            {
+              "type": "PZ配置产出",
+              "cs": [
+                "frmME_PZOutput",
+                "frmME_PZoutputTKBD"
+              ],
+              "bs": "MESZZZX_PZOutputBLL"
+            },
+            {
+              "type": "设备配置产出",
+              "cs": "frmME_EquipmentConfigOut",
+              "bs": "MESZZZX_EquipmentConfigOutBLL"
+            },
+            {
+              "type": "包装产出",
+              "cs": [
+                "frmME_CPPackage",
+                "frmME_NZBPackaging"
+              ],
+              "bs": [
+                "MESZZZX_CPPackageBLL",
+                "MESZZZX_InnerPackagingBLL",
+                "MESZZZX_PalletPackagingBLL"
+              ]
+            }
+          ],
+          "evidence": {
+            "pda-f": {
+              "fragment": [
+                "Fragment_Output_a",
+                "Fragment_Output_b",
+                "Fragment_Collect_a",
+                "Fragment_Collect_b",
+                "Fragment_Collect_c",
+                "Fragment_Collect_d"
+              ],
+              "thread": [
+                "YesThread",
+                "YesThreadNew",
+                "TotalThread"
+              ]
+            },
+            "pda-b": {
+              "wcf": [
+                "DoOutput",
+                "DoProductLineOutPut",
+                "DoProductLineExcutionOutPut"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "ProductLineOutputHistory"
+            ]
+          }
+        },
+        {
+          "id": "form-5",
+          "order": 5,
+          "name": "成品入库",
+          "predecessor": "form-4",
+          "successor": null,
+          "connectsTo": {
+            "stage": "closure",
+            "subprocess": "close-1"
+          },
+          "systems": [
+            "pda",
+            "db"
+          ],
+          "evidence": {
+            "pda-f": {
+              "fragment": [
+                "ChanChuPingRuKuNewFragment_A",
+                "ChanChuPingRuKuNewFragment_B",
+                "ChanChuPingRuKuNewFragment_C"
+              ]
+            },
+            "pda-b": {
+              "wcf": [
+                "CompliteProductInWarehouseOrder",
+                "CompliteProductInWarehouseOrderNew",
+                "AddProductLineSendWarehouseOrder",
+                "DoProductSendWarehouseOrderComplete",
+                "DoProductLineSendWarehouseOrderSendLot"
+              ]
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "ProductLineSendWarehouseOrder"
+            ]
+          }
+        },
+        {
+          "id": "form-6",
+          "order": 6,
+          "name": "批次拆分",
+          "predecessor": "form-1",
+          "successor": null,
+          "systems": [
+            "cs",
+            "bs",
+            "pda"
+          ],
+          "isAuxiliary": true,
+          "note": "产出过程中按需执行的辅助操作",
+          "evidence": {
+            "pda-f": {
+              "fragment": [
+                "FragmentSerial_SerialNumberSplit_A",
+                "FragmentSerial_SerialNumberSplit_B",
+                "Fragment_Stack_A",
+                "Fragment_Stack_B",
+                "Fragment_Stack_C"
+              ]
+            },
+            "cs": {
+              "form": "frmME_WIPLotSplit"
+            },
+            "bs": {
+              "bll": [
+                "CKZY_LotSplitBLL",
+                "MESZZZX_WIPLotSplitBLL"
+              ]
+            },
+            "pda-b": {
+              "wcf": "DoLotMove"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "SplitHistory",
+              "SplitHistoryDetails",
+              "SplitPartHistory"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "closure",
+      "order": 7,
+      "name": "结案",
+      "nameEn": "Case Closure",
+      "owner": "cs",
+      "color": "#4B5563",
+      "description": "BPR记录归档与工单结案清理",
+      "subprocesses": [
+        {
+          "id": "close-1",
+          "order": 1,
+          "name": "BPR记录",
+          "predecessor": null,
+          "connectsFrom": {
+            "stage": "formula",
+            "subprocess": "form-5"
+          },
+          "successor": "close-2",
+          "systems": [
+            "cs",
+            "bs"
+          ],
+          "evidence": {
+            "cs": {
+              "form": [
+                "frmME_BPRRecord",
+                "frmME_BPRRecordEdit"
+              ]
+            },
+            "bs": {
+              "bll": [
+                "MESZZZX_BPRRecordBLL",
+                "CKZY_BPRStartQueryBLL"
+              ],
+              "controller": "MESZZZX_BPRRecordController"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "BPRHistory",
+              "BPRTimeHistory",
+              "BPRWorkLog"
+            ]
+          }
+        },
+        {
+          "id": "close-2",
+          "order": 2,
+          "name": "结案清理",
+          "predecessor": "close-1",
+          "successor": null,
+          "systems": [
+            "cs"
+          ],
+          "isEndpoint": true,
+          "note": "⚠️ 结案确切定义待验证（关闭工单/关闭BPR/关闭批次）",
+          "evidence": {
+            "cs": {
+              "form": "frmME_CleanBPREnd"
+            }
+          },
+          "dataEntities": {
+            "tables": [
+              "BPRLockHistory"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "crossStageConnections": [
+    {
+      "from": {
+        "stage": "procurement",
+        "subprocess": "proc-3",
+        "name": "标签分发"
+      },
+      "to": {
+        "stage": "receiving",
+        "subprocess": "recv-1",
+        "name": "PDA扫码入库"
+      },
+      "label": "标签分发 → 扫码入库"
+    },
+    {
+      "from": {
+        "stage": "receiving",
+        "subprocess": "recv-3",
+        "name": "暂收入库"
+      },
+      "to": {
+        "stage": "quality",
+        "subprocess": "qual-1",
+        "name": "抽样标签"
+      },
+      "label": "入库完成 → 抽样标签"
+    },
+    {
+      "from": {
+        "stage": "quality",
+        "subprocess": "qual-4",
+        "name": "放行/滞留"
+      },
+      "to": {
+        "stage": "weighing",
+        "subprocess": "weigh-1",
+        "name": "投前称重确认"
+      },
+      "label": "放行通过 → 称料"
+    },
+    {
+      "from": {
+        "stage": "weighing",
+        "subprocess": "weigh-2",
+        "name": "称重测试"
+      },
+      "to": {
+        "stage": "loading",
+        "subprocess": "load-1",
+        "name": "工单领料"
+      },
+      "label": "称重确认 → 上料"
+    },
+    {
+      "from": {
+        "stage": "loading",
+        "subprocess": "load-2",
+        "name": "发料/上料"
+      },
+      "to": {
+        "stage": "weighing",
+        "subprocess": "weigh-3",
+        "name": "余料称重"
+      },
+      "label": "上料完成 → 余料退回称重",
+      "isFeedback": true
+    },
+    {
+      "from": {
+        "stage": "loading",
+        "subprocess": "load-2",
+        "name": "发料/上料"
+      },
+      "to": {
+        "stage": "formula",
+        "subprocess": "form-1",
+        "name": "工单启动"
+      },
+      "label": "上料完成 → 配置产出"
+    },
+    {
+      "from": {
+        "stage": "formula",
+        "subprocess": "form-1",
+        "name": "工单启动"
+      },
+      "to": {
+        "stage": "quality",
+        "subprocess": "qual-5",
+        "name": "IPQC在线检测"
+      },
+      "label": "工单启动 → IPQC开始",
+      "isParallel": true
+    },
+    {
+      "from": {
+        "stage": "formula",
+        "subprocess": "form-5",
+        "name": "成品入库"
+      },
+      "to": {
+        "stage": "closure",
+        "subprocess": "close-1",
+        "name": "BPR记录"
+      },
+      "label": "成品入库 → 结案"
+    }
+  ],
+  "idTracking": [
+    {
+      "id": "PurchaseOrderNM",
+      "name": "采购单号",
+      "scope": "采购→入库"
+    },
+    {
+      "id": "InWHOrderNM",
+      "name": "入库单号",
+      "scope": "入库→质检"
+    },
+    {
+      "id": "LotNM",
+      "name": "批次号",
+      "scope": "贯穿全部7阶段",
+      "isGlobal": true
+    },
+    {
+      "id": "MfgOrderNM",
+      "name": "工单号",
+      "scope": "上料→配置产出→结案"
+    },
+    {
+      "id": "BPRId",
+      "name": "BPR号",
+      "scope": "配置产出→结案"
+    },
+    {
+      "id": "ResourceNM",
+      "name": "资源号",
+      "scope": "上料/设备启动"
+    }
+  ]
+}
