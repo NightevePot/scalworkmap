@@ -455,21 +455,27 @@
 
   <div class="main" id="mainContent">
     <div class="section" id="overviewSection">
-      <div class="section-title"><span class="dot" style="background:#3b82f6"></span> 总览 · 8 阶段主链路 + 生产模型配置 + 结案并行输出</div>
+      <div class="section-title"><span class="dot" style="background:#3b82f6"></span> 总览 · 8 阶段主链路 + 生产模型配置 + 结案并行输出
+      </div>
       <div class="mermaid-box overview" id="overviewChart"></div>
       <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap">
-        <div style="flex:1;min-width:300px;background:#f0fdf4;border:2px dashed #22c55e;border-radius:10px;padding:14px 18px">
+        <div
+          style="flex:1;min-width:300px;background:#f0fdf4;border:2px dashed #22c55e;border-radius:10px;padding:14px 18px">
           <div style="font-weight:700;font-size:13px;color:#166534;margin-bottom:6px">📐 生产模型配置（基础参考数据，外侧引用）</div>
           <div style="display:flex;gap:10px;font-size:11px;color:#4b5563">
-            <span style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px"><b>BOM</b> 物料清单<br/><small>MESSCMX_BOM</small></span>
+            <a href="demo-bom.html" target="_blank" style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s" onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'" onmouseleave="this.style.boxShadow=''"><b>BOM</b>
+              物料清单<br /><small>MESSCMX_BOM</small></a>
             <span style="color:#22c55e;align-self:center">→</span>
-            <span style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px"><b>工艺维护</b> 工艺步骤/参数<br/><small>MESGYLC_Recipe</small></span>
+            <a href="demo-process-config.html" target="_blank" style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s" onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'" onmouseleave="this.style.boxShadow=''"><b>工艺维护</b>
+              工艺步骤/参数<br /><small>MESGYLC_Recipe</small></a>
             <span style="color:#22c55e;align-self:center">→</span>
-            <span style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px"><b>BPR配方</b> 批次配方定义<br/><small>MESGYLC_BPR</small></span>
+            <a href="demo-process-config.html" target="_blank" style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s" onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'" onmouseleave="this.style.boxShadow=''"><b>BPR配方</b>
+              批次配方定义<br /><small>MESGYLC_BPR</small></a>
           </div>
           <div style="font-size:10px;color:#6b7280;margin-top:6px">↓ BOM引用 ④领料 | ↓ 工艺引用 ⑤称料 | ↓ 配方引用 ⑥BPR作业</div>
         </div>
-        <div style="flex:1;min-width:300px;background:#fefce8;border:2px dashed #eab308;border-radius:10px;padding:14px 18px">
+        <div
+          style="flex:1;min-width:300px;background:#fefce8;border:2px dashed #eab308;border-radius:10px;padding:14px 18px">
           <div style="font-weight:700;font-size:13px;color:#854d0e;margin-bottom:6px">📤 结案阶段 · 并行输出</div>
           <div style="display:flex;gap:8px;font-size:11px;color:#4b5563;flex-wrap:wrap">
             <span style="background:#fff;border:1px solid #fde68a;border-radius:6px;padding:4px 8px">📊 BPR报表</span>
@@ -962,7 +968,13 @@
       '📱预称报表': 'demo-pre-weight.html',
       '📱质量追溯': 'demo-quality-trace.html',
       '📱工单': 'demo-work-order.html',
-      '📱数据链查询': 'demo-data-link.html'
+      '📱数据链查询': 'demo-data-link.html',
+      '📱BOM': 'demo-bom.html',
+      '📱工艺维护': 'demo-process-config.html',
+      '📱BPR配方': 'demo-process-config.html',
+      '📱BPR作业': 'demo-bpr-operation.html',
+      '📱BPR配制作业': 'demo-bpr-operation.html',
+      '📱审计追踪': 'demo-audit-trail.html'
     };
 
     function addDetailHotspots() {
@@ -1035,7 +1047,7 @@
         // 匹配 "①采购" 到 "⑧结案"
         const m = txt.match(/^([①②③④⑤⑥⑦⑧])/);
         if (!m) return;
-        const numMap = { '①':1,'②':2,'③':3,'④':4,'⑤':5,'⑥':6,'⑦':7,'⑧':8 };
+        const numMap = { '①': 1, '②': 2, '③': 3, '④': 4, '⑤': 5, '⑥': 6, '⑦': 7, '⑧': 8 };
         const n = numMap[m[1]];
         if (!n) return;
         const sid = stageIds[n - 1];

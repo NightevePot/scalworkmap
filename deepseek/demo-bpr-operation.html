@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>BPR作业 · 字段血缘演示</title>
+<style>:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9;--warn:#f59e0b}*{box-sizing:border-box;margin:0;padding:0}body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}.demo-main{flex:1;max-width:1050px}.bar{height:50px;display:flex;color:#fff;background:var(--green)}.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default}.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}.sub-arr{color:#94a3b8;font-size:10px}
+.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap}.toolbar label{font-size:12px;font-weight:600}.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}.btn-pri{background:var(--blue);color:#fff}.btn-warn{background:var(--warn);color:#fff}.btn-sec{background:#fff;color:#17232d;border:1px solid var(--line)}
+.content{padding:8px 10px}.dg{background:#fff;border:1px solid var(--line);margin-bottom:10px}.dg table{width:100%;border-collapse:collapse}.dg th{background:#f0f4f7;border-bottom:2px solid var(--line);padding:7px 8px;font-size:12px;text-align:left}.dg td{padding:6px 8px;border-bottom:1px solid #e8ecf0;font-size:12px;cursor:pointer}.dg td:hover{background:#e8f0fe}.step-group{margin-bottom:14px}.step-title{font-weight:700;font-size:13px;padding:8px 12px;background:#f0f4f7;border:1px solid var(--line);border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:center}.step-title .status-ok{color:var(--green)}.step-title .status-skip{color:var(--warn)}.step-body{border:1px solid var(--line);border-top:0}.step-row{display:flex;padding:6px 12px;border-bottom:1px solid #e8ecf0;align-items:center;gap:8px}.step-row:last-child{border-bottom:0}.step-label{font-weight:600;min-width:100px}.step-val{color:#94a3b8;min-width:80px}.step-act{min-width:60px;font-size:10px;padding:2px 6px;border-radius:3px;text-align:center}.act-auto{background:#d1fae5;color:#047857}.act-manual{background:#fef3c7;color:#92400e}.skip-row{background:#fffbf0}.skip-row .step-label{color:var(--warn)}
+.card{position:fixed;right:24px;bottom:24px;width:340px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;z-index:100;overflow:hidden}.card.show{display:block}.card-head{background:var(--soft);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;cursor:move}.card-head h3{font-size:13px;color:var(--blue)}.card-head small{font-size:10px;color:#94a3b8;display:block}.close-btn{border:none;background:none;font-size:18px;cursor:pointer;color:#94a3b8}.card-body{padding:12px 14px}.meta{margin-bottom:8px}.meta dt{font-size:10px;color:#94a3b8;text-transform:uppercase;margin-bottom:2px}.meta dd{font-size:12px;color:#17232d;word-break:break-all}.pth{display:flex;gap:4px;font-size:10px;color:var(--blue);margin-bottom:8px;flex-wrap:wrap}.pth span{background:#e8f0fe;padding:2px 6px;border-radius:3px}.ar{color:#94a3b8;background:none!important;padding:2px 0!important}
+.stats-panel{width:280px;flex-shrink:0;position:sticky;top:12px}.sh{font-weight:700;font-size:13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.badge{font-size:10px;background:var(--green);color:#fff;padding:2px 8px;border-radius:10px;font-weight:400}.stats-body{font-size:11px}.ss{margin-bottom:14px}.ss h4{font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase}.si{margin-bottom:3px;display:flex;align-items:center;gap:4px}.sn{font-weight:600;color:var(--blue);cursor:help}.st{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}.bll{background:#dbeafe;color:#1d4ed8}.tbl{background:#e0f2fe;color:#0369a1}.sp{background:#fef3c7;color:#92400e}.ctrl{background:#ede9fe;color:#6d28d9}.form{background:#fef3c7;color:#b45309}.stats-count-row{display:flex;gap:20px;margin-bottom:12px}.scn{font-size:18px;font-weight:700;color:var(--blue)}.scl{font-size:10px;color:#94a3b8}</style></head>
+<body>
+<div class="demo-main">
+<header class="bar"><div class="brand">ⓘ MES制造执行系统</div><nav class="nav"><span class="active">工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span></nav><div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| BPR作业 · 字段血缘演示</span></div></header>
+<div class="sub-tabs"><span class="sub-tab">工艺流程模块</span><span class="sub-arr">▸</span><span class="sub-tab">BPR</span><span class="sub-arr">▸</span><span class="sub-tab active">BPR作业</span></div>
+
+<div class="toolbar">
+<label>工单：</label><input data-k="sMfgOrderNM" value="MO-SO251206750-02" style="width:200px">
+<label>设备：</label><input data-k="sEquipmentNM" value="QDZY-1A004" style="width:140px">
+<label>WIP：</label><span style="font-weight:700">150</span>
+<label>批量：</label><span style="font-weight:700">1760 KG</span>
+<label>DateCode：</label><span style="font-weight:700">2629</span>
+<button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button>
+</div>
+
+<div class="content">
+<div class="step-group">
+<div class="step-title"><span>🔹 预配物</span><span class="status-ok">✓ 完成</span></div>
+<div class="step-body">
+<div class="step-row"><span class="step-label" data-k="step1_name">预配物-加料</span><span class="step-val" data-k="step1_std">标准 0.528 KG</span><span class="step-val">下限 0.5227</span><span class="step-val">上限 0.5333</span><span class="step-val" data-k="step1_actual">实际 0.528</span><span class="step-act act-auto">自动读取</span><span style="color:var(--green)">OK</span></div>
+<div class="step-row"><span class="step-label">预配物-搅拌</span><span class="step-val">标准 300s</span><span class="step-val">实际 300s</span><span class="step-act act-auto">自动读取</span><span style="color:var(--green)">OK</span></div>
+</div></div>
+
+<div class="step-group">
+<div class="step-title"><span>🔹 主配物</span><span class="status-skip">⚠ 含跳步</span></div>
+<div class="step-body">
+<div class="step-row"><span class="step-label" data-k="step2_name">主配物-加料</span><span class="step-val" data-k="step2_std">标准 0.528 KG</span><span class="step-val">实际 0.528</span><span class="step-act act-auto">自动读取</span><span style="color:var(--green)">OK</span></div>
+<div class="step-row"><span class="step-label">主配物-搅拌</span><span class="step-val">标准 600s</span><span class="step-val">实际 600s</span><span class="step-act act-auto">自动读取</span><span style="color:var(--green)">OK</span></div>
+<div class="step-row"><span class="step-label">主配物-循环</span><span class="step-val">标准 120s</span><span class="step-val">实际 120s</span><span class="step-act act-manual">人工输入</span><span style="color:var(--green)">OK</span></div>
+<div class="step-row skip-row"><span class="step-label" data-k="step_skip">主配物-均质</span><span class="step-val">标准 180s</span><span class="step-val">—</span><span class="step-act" style="background:#fee2e2;color:#dc2626">已跳步</span><span style="color:var(--warn)">SKIP</span></div>
+<div class="step-row"><span class="step-label">主配物-出料</span><span class="step-val">—</span><span class="step-val">实际 45s</span><span class="step-act act-manual">人工输入</span><span style="color:var(--green)">OK</span></div>
+<div class="step-row"><span class="step-label" data-k="step_confirm">主配物-确认</span><span class="step-val">—</span><span class="step-val">—</span><span class="step-act act-manual">电子签名</span><span style="color:var(--green)">OK</span></div>
+</div></div>
+
+<div class="step-group">
+<div class="step-title"><span>🔹 预配物三</span><span class="status-ok">✓ 完成</span></div>
+<div class="step-body">
+<div class="step-row"><span class="step-label">预配物三-补充</span><span class="step-val">标准 0</span><span class="step-val">实际 0</span><span class="step-act act-manual">人工输入</span><span style="color:var(--green)">OK</span></div>
+</div></div>
+
+<div style="padding:8px 0;display:flex;gap:10px">
+<button class="btn btn-warn" data-k="btnSkip">⚠ 跳步操作</button>
+<button class="btn btn-pri" data-k="btnNext">→ 下一步</button>
+<button class="btn btn-sec" data-k="btnComplete">✓ 完成BPR</button>
+</div>
+</div></div>
+
+<aside class="card" id="card"><div class="card-head"><div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div><button class="close-btn" onclick="cl()">×</button></div><div class="card-body"><div class="pth" id="pth"></div><dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl><dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl><dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl><dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl></div></aside>
+
+<div class="stats-panel"><div class="sh">📊 调用统计<span class="badge">BS·BPR作业 | tonBPRRecord</span></div><div class="stats-body">
+<div class="stats-count-row"><div><div class="scn">5</div><div class="scl">数据库表</div></div><div><div class="scn">2</div><div class="scl">BLL</div></div><div><div class="scn">1</div><div class="scl">CS窗体</div></div></div>
+<div class="ss"><h4>📊 数据库表</h4><div class="si"><span class="sn" title="MfgOrder">MfgOrder</span><span class="st tbl">工单</span></div><div class="si"><span class="sn" title="BPRHistory">BPRHistory</span><span class="st tbl">BPR历史</span></div><div class="si"><span class="sn" title="BPRTimeHistory">BPRTimeHistory</span><span class="st tbl">BPR时间历史</span></div><div class="si"><span class="sn" title="BPRWorkLog">BPRWorkLog</span><span class="st tbl">BPR工作日志</span></div><div class="si"><span class="sn" title="Recipe">Recipe</span><span class="st tbl">配方</span></div></div>
+<div class="ss"><h4>🧩 BLL</h4><div class="si"><span class="sn" title="MESGYLC_OperationBLL">MESGYLC_OperationBLL</span><span class="st bll">BPR作业</span></div><div class="si"><span class="sn" title="MESGYLC_RecipeBLL">MESGYLC_RecipeBLL</span><span class="st bll">操作指导</span></div></div>
+<div class="ss"><h4>🖥️ CS 桌面端</h4><div class="si"><span class="sn" title="tonBPRRecord">tonBPRRecord</span><span class="st form">BPR作业 CS窗体</span></div></div></div></div>
+
+<script>
+const map={
+sMfgOrderNM:['工单','MfgOrder.MfgOrderNM','nvarchar(50)','combogrid','查询',['MfgOrder']],
+sEquipmentNM:['设备','Equipment.EquipmentNM','nvarchar(50)','combogrid','查询',['Equipment']],
+step1_name:['步骤名称','Recipe.StepName','nvarchar(200)','List·工艺步骤','列表',['Recipe','ProcessSpecStep']],
+step1_std:['标准值','Recipe.StandardValue','decimal(18,4)','List','列表',['Recipe']],
+step1_actual:['实际值','BPRHistory.ActualValue','decimal(18,4)','List·自动读取/人工输入','列表',['BPRHistory']],
+step2_std:['标准值','Recipe.StandardValue','decimal(18,4)','List','列表',['Recipe']],
+step_skip:['跳步步骤','BPRWorkLog.SkipStep','nvarchar(200)','List·勾选是否跳步→电子签名→审计追踪','列表',['BPRWorkLog','ESignature']],
+step_confirm:['确认步骤','BPRHistory.ConfirmStatus','nvarchar(50)','List·电子签名双人复核','列表',['BPRHistory']],
+btnSkip:['⚠ 跳步操作','API:SkipStep→ESignature','—','勾选跳步→电子签名窗口→写入BPRWorkLog→审计追踪','操作',['BPRWorkLog','ESignature','AuditTrail']],
+btnNext:['→ 下一步','API:NextStep','—','执行下一工艺步骤','操作',['MESGYLC_OperationBLL']],
+btnComplete:['✓ 完成BPR','API:CompleteBPR','—','主配物状态→完成→写入BPRHistory','操作',['BPRHistory','MfgOrder']],
+btnQuery:['⌕ 查询','API:GetBPRDetail','—','工单→MESGYLC_OperationBLL→BPR步骤列表','查询',['MESGYLC_OperationBLL','Recipe']],
+};
+const card=document.getElementById('card');
+function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');card.classList.add('show')}function cl(){card.classList.remove('show')}
+document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));
+let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))+'px';card.style.top=Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))+'px'};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
+</script></body></html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>审计追踪 · 字段血缘演示</title>
+<style>:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9}*{box-sizing:border-box;margin:0;padding:0}body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}.demo-main{flex:1;max-width:1050px}.bar{height:50px;display:flex;color:#fff;background:var(--green)}.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default}.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}.sub-arr{color:#94a3b8;font-size:10px}
+.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center}.toolbar label{font-size:12px;font-weight:600}.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}.btn-pri{background:var(--blue);color:#fff}
+.content{padding:8px 10px}.dg{background:#fff;border:1px solid var(--line);margin-bottom:10px}.dg table{width:100%;border-collapse:collapse}.dg th{background:#f0f4f7;border-bottom:2px solid var(--line);padding:7px 8px;font-size:12px;text-align:left}.dg td{padding:6px 8px;border-bottom:1px solid #e8ecf0;font-size:12px;cursor:pointer}.dg td:hover{background:#e8f0fe}.log-type{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600}.log-skip{background:#fef3c7;color:#92400e}.log-restore{background:#e0f2fe;color:#0369a1}.log-close{background:#f3f4f6;color:#4b5563}.log-sign{background:#ede9fe;color:#6d28d9}
+.card{position:fixed;right:24px;bottom:24px;width:340px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;z-index:100;overflow:hidden}.card.show{display:block}.card-head{background:var(--soft);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;cursor:move}.card-head h3{font-size:13px;color:var(--blue)}.card-head small{font-size:10px;color:#94a3b8;display:block}.close-btn{border:none;background:none;font-size:18px;cursor:pointer;color:#94a3b8}.card-body{padding:12px 14px}.meta{margin-bottom:8px}.meta dt{font-size:10px;color:#94a3b8;text-transform:uppercase;margin-bottom:2px}.meta dd{font-size:12px;color:#17232d;word-break:break-all}.pth{display:flex;gap:4px;font-size:10px;color:var(--blue);margin-bottom:8px;flex-wrap:wrap}.pth span{background:#e8f0fe;padding:2px 6px;border-radius:3px}.ar{color:#94a3b8;background:none!important;padding:2px 0!important}
+.stats-panel{width:280px;flex-shrink:0;position:sticky;top:12px}.sh{font-weight:700;font-size:13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.badge{font-size:10px;background:var(--green);color:#fff;padding:2px 8px;border-radius:10px;font-weight:400}.stats-body{font-size:11px}.ss{margin-bottom:14px}.ss h4{font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase}.si{margin-bottom:3px;display:flex;align-items:center;gap:4px}.sn{font-weight:600;color:var(--blue);cursor:help}.st{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}.bll{background:#dbeafe;color:#1d4ed8}.tbl{background:#e0f2fe;color:#0369a1}.sp{background:#fef3c7;color:#92400e}.ctrl{background:#ede9fe;color:#6d28d9}.stats-count-row{display:flex;gap:20px;margin-bottom:12px}.scn{font-size:18px;font-weight:700;color:var(--blue)}.scl{font-size:10px;color:#94a3b8}</style></head>
+<body>
+<div class="demo-main">
+<header class="bar"><div class="brand">ⓘ MES制造执行系统</div><nav class="nav"><span>工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span></nav><div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| 审计追踪 · 字段血缘演示</span></div></header>
+<div class="sub-tabs"><span class="sub-tab">基本信息</span><span class="sub-arr">▸</span><span class="sub-tab active">审计追踪</span></div>
+
+<div class="toolbar">
+<label>工单：</label><input data-k="sMfgOrderNM" value="MO-SO251206750-02" style="width:200px">
+<label>操作类型：</label><select style="padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;height:28px"><option>全部</option><option>跳步</option><option>结案还原</option><option>电子签名</option></select>
+<button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button>
+</div>
+
+<div class="content">
+<div class="dg"><table>
+<thead><tr><th>时间</th><th>操作类型</th><th>操作描述</th><th>来源模块</th><th>操作人</th><th>工单</th></tr></thead>
+<tbody>
+<tr><td data-k="log_time1">2026-07-15 14:23:05</td><td><span class="log-type log-skip">跳步</span></td><td data-k="log_desc1">主配物-均质 跳步至 主配物-出料 · 原因：设备均质模块维护中</td><td data-k="log_module1">BPR作业</td><td>admin</td><td data-k="log_order1">MO-SO251206750-02</td></tr>
+<tr><td data-k="log_time2">2026-07-15 14:22:30</td><td><span class="log-type log-sign">电子签名</span></td><td>跳步确认 · 操作人：admin</td><td>BPR作业</td><td>admin</td><td>MO-SO251206750-02</td></tr>
+<tr><td data-k="log_time3">2026-07-15 11:45:12</td><td><span class="log-type log-close">结案</span></td><td>工单结案 · MOStatus更新为2 · 完成数量1760</td><td data-k="log_module3">工单管理</td><td>admin</td><td>MO-SO251206750-02</td></tr>
+<tr><td data-k="log_time4">2026-07-15 10:30:00</td><td><span class="log-type log-restore">结案还原</span></td><td data-k="log_desc4">工单反结案 · MOStatus从2还原 · 原因：需补充BPR数据</td><td>工单管理</td><td>admin</td><td>MO-SO251206750-02</td></tr>
+<tr><td data-k="log_time5">2026-07-15 09:15:00</td><td><span class="log-type log-sign">电子签名</span></td><td>称重确认 · 双人复核完成 · 称重流水号：005226290006002W001</td><td>原料称重</td><td>admin</td><td>MO-SO251206750-02</td></tr>
+</tbody>
+</table></div></div></div>
+
+<aside class="card" id="card"><div class="card-head"><div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div><button class="close-btn" onclick="cl()">×</button></div><div class="card-body"><div class="pth" id="pth"></div><dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl><dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl><dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl><dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl></div></aside>
+
+<div class="stats-panel"><div class="sh">📊 调用统计<span class="badge">BS·审计追踪 | AuditTrail</span></div><div class="stats-body">
+<div class="stats-count-row"><div><div class="scn">4</div><div class="scl">数据库表</div></div><div><div class="scn">2</div><div class="scl">BLL</div></div></div>
+<div class="ss"><h4>📊 数据库表</h4><div class="si"><span class="sn" title="BPRWorkLog">BPRWorkLog</span><span class="st tbl">BPR工作日志</span></div><div class="si"><span class="sn" title="BPRHistory">BPRHistory</span><span class="st tbl">BPR历史</span></div><div class="si"><span class="sn" title="MfgOrder">MfgOrder</span><span class="st tbl">工单</span></div><div class="si"><span class="sn" title="UndoWeighingHistory">UndoWeighingHistory</span><span class="st tbl">称重撤销历史</span></div></div>
+<div class="ss"><h4>🧩 BLL</h4><div class="si"><span class="sn" title="AuditTrail">AuditTrail</span><span class="st ctrl">审计追踪控制器</span></div><div class="si"><span class="sn" title="BillhiStoryQueryBLL">BillhiStoryQueryBLL</span><span class="st bll">单据历史查询</span></div></div></div></div>
+
+<script>
+const map={
+sMfgOrderNM:['工单','MfgOrder.MfgOrderNM','nvarchar(50)','combogrid','查询',['MfgOrder']],
+log_time1:['时间','BPRWorkLog.TxnDate','datetime','List','列表',['BPRWorkLog']],
+log_desc1:['操作描述','BPRWorkLog.Remark','nvarchar(500)','List·跳步原因记录','列表',['BPRWorkLog']],
+log_module1:['来源模块','BPRWorkLog.SourceModule','nvarchar(100)','List','列表',['BPRWorkLog']],
+log_order1:['工单','MfgOrder.MfgOrderNM','nvarchar(50)','List','列表',['MfgOrder']],
+log_time4:['时间','UndoWeighingHistory.TxnDate','datetime','List·结案还原记录','列表',['UndoWeighingHistory']],
+log_desc4:['操作描述','UndoWeighingHistory.Remark','nvarchar(500)','List·反结案原因','列表',['UndoWeighingHistory']],
+log_module3:['来源模块','MfgOrder.SourceModule','nvarchar(100)','List','列表',['MfgOrder']],
+btnQuery:['⌕ 查询','API:GetAuditTrail','—','工单→AuditTrail→BPRWorkLog+BillhiStoryQueryBLL→审计日志列表','查询',['AuditTrail','BPRWorkLog','BillhiStoryQueryBLL']],
+};
+const card=document.getElementById('card');
+function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');card.classList.add('show')}function cl(){card.classList.remove('show')}
+document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));
+let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))+'px';card.style.top=Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))+'px'};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
+</script></body></html>
