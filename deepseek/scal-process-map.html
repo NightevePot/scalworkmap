@@ -496,7 +496,7 @@
   <script>
     mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: { fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif', fontSize: '15px', primaryColor: '#eff6ff', primaryBorderColor: '#3b82f6', lineColor: '#94a3b8', tertiaryColor: '#f8fafc' }, flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', rankSpacing: 70, nodeSpacing: 40 } });
 
-    const overviewDef = `graph LR
+    const overviewDef = `flowchart LR
   P["<b>① 采购</b><br/>Procurement<br/><i>ERP·黑盒</i>"] == "条码申请<br/>→扫码入库" ==> R["<b>② 入库</b><br/>Receiving<br/><i>PDA主导</i>"]
   R == "暂收→抽样" ==> Q["<b>③ 质检</b><br/>Inspection<br/><i>BS主导</i>"]
   Q == "放行→领料" ==> L["<b>④ 领料/发料</b><br/>Dispatch<br/><i>PDA主导</i>"]
@@ -521,7 +521,7 @@
     <p style="margin-top:8px">SCAL 侧入口：CKZY_LotApplyBLL（采购单下拉） · BarCodeDefBll（条码定义）</p>
   </div>`,
 
-      receiving: `graph TB
+      receiving: `flowchart TB
     A["📥 标签分发"] --> B["📱PDA暂收<br/><small>扫采购单+物料标签</small><br/><small>生成暂收单 · 🔗demo</small>"]
     B --> D["暂收完成<br/><small>📤 主链路出口</small>"]
     B -.-> C["📱PDA扫码入库<br/><small>DoInWH·扫LotNM</small><br/><small>校验:已暂收+未入库 · 🔗demo</small>"]
@@ -536,7 +536,7 @@
     linkStyle 2 stroke-dasharray:5,stroke:#047857
     linkStyle 3 stroke-dasharray:5,stroke:#047857`,
 
-      quality: `graph TB
+      quality: `flowchart TB
     A["📥 从入库:抽样完成"] --> B["送检<br/><small>ZLKZ_SendBLL</small>"]
     B --> C["[WEB]检验结果输入<br/><small>MESZLKZ_InspectionBLL</small>"]
     C --> D["[WEB]质检结果判定<br/><small>MESZLKZ_FinalInspectionBLL</small>"]
@@ -563,7 +563,7 @@
     linkStyle 8 stroke:#f59e0b,stroke-width:1.5px
     linkStyle 9 stroke:#10b981,stroke-width:2px`,
 
-      loading: `graph TB
+      loading: `flowchart TB
     A["📥 从质检:放行"] --> B["📱工单领料<br/><small>PDA: GongDanLingLiaoFragment</small>"]
     B --> C["📱发料扫描<br/><small>DoDispatchLot</small>"]
     C --> D["📱领料确认<br/><small>DispatchConfirm</small>"]
@@ -576,53 +576,17 @@
     style E fill:#fecaca,stroke:#dc2626,color:#991b1b
     style F fill:#fee2e2,stroke:#dc2626,color:#991b1b`,
 
-      weighing: `graph TB
-    A["📥 从领料:发料完成<br/><small>DispatchHistory 已存在</small>"] --> B["🖥️原料称重<br/><small>CS: frmME_IssueMaterial_Weighting</small>"]
-    B --> C{"称重结果"}
-    C -->|"✅ 在允差内"| D["🖥️称重调试<br/><small>frmME_WeightingTest</small>"]
-    C -->|"❌ 超差"| E["异常处理<br/><small>调整/退回</small>"]
-    E --> B
-    D --> F["🖥️余料称重<br/><small>LotNM + W001</small>"]
-    F --> G["📤 → BPR作业阶段"]
-    style A fill:#fef3c7,stroke:#d97706,color:#92400e
-    style B fill:#fef3c7,stroke:#d97706,color:#92400e
-    style C fill:#fde68a,stroke:#d97706,color:#92400e
-    style D fill:#fef3c7,stroke:#d97706,color:#92400e
-    style E fill:#fef3c7,stroke:#d97706,color:#92400e
-    style F fill:#fef3c7,stroke:#d97706,color:#92400e
-    style G fill:#fef3c7,stroke:#d97706,color:#92400e
-    linkStyle 1 stroke:#10b981,stroke-width:2.5px
-    linkStyle 2 stroke:#ef4444,stroke-width:2.5px
-    linkStyle 3 stroke:#ef4444,stroke-width:2px`,
+      weighing: `flowchart TB
+    A["📥 发料完成<br/><small>PDA端: DispatchHistory已生成</small>"] --> B["🖥️原料称重<br/><small>frmME_IssueMaterial</small>"]
+    B --> C["⚖️ 称重确认<br/><small>允差判定→记录+打印标签</small>"]
+    C --> D["📤 称重结束<br/><small>进入BPR作业</small>"]`,
 
-      bpr: `graph TB
-    A["📥 从称料:称重确认"] --> B["🖥️BPR作业<br/><small>BS: BPR作业页面</small>"]
-    B --> C["预配物<br/><small>工艺步骤执行</small>"]
-    C --> D["主配物<br/><small>加料→搅拌→循环→均质→出料→确认</small>"]
-    D --> E{"是否跳步？"}
-    E -->|"是"| F["跳步确认<br/><small>电子签名→审计追踪</small>"]
-    E -->|"否"| G["继续执行"]
-    F --> G
-    G --> H["预配物三<br/><small>后续步骤</small>"]
-    H --> I["BPR完成<br/><small>主配物状态=完成</small>"]
-    I --> J["📤 → 产出阶段"]
-    style A fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style B fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style C fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style D fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style E fill:#c7d2fe,stroke:#6366f1,color:#3730a3
-    style F fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style G fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style H fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style I fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    style J fill:#e0e7ff,stroke:#6366f1,color:#3730a3
-    linkStyle 2 stroke:#10b981,stroke-width:2.5px
-    linkStyle 3 stroke:#ef4444,stroke-width:2.5px
-    linkStyle 4 stroke:#ef4444,stroke-width:2px
-    linkStyle 5 stroke:#10b981,stroke-width:2px`,
+      bpr: `flowchart TB
+    A["📥 称重结束"] --> B["🖥️BPR作业<br/><small>frmME_BPRRecord</small>"]
+    B --> C["📤 BPR完成<br/><small>进入产出阶段</small>"]`,
 
-      formula: `graph TB
-    A["📥 从BPR作业:配制完成"] --> B["📱工单启动<br/><small>PDA: StartMfgOrder</small>"]
+      formula: `flowchart TB
+    A["📥 从BPR作业:BPR完成"] --> B["📱工单启动<br/><small>PDA: StartMfgOrder</small>"]
     B --> C["🖥️设备启动<br/><small>CS: frmME_EquipmentStart</small>"]
     C --> D["操作指导<br/><small>MESGYLC_Recipe · 加载工艺配方</small>"]
     D --> E["🖥️配制产出<br/><small>CS: frmME_PZOutput</small>"]
@@ -644,24 +608,26 @@
     linkStyle 6 stroke:#ef4444,stroke-width:2.5px
     linkStyle 7 stroke:#ef4444,stroke-width:2px`,
 
-      closure: `graph TB
+      closure: `flowchart TB
     A["📥 从产出:成品入库"] --> B["结案前检查<br/><small>Pro_MfgOrder_Close_Check</small>"]
     B --> C{"检查结果"}
     C -->|"✅ 通过"| D["正常结案<br/><small>Pro_MfgOrder_Close</small>"]
-    C -->|"⚠️ 偏差≥5%"| E["强制结案确认"]
-    C -->|"❌ 阻断"| F["待处理<br/><small>线边未送库/退料未收/产线未关</small>"]
+    C -->|"❌ 不通过"| X{"不通过原因"}
+    X -->|"⚠️ 偏差≥5%<br/><small>可补救</small>"| E["强制结案确认"]
+    X -.->|"🚫 硬阻断<br/><small>线边未送库等</small>"| F["待处理<br/><small>线边未送库/退料未收/产线未关</small>"]
     E --> D
-    D --> G["MOStatus=2<br/><small>工单已结案</small>"]
-    G --> H["线边归档<br/><small>LotDeduction</small>"]
-    G --> I["ERP接口<br/><small>InterfaceBusiness</small>"]
     D -.->|"并行报表"| J["[WEB]BPR记录查询<br/><small>🔗demo</small>"]
     D -.->|"并行追溯"| K["[WEB]数据链查询<br/><small>🔗demo</small>"]
+    D --> G["MOStatus=2<br/><small>工单已结案</small>"]
     D -.->|"并行追溯"| L["[WEB]质量追溯<br/><small>🔗demo</small>"]
     D -.->|"并行报表"| M["[WEB]预称报表<br/><small>🔗demo</small>"]
     D -.->|"并行审计"| N["[WEB]审计追踪<br/><small>🔗demo</small>"]
+    G --> H["线边归档<br/><small>LotDeduction</small>"]
+    G --> I["ERP接口<br/><small>InterfaceBusiness</small>"]
     style A fill:#f3f4f6,stroke:#6b7280,color:#374151
     style B fill:#f3f4f6,stroke:#6b7280,color:#374151
     style C fill:#e5e7eb,stroke:#6b7280,color:#374151
+    style X fill:#e5e7eb,stroke:#6b7280,color:#374151
     style D fill:#f3f4f6,stroke:#6b7280,color:#374151
     style E fill:#fef3c7,stroke:#f59e0b,color:#92400e
     style F fill:#fee2e2,stroke:#dc2626,color:#991b1b
@@ -673,13 +639,12 @@
     style L fill:#d1fae5,stroke:#059669,color:#065f46
     style M fill:#d1fae5,stroke:#059669,color:#065f46
     style N fill:#d1fae5,stroke:#059669,color:#065f46
-    linkStyle 3 stroke:#10b981,stroke-width:2.5px
+    linkStyle 2 stroke:#10b981,stroke-width:2.5px
     linkStyle 4 stroke:#f59e0b,stroke-width:2.5px
-    linkStyle 5 stroke:#ef4444,stroke-width:2.5px
+    linkStyle 5 stroke:#ef4444,stroke-width:2px,stroke-dasharray:5
     linkStyle 6 stroke:#f59e0b,stroke-width:2px
-    linkStyle 7 stroke:#10b981,stroke-width:2.5px
-    linkStyle 8 stroke:#10b981,stroke-width:2px
-    linkStyle 9 stroke:#059669,stroke-width:1.5px,stroke-dasharray:5`,
+    linkStyle 9 stroke:#10b981,stroke-width:2.5px
+    linkStyle 13 stroke:#10b981,stroke-width:2px`,
     };
 
     const stageIds = ['procurement', 'receiving', 'quality', 'loading', 'weighing', 'bpr', 'formula', 'closure'];
@@ -700,7 +665,7 @@
     ];
     const connDefs = [
       // 0: 采购→入库
-      `graph TB
+      `flowchart TB
         A["🔒 ERP采购单<br/><small>外部ERP系统</small>"] --> B["<b>🌐 条码申请</b><br/><small>BS: CKZY_LotApplyBLL</small><br/><small>生成LotNM流水号</small>"]
         B --> C["🏷️ 标签打印<br/><small>BS: SendLabelQueryBLL</small><br/><small>ZDesigner打印·人工贴标→收货区</small>"]
         C --> D["PDA扫码入库<br/><small>扫描标签LotNM</small>"]
@@ -709,7 +674,7 @@
         style C fill:#fef3c7,stroke:#d97706
         style D fill:#d1fae5,stroke:#059669`,
       // 1: 入库→质检
-      `graph TB
+      `flowchart TB
         A["暂收完成<br/><small>暂收单已生成</small>"] --> B["抽样规则匹配<br/><small>物料类别+供应商判定</small>"]
         B --> C["[WEB]抽样标签<br/><small>生成SampleLot<br/>Pro_CreateSampleLot_New</small>"]
         C --> D["送检阶段入口<br/><small>ZLKZ_SendBLL</small>"]
@@ -718,41 +683,39 @@
         style C fill:#ede9fe,stroke:#7c3aed
         style D fill:#ede9fe,stroke:#7c3aed`,
       // 2: 质检→领料（交接：放行后批次可用）
-      `graph TB
+      `flowchart TB
         A["放行确认<br/><small>HoldStatus→放行</small>"] --> B["批次状态变更<br/><small>Lot.QCState→可投料</small>"]
         B --> C["PDA工单领料<br/><small>扫描流水号发料</small>"]
         style A fill:#ede9fe,stroke:#7c3aed
         style B fill:#fef3c7,stroke:#f59e0b
         style C fill:#fee2e2,stroke:#dc2626`,
-      // 3: 领料→称料（交接：发料记录→称重校验）
-      `graph TB
-        A["DispatchHistory 生成<br/><small>发料完成·数量>0</small>"] --> B["LotEstate = 10<br/><small>物料到达线边仓</small>"]
-        B --> C["称重SP校验<br/><small>DispatchHistory存在+量>0</small>"]
-        C --> D["投前称重<br/><small>frmME_IssueMaterial_Weighting</small>"]
+      // 3: 领料→称料（交接：DispatchHistory→称重就绪）
+      `flowchart TB
+        A["📤 DispatchHistory 生成<br/><small>领料阶段结束</small>"] --> B["🏭 LotEstate=10<br/><small>物料到达线边仓</small>"]
+        B --> C["📥 发料完成<br/><small>称料阶段开始</small>"]
         style A fill:#fee2e2,stroke:#dc2626
-        style B fill:#fef3c7,stroke:#f59e0b
-        style C fill:#fef3c7,stroke:#d97706
-        style D fill:#fef3c7,stroke:#d97706`,
+        style B fill:#fef3c7,stroke:#d97706
+        style C fill:#fef3c7,stroke:#d97706`,
       // 4: 称料→BPR作业（交接：称重完成→工艺配方关联）
-      `graph TB
+      `flowchart TB
         A["称重流水号 W001<br/><small>WeighingHistory.Status=1</small>"] --> B["关联工艺配方<br/><small>ProcessSpecStep→BPR配方行</small>"]
-        B --> C["BPR作业触发<br/><small>预配物·主配物·预配物三</small>"]
+        B --> C["📤 称重结束<br/><small>进入BPR作业</small>"]
         style A fill:#fef3c7,stroke:#d97706
         style B fill:#e0e7ff,stroke:#6366f1
         style C fill:#e0e7ff,stroke:#6366f1`,
       // 5: BPR作业→产出（交接：配制完成→工单启动）
-      `graph TB
-        A["BPR主配物完成<br/><small>各步骤OK/Skip</small>"] --> B["配制罐选择<br/><small>设备编号+配制罐号</small>"]
+      `flowchart TB
+        A["BPR完成<br/><small>currentStep==TotalStep-1</small>"] --> B["配制罐选择<br/><small>设备编号+配制罐号</small>"]
         B --> C["工单启动<br/><small>PDA: StartMfgOrder</small>"]
         C --> D["产出执行<br/><small>frmME_PZOutput</small>"]
-        A -->|"回环"| E["余料退回称重<br/><small>frmME_SurplusMaterial</small>"]
+        A -.->|"分支"| E["余料称重<br/><small>frmME_SurplusMaterial(调料)</small>"]
         style A fill:#e0e7ff,stroke:#6366f1
         style B fill:#cffafe,stroke:#0891b2
         style C fill:#cffafe,stroke:#0891b2
         style D fill:#cffafe,stroke:#0891b2
         style E fill:#fef3c7,stroke:#d97706`,
       // 6: 产出→结案（交接：成品入库→结案检查）
-      `graph TB
+      `flowchart TB
         A["成品入库完成<br/><small>CompliteProductInWarehouse</small>"] --> B["结案前检查<br/><small>Pro_MfgOrder_Close_Check</small>"]
         B --> C{"检查结果"}
         C -->|"通过"| D["结案关闭<br/><small>MOStatus=2</small>"]
@@ -800,7 +763,7 @@
       // 5: BPR作业→产出（交接：配制完成→工单产出）
       [
         { sys: '交接物', items: ['BPR完成状态（主配物=完成）', '配制罐编号'] },
-        { sys: '分支', items: ['正常路径：BPR完成→配制罐选择→工单启动→产出', '回环路径：余料退回称重（frmME_SurplusMaterial）'] },
+        { sys: '分支', items: ['正常路径：BPR完成→配制罐选择→工单启动→产出', '虚线分支：余料称重调料（frmME_SurplusMaterial）'] },
         { sys: '关键代码', form: ['frmME_PZOutput（配制产出）'], sp: ['Pro_PZOutput_Packing_New'] }
       ],
       // 6: 产出→结案（交接：成品入库→结案检查）
@@ -879,15 +842,15 @@
         }
       ],
       weighing: [
-        { sys: '桌面MES(CS) · 称重', form: ['frmME_IssueMaterial_Weighting（投前称重确认）', 'frmME_WeightingTest（称重测试）', 'frmME_SurplusMaterial（余料称重）'] },
-        { sys: 'Web MES(BS)', bll: ['CKZY_MaterialWeighingBLL（物料称重查询）', 'MESZZZX_SurplusMaterialBLL（余料称重）'] },
-        { sys: '数据库', tbl: ['WeightingEquipmentContentList', 'WeightingEquipmentHanderList', 'WeightingEquipmentValueView', 'WeighingHistory'] }
+        { sys: '桌面MES(CS) · 称重', form: ['frmME_IssueMaterial（原料称重主页）', 'frmME_IssueMaterial_Weighting（称重弹窗·ShowDialog）', 'frmME_WeightingTest（称重调试）', 'frmME_SurplusMaterial（余料称重）'] },
+        { sys: 'Web MES(BS)', bll: ['CKZY_MaterialWeighingBLL（物料称重查询）', 'MESZZZX_IssueMaterialDAL（发料称重数据）', 'MESZZZX_SurplusMaterialDAL（余料称重）'] },
+        { sys: '数据库', tbl: ['WeightingEquipmentContentList', 'WeightingEquipmentHanderList', 'WeightingEquipmentValueView', 'WeighingHistory', 'DispatchHistory'] }
       ],
       bpr: [
-        { sys: 'Web MES(BS) · BPR作业', bll: ['MESGYLC_OperationBLL（BPR作业·工艺步骤执行）', 'tonBPRRecord（BPR作业页面）', 'tonBPRRecordEdir（BPR作业修改）'] },
+        { sys: '桌面MES(CS) · BPR作业', form: ['frmME_BPRRecord（BPR作业·1588×918）'], bll: ['MESZZZX_BPRRecordBLL（BPR业务逻辑）', 'MESZZZX_BPRRecordDAL（BPR数据访问）', 'MESZZZX_IssueMaterialDAL（发料关联）'] },
         { sys: 'Web MES(BS) · BPR配方配置', bll: ['MESGYLC_BPR（BPR配方定义）', 'MESGYLC_BPRApprovel（BPR核准）'], tbl: ['BPRSize'] },
         { sys: '数据库', tbl: ['BPRHistory', 'BPRTimeHistory', 'BPRWorkLog', 'BPRLoadMaterial'], sp: ['Pro_Tran_Weighing_News（称重历史关联BPR）'] },
-        { sys: '衔接说明', items: ['BPR作业介于称重与产出之间：称重完成后进入BPR配制页面→按预配物/主配物/预配物三执行工艺步骤→支持跳步(审计追踪)→完成后进入产出阶段'] }
+        { sys: '衔接说明', items: ['BPR作业是步骤循环：启动→作业→采集→判定→下一步，支持预配物/主配物检查、跳步(电子签名+审计追踪)，完成所有步骤后进入产出'] }
       ],
       loading: [
         {

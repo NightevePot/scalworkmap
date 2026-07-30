@@ -1,750 +1,1218 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
   <meta charset="utf-8">
-  <title>BPR浣滀笟 路 CS瀹㈡埛绔?/title>
-    <style>
-      :root {
-        --hdr: #BCDCF4;
-        --grp: #5FA2D3;
-        --bg: #F0F0F0;
-        --w: #FFF;
-        --txt: #333;
-        --bdr: #C0C0C0;
-        --ghdr: #E8F0FE
-      }
+  <title>BPR作业 · CS客户端</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --hdr: #BCDCF4;
+      --grp: #5FA2D3;
+      --bg: #F0F0F0;
+      --w: #FFF;
+      --txt: #333;
+      --bdr: #C0C0C0;
+      --ghdr: #E8F0FE
+    }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-      body {
-        font: 9pt "Microsoft YaHei", "寰蒋闆呴粦", sans-serif;
-        background: #E8ECF0;
-        display: flex;
-        justify-content: center;
-        padding: 8px;
-        min-height: 100vh
-      }
+    body {
+      font: 9pt "Microsoft YaHei", "微软雅黑", sans-serif;
+      background: #E8ECF0;
+      display: flex;
+      justify-content: center;
+      padding: 8px;
+      min-height: 100vh
+    }
 
-      .win {
-        max-width: 1500px;
-        width: 100%;
-        background: var(--bg);
-        border: 1px solid #8492A0;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
-      }
+    .win {
+      max-width: 1500px;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid #8492A0;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
+    }
 
-      .topbar {
-        height: 82px;
-        background: var(--hdr);
-        border-bottom: 1px solid #9BBDE0;
-        display: flex;
-        align-items: center;
-        padding: 0 16px;
-        gap: 20px
-      }
+    .topbar {
+      height: 82px;
+      background: var(--hdr);
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 20px
+    }
 
-      .topbar .logo {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #1a3a5c
-      }
+    .topbar .logo {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #1a3a5c
+    }
 
-      .topbar .info {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        flex: 1;
-        font-size: 9pt
-      }
+    .topbar .info {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+      font-size: 9pt
+    }
 
-      .topbar .info .time {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #000
-      }
+    .topbar .info .time {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000
+    }
 
-      .topbar .user {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #000;
-        margin-left: auto
-      }
+    .topbar .user {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000;
+      margin-left: auto
+    }
 
-      .topbar .ver {
-        font-size: 9pt;
-        color: DimGray
-      }
+    .topbar .ver {
+      font-size: 9pt;
+      color: DimGray
+    }
 
-      .body {
-        display: flex;
-        height: calc(100vh - 100px);
-        min-height: 600px
-      }
+    .body {
+      display: flex;
+      height: calc(100vh - 100px);
+      min-height: 600px
+    }
 
-      .left {
-        width: 179px;
-        background: WhiteSmoke;
-        border-right: 1px solid var(--bdr);
-        overflow-y: auto;
-        flex-shrink: 0
-      }
+    .left {
+      width: 179px;
+      background: WhiteSmoke;
+      border-right: 1px solid var(--bdr);
+      overflow-y: auto;
+      flex-shrink: 0
+    }
 
-      .left .grp-title {
-        padding: 8px 10px;
-        font-weight: 700;
-        font-size: 9pt;
-        background: var(--grp);
-        color: #fff;
-        position: sticky;
-        top: 0;
-        z-index: 1
-      }
+    .left .grp-title {
+      padding: 8px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      background: var(--grp);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1
+    }
 
-      .left .tree-item {
-        padding: 4px 8px 4px 18px;
-        cursor: pointer;
-        font-size: 9pt;
-        color: var(--txt);
-        border-left: 3px solid transparent
-      }
+    .left .tree-item {
+      padding: 4px 8px 4px 18px;
+      cursor: pointer;
+      font-size: 9pt;
+      color: var(--txt);
+      border-left: 3px solid transparent
+    }
 
-      .left .tree-item:hover {
-        background: #E8F0FE
-      }
+    .left .tree-item:hover {
+      background: #E8F0FE
+    }
 
-      .left .tree-item.sel {
-        background: #DAE8F5;
-        border-left-color: #1a56b0;
-        font-weight: 700
-      }
+    .left .tree-item.sel {
+      background: #DAE8F5;
+      border-left-color: #1a56b0;
+      font-weight: 700
+    }
 
-      .right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden
-      }
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
 
-      .tabs {
-        display: flex;
-        background: var(--bg);
-        border-bottom: 1px solid var(--bdr)
-      }
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      border-bottom: 1px solid var(--bdr)
+    }
 
-      .tab {
-        padding: 6px 16px;
-        border-right: 1px solid var(--bdr);
-        cursor: pointer;
-        font-size: 9pt;
-        color: DimGray;
-        background: var(--bg)
-      }
+    .tab {
+      padding: 6px 16px;
+      border-right: 1px solid var(--bdr);
+      cursor: pointer;
+      font-size: 9pt;
+      color: DimGray;
+      background: var(--bg)
+    }
 
-      .tab.sel {
-        background: var(--w);
-        color: var(--txt);
-        font-weight: 700
-      }
+    .tab.sel {
+      background: var(--w);
+      color: var(--txt);
+      font-weight: 700
+    }
 
-      .content {
-        flex: 1;
-        overflow-y: auto;
-        background: var(--w)
-      }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--w)
+    }
 
-      .btn {
-        padding: 4px 16px;
-        border: 1px solid #C0C0C0;
-        border-radius: 3px;
-        background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
-        font: 9pt "寰蒋闆呴粦";
-        cursor: pointer;
-        height: 30px
-      }
+    .btn {
+      padding: 4px 16px;
+      border: 1px solid #C0C0C0;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
+      font: 9pt "微软雅黑";
+      cursor: pointer;
+      height: 30px
+    }
 
-      .btn:hover {
-        background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
-      }
+    .btn:hover {
+      background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
+    }
 
-      .btn.primary {
-        background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
-        border-color: #2D6AA0;
-        color: #fff
-      }
+    .btn.primary {
+      background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
+      border-color: #2D6AA0;
+      color: #fff
+    }
 
-      .grid-wrap {
-        overflow-x: auto
-      }
+    .sec-inactive {
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0);
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid var(--bdr);
+      height: 26px;
+      display: flex;
+      align-items: center
+    }
 
-      table.grid {
-        width: 100%;
-        border-collapse: collapse;
-        font: 9pt "寰蒋闆呴粦", "Microsoft YaHei", sans-serif
-      }
+    .blk {
+      margin: 4px 6px;
+      background: var(--w);
+      border: 1px solid #C8D0D8;
+      border-radius: 3px;
+      overflow: hidden
+    }
 
-      table.grid th {
-        background: var(--ghdr);
-        border: 1px solid #C0C0C0;
-        padding: 4px 6px;
-        font-weight: 600;
-        text-align: left;
-        font-size: 9pt
-      }
+    .blk-hd {
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid #C8D0D8;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0)
+    }
 
-      table.grid td {
-        border: 1px solid #E0E0E0;
-        padding: 3px 6px;
-        font-size: 9pt;
-        cursor: pointer
-      }
+    .blk-bd {
+      padding: 4px
+    }
 
-      table.grid tr:hover td {
-        background: #BCDCF4
-      }
+    .blk-bd .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 4px
+    }
 
-      .frow {
-        display: flex;
-        gap: 8px;
-        padding: 4px 10px;
-        flex-wrap: wrap;
-        align-items: center
-      }
+    .blk-bd .row:last-child {
+      margin-bottom: 0
+    }
 
-      .frow .fld {
-        display: flex;
-        align-items: center;
-        gap: 4px
-      }
+    .blk-bd label {
+      font: 9pt "微软雅黑";
+      white-space: nowrap
+    }
 
-      .frow .fld label {
-        font: 10pt "寰蒋闆呴粦";
-        white-space: nowrap
-      }
+    .blk-bd input,
+    .blk-bd select {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 2px 6px
+    }
 
-      .frow .fld .val {
-        padding: 2px 6px;
-        border: 1px solid var(--bdr);
-        border-radius: 2px;
-        background: #fff;
-        font: 10pt "寰蒋闆呴粦";
-        height: 29px;
-        display: flex;
-        align-items: center
-      }
+    .blk-bd .btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px
+    }
 
-      .frow .fld .val.ro {
-        background: #F5F5F5
-      }
+    .grid-wrap {
+      overflow-x: auto;
+      overflow-y: auto;
+      min-height: 80px;
+      max-height: 220px
+    }
 
-      .frow .fld .val.big {
-        font: 14pt "寰蒋闆呴粦";
-        font-weight: 700;
-        height: 38px
-      }
+    table.grid {
+      width: 100%;
+      border-collapse: collapse;
+      font: 9pt "宋体", SimSun, serif
+    }
 
-      .timer {
-        font: 20pt "瀹嬩綋", SimSun, serif;
-        color: #1a3a5c;
-        padding: 4px 12px;
-        background: #fff;
-        border: 1px solid #C0C0C0;
-        border-radius: 4px
-      }
+    table.grid th {
+      background: var(--ghdr);
+      border: 1px solid #C0C0C0;
+      padding: 3px 5px;
+      font-weight: 600;
+      text-align: left;
+      font-size: 8pt;
+      white-space: nowrap
+    }
 
-      .stats {
-        width: 280px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 8px;
-        font-size: 9pt;
-        margin-left: 8px
-      }
+    table.grid td {
+      border: 1px solid #E0E0E0;
+      padding: 2px 5px;
+      font-size: 8pt;
+      cursor: pointer
+    }
 
-      .stats .sh {
-        font-weight: 700;
-        font-size: 10pt;
-        margin-bottom: 6px
-      }
+    table.grid tr:hover td {
+      background: #BCDCF4
+    }
 
-      .stats .ss {
-        margin-bottom: 6px;
-        background: #fff;
-        border: 1px solid var(--bdr);
-        border-radius: 3px;
-        padding: 6px 8px
-      }
+    .frow {
+      display: flex;
+      gap: 6px;
+      padding: 3px 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
 
-      .stats .ss h4 {
-        font-size: 8pt;
-        color: DimGray;
-        margin-bottom: 3px
-      }
+    .stats {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 8px;
+      font-size: 9pt;
+      margin-left: 8px
+    }
 
-      .stats .tag {
-        font-size: 7pt;
-        padding: 1px 5px;
-        border-radius: 3px
-      }
+    .stats .sh {
+      font-weight: 700;
+      font-size: 10pt;
+      margin-bottom: 6px
+    }
 
-      .tag-tbl {
-        background: #E0F2FE;
-        color: #0369A1
-      }
+    .stats .ss {
+      margin-bottom: 6px;
+      background: #fff;
+      border: 1px solid var(--bdr);
+      border-radius: 3px;
+      padding: 6px 8px
+    }
 
-      .tag-form {
-        background: #FEF3C7;
-        color: #92400E
-      }
+    .stats .ss h4 {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 3px
+    }
 
-      .src-note {
-        font-size: 7pt;
-        color: #92400E;
-        background: #FEFCE8;
-        padding: 5px 7px;
-        border-radius: 3px
-      }
+    .stats .tag {
+      font-size: 7pt;
+      padding: 1px 5px;
+      border-radius: 3px
+    }
 
-      .card {
-        position: fixed;
-        right: 16px;
-        bottom: 16px;
-        width: 380px;
-        background: #fff;
-        border: 1px solid #8492A0;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
-        display: none;
-        z-index: 100;
-        font-size: 9pt
-      }
+    .tag-tbl {
+      background: #E0F2FE;
+      color: #0369A1
+    }
 
-      .card.show {
-        display: block
-      }
+    .tag-form {
+      background: #FEF3C7;
+      color: #92400E
+    }
 
-      .card-hd {
-        background: var(--hdr);
-        padding: 8px 12px;
-        border-bottom: 1px solid #9BBDE0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: move
-      }
+    .src-note {
+      font-size: 7pt;
+      color: #059669;
+      background: #f0fdf4;
+      padding: 5px 7px;
+      border-radius: 3px
+    }
 
-      .card-hd h3 {
-        font-size: 10pt;
-        color: #1a3a5c
-      }
+    /* 弹窗 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      z-index: 200;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px
+    }
 
-      .card-bd {
-        padding: 8px 10px
-      }
+    .modal-overlay.show {
+      display: flex
+    }
 
-      .card-bd dt {
-        font-size: 8pt;
-        color: DimGray;
-        margin-bottom: 1px
-      }
+    .modal {
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .3);
+      border-radius: 4px;
+      width: 520px;
+      max-width: 95vw;
+      font-size: 9pt
+    }
 
-      .card-bd dd {
-        font-size: 9pt;
-        color: var(--txt);
-        word-break: break-all;
-        margin-bottom: 3px
-      }
+    .modal-hd {
+      background: var(--hdr);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #9BBDE0
+    }
 
-      .path {
-        display: flex;
-        gap: 3px;
-        font-size: 8pt;
-        color: var(--grp);
-        margin-bottom: 5px;
-        flex-wrap: wrap
-      }
+    .modal-hd h3 {
+      font-size: 11pt;
+      color: #1a3a5c
+    }
 
-      .path span {
-        background: #E8F0FE;
-        padding: 1px 4px;
-        border-radius: 2px
-      }
+    .modal-bd {
+      padding: 12px 14px
+    }
 
-      .path .ar {
-        color: DimGray;
-        background: none
-      }
+    .modal-bd .fld {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px
+    }
 
-      .toast {
-        position: fixed;
-        top: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #333;
-        color: #fff;
-        padding: 8px 20px;
-        border-radius: 4px;
-        font-size: 10pt;
-        z-index: 300;
-        opacity: 0;
-        transition: opacity .3s;
-        pointer-events: none
-      }
+    .modal-bd .fld label {
+      width: 100px;
+      text-align: right;
+      font-size: 9pt;
+      white-space: nowrap
+    }
 
-      .toast.show {
-        opacity: 1
-      }
-    </style>
+    .modal-bd .fld input,
+    .modal-bd .fld select,
+    .modal-bd .fld textarea {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 3px 6px;
+      flex: 1
+    }
+
+    .modal-bd .fld textarea {
+      height: 60px;
+      resize: vertical
+    }
+
+    .modal-ft {
+      padding: 8px 14px;
+      border-top: 1px solid #E0E0E0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px
+    }
+
+    .toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-size: 10pt;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    .sel-row {
+      background: #BCDCF4 !important
+    }
+
+    .card {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 380px;
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+      display: none;
+      z-index: 100;
+      font-size: 9pt
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-hd {
+      background: var(--hdr);
+      padding: 8px 12px;
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-hd h3 {
+      font-size: 10pt;
+      color: #1a3a5c
+    }
+
+    .card-bd {
+      padding: 8px 10px
+    }
+
+    .card-bd dt {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 1px
+    }
+
+    .card-bd dd {
+      font-size: 9pt;
+      color: var(--txt);
+      word-break: break-all;
+      margin-bottom: 3px
+    }
+
+    .path {
+      display: flex;
+      gap: 3px;
+      font-size: 8pt;
+      color: var(--grp);
+      margin-bottom: 5px;
+      flex-wrap: wrap
+    }
+
+    .path span {
+      background: #E8F0FE;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .path .ar {
+      color: DimGray;
+      background: none
+    }
+  </style>
 </head>
 
 <body>
   <div style="display:flex;gap:8px">
     <div class="win">
       <div class="topbar">
-        <div class="logo">MES 鍒堕€犳墽琛岀郴缁?/div><div class="info"><span>馃搮 2026-07-29</span><span
-              class="time">14:30:00</span><span>鏄熸湡涓?/span><span>| 绯荤粺杩炴帴锛氭甯?/span></div><span
-            class="ver">褰撳墠鐗堟湰锛?.0.5.74</span><span class="user">馃懁 瓒呯骇绠＄悊鍛?/span></div>
-        <div class="body">
-          <div class="left">
-            <div class="grp-title">涓诲鑸?/div><div class="tree-item">鏃?/div><div class="grp-title">鐢熶骇鎵ц</div>
-                <div class="tree-item">宸ュ崟鍚姩</div>
-                <div class="tree-item">宸ュ崟</div>
-                <div class="tree-item">鍘熸枡绉伴噸</div>
-                <div class="tree-item">鍘熸枡绉伴噸澶嶆牳</div>
-                <div class="tree-item">浣欐枡绉伴噸</div>
-                <div class="tree-item">绉伴噸璋冭瘯</div>
-                <div class="tree-item">澶╁钩璋冭瘯</div>
-                <div class="tree-item sel">BPR浣滀笟</div>
-                <div class="tree-item">BPR浣滀笟淇敼</div>
-                <div class="tree-item">閰嶅埗缃愭竻娲楀惎鍔?/div><div class="tree-item">棰勯厤缃愭竻娲楀惎鍔?/div><div class="tree-item">
-                      鍌ㄧ綈娓呮礂鍚姩</div>
-                    <div class="tree-item">閰嶅埗鍚庢竻娲?/div><div class="tree-item">涓嶉攬閽㈡竻娲楁秷姣?/div><div class="tree-item">
-                          璁惧娓呮礂娑堟瘨</div>
-                        <div class="tree-item">閰嶅埗浜у嚭</div>
-                        <div class="tree-item">鍗婃垚鍝佷骇鍑?/div><div class="tree-item">閰嶅埗缃愯緭鍑?/div><div class="tree-item">
-                              鍌ㄧ綈杈撳叆</div>
-                            <div class="tree-item">鍌ㄧ綈杈撳嚭</div>
-                            <div class="tree-item">鎶ュ簾鍗?/div><div class="tree-item">缃愯閫€鏂?/div><div class="tree-item">
-                                  鍐呮爤鏉垮寘瑁?/div><div class="tree-item">鎴愬搧鍖呰</div>
-                                  <div class="tree-item">杩斿伐璁板綍琛?/div><div class="tree-item">鎵瑰彿閲嶅嵃</div>
-                                    <div class="tree-item">閰嶅埗浜у嚭TK缁戝畾</div>
-                                    <div class="tree-item">鐢熶骇绾垮垎鎵?/div><div class="tree-item">涓績绾胯緭鍏?/div><div
-                                          class="tree-item">閰嶅埗璁惧妫€鏌ヨ褰?/div><div class="tree-item">
-                                            閰嶅埗鍖哄煙鐢熶骇鍓嶆竻鍦鸿褰?/div><div class="tree-item">鐢熶骇鍓嶇敓浜х嚎娓呭満妫€鏌ヨ〃</div>
-                                            <div class="tree-item">鍦ㄧ嚎浜у搧瑁呯閲嶉噺妫€鏌ヨ〃</div>
-                                            <div class="tree-item">璁惧鍋滄満璁板綍</div>
-                                            <div class="tree-item">鐢熶骇瀹炵哗褰曞叆</div>
-                                          </div>
-                                          <div class="right">
-                                            <div class="tabs">
-                                              <div class="tab">棣栭〉</div>
-                                              <div class="tab sel">BPR浣滀笟</div>
-                                            </div>
-                                            <div class="content">
+        <div class="logo">MES 制造执行系统</div>
+        <div class="info"><span>📅 2026-07-29</span><span class="time">14:30:00</span><span>星期三</span><span>|
+            系统连接：正常</span></div><span class="ver">当前版本：3.0.5.74</span><span class="user">👤 超级管理员</span>
+      </div>
+      <div class="body">
+        <div class="left">
+          <div class="grp-title">主导航</div>
+          <div class="tree-item">无</div>
+          <div class="grp-title">生产执行</div>
+          <div class="tree-item">工单启动</div>
+          <div class="tree-item">工单</div>
+          <div class="tree-item">原料称重</div>
+          <div class="tree-item">原料称重复核</div>
+          <div class="tree-item">余料称重</div>
+          <div class="tree-item">称重调试</div>
+          <div class="tree-item">天平调试</div>
+          <div class="tree-item">BPR作业</div>
+          <div class="tree-item">BPR作业修改</div>
+          <div class="tree-item">配制罐清洗启动</div>
+          <div class="tree-item">预配罐清洗启动</div>
+          <div class="tree-item">储罐清洗启动</div>
+          <div class="tree-item">配制后清洗</div>
+          <div class="tree-item">不锈钢清洗消毒</div>
+          <div class="tree-item">设备清洗消毒</div>
+          <div class="tree-item">配制产出</div>
+          <div class="tree-item">半成品产出</div>
+          <div class="tree-item">配制罐输出</div>
+          <div class="tree-item">储罐输入</div>
+          <div class="tree-item">储罐输出</div>
+          <div class="tree-item sel">BPR作业</div>
+          <div class="tree-item">罐装退料</div>
+          <div class="tree-item">内栈板包装</div>
+          <div class="tree-item">成品包装</div>
+          <div class="tree-item">返工记录表</div>
+          <div class="tree-item">批号重印</div>
+          <div class="tree-item">配制产出TK绑定</div>
+          <div class="tree-item">生产线分批</div>
+          <div class="tree-item">中心线输入</div>
+          <div class="tree-item">配制设备检查记录</div>
+          <div class="tree-item">配制区域生产前清场记录</div>
+          <div class="tree-item">生产前生产线清场检查表</div>
+          <div class="tree-item">在线产品装箱重量检查表</div>
+          <div class="tree-item">设备停机记录</div>
+          <div class="tree-item">生产实绩录入</div>
+        </div>
+        <div class="right">
+          <div class="tabs">
+            <div class="tab">首页</div>
+            <div class="tab sel">BPR作业</div>
+          </div>
+          <div class="content">
 
-                                              <div
-                                                style="padding:4px 10px;background:var(--bg);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                                                <label style="font:10pt '寰蒋闆呴粦'">宸ュ崟鍙凤細</label><input
-                                                  data-k="sMfgOrderNM" value="MO-SO251206750-02"
-                                                  style="width:200px;height:28px;font:9pt '寰蒋闆呴粦';border:1px solid #C0C0C0"
-                                                  placeholder="ComboGrid">
-                                                <label style="font:10pt '寰蒋闆呴粦'">鐢电锛?/label><select
-                                                    data-k="sRefrigerator" style="width:160px;height:28px">
-                                                    <option>BX-01</option>
-                                                  </select>
-                                                  <button class="btn primary" data-k="btnQuery">鏌ヨ</button><button
-                                                    class="btn" data-k="btnStartNoProcess">鏃犻渶宸ヨ壓鍚姩</button><button
-                                                    class="btn" data-k="btnProcessSwitch">宸ヨ壓鍒囨崲</button>
-                                              </div>
+            <!-- ═══════ frmME_BPRRecord · BPR作业 1588×918 ═══════ -->
 
-                                              <div style="display:flex">
-                                                <div style="flex:1">
-                                                  <div style="font:10pt '寰蒋闆呴粦';font-weight:600;padding:2px 10px">
-                                                    宸ュ崟鍒楄〃锛?/div><div class="grid-wrap" style="max-height:90px">
-                                                      <table class="grid">
-                                                        <thead>
-                                                          <tr>
-                                                            <th>#</th>
-                                                            <th>WIP</th>
-                                                            <th>MOQty</th>
-                                                            <th>鎻忚堪</th>
-                                                            <th>浜у搧鍚嶇О</th>
-                                                            <th>MFGBatch</th>
-                                                            <th>DateCode</th>
-                                                          </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                          <tr>
-                                                            <td>1</td>
-                                                            <td data-k="moWIP">150</td>
-                                                            <td data-k="moQty">1760</td>
-                                                            <td>娲楀彂姘?/td>
-                                                            <td data-k="moProductNM">绀轰緥娲楀彂姘?/td>
-                                                            <td data-k="moBatch">2630</td>
-                                                            <td data-k="moDateCode">2629</td>
-                                                          </tr>
-                                                        </tbody>
-                                                      </table>
-                                                    </div>
-                                                  </div>
-                                                  <div style="flex:1">
-                                                    <div style="font:10pt '寰蒋闆呴粦';font-weight:600;padding:2px 10px">
-                                                      瑙勬牸鏄庣粏锛?/div><div class="grid-wrap" style="max-height:90px">
-                                                        <table class="grid">
-                                                          <thead>
-                                                            <tr>
-                                                              <th>#</th>
-                                                              <th>椤规</th>
-                                                              <th>PSDNM</th>
-                                                              <th>鎻忚堪</th>
-                                                              <th>鏂规硶</th>
-                                                              <th>鏍囧噯</th>
-                                                              <th>缁撴灉</th>
-                                                            </tr>
-                                                          </thead>
-                                                          <tbody>
-                                                            <tr>
-                                                              <td>1</td>
-                                                              <td data-k="specItem">1</td>
-                                                              <td data-k="specPSDNM">棰勯厤鐗?/td>
-                                                              <td>鍔犳枡姝ラ</td>
-                                                              <td>鑷姩</td>
-                                                              <td>0.528</td>
-                                                              <td>OK</td>
-                                                            </tr>
-                                                          </tbody>
-                                                        </table>
-                                                      </div>
-                                                    </div>
-                                                  </div>
+            <!-- panel1: 顶部工具栏 1567×50 -->
+            <div class="blk"
+              style="border:1px solid #C0C0C0;border-radius:4px;margin:6px 6px 2px 6px;background:#FAFBFC">
+              <div class="blk-bd" style="padding:6px 8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <label style="font:9pt '微软雅黑';color:red">*</label>
+                <label style="font:9pt '微软雅黑'">工单：</label>
+                <input data-k="SearchArea_MfgOrderNM" value="MO-SO251206750-02"
+                  style="width:200px;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px"
+                  title="ComboGrid控件">
+                <label style="font:9pt '微软雅黑';margin-left:8px">工艺版本：</label>
+                <span data-k="lblGYVersion" style="font:9pt '微软雅黑';color:#1a3a5c">01.01</span>
+                <button class="btn" data-k="SearchArea_Query" style="font:9pt '微软雅黑';width:60px;height:28px">查询</button>
+                <span style="flex:1"></span>
+                <label style="font:9pt '微软雅黑'">设备名：</label>
+                <select data-k="cboDevice" style="width:126px;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0">
+                  <option>QDZY-10007</option>
+                  <option>QDZY-10006</option>
+                </select>
+                <button class="btn" data-k="btnProcessSwitch"
+                  style="font:9pt '微软雅黑';width:138px;height:35px">工艺设备切换</button>
+                <button class="btn primary" data-k="btnStartNoProcess"
+                  style="font:9pt '微软雅黑';width:138px;height:35px">无工艺启动</button>
+              </div>
+            </div>
 
-                                                  <div style="font:10pt '寰蒋闆呴粦';font-weight:600;padding:2px 10px">
-                                                    宸ヨ壓姝ラ鏄庣粏锛?/div><div class="grid-wrap" style="max-height:130px">
-                                                      <table class="grid">
-                                                        <thead>
-                                                          <tr>
-                                                            <th>#</th>
-                                                            <th>椤规</th>
-                                                            <th>姝ラ鍚?/th>
-                                                            <th>浜у搧</th>
-                                                            <th>鎻忚堪</th>
-                                                            <th>鍊?/th>
-                                                            <th>缁撴灉</th>
-                                                            <th>鏍囧噯鍊?/th>
-                                                            <th>鍗曚綅</th>
-                                                            <th>涓婇檺</th>
-                                                            <th>涓嬮檺</th>
-                                                            <th>鍙烦姝?/th>
-                                                            <th>閲囬泦鏂瑰紡</th>
-                                                            <th>璁惧鍚?/th>
-                                                            <th>璁惧鐘舵€?/th>
-                                                            <th>宸ヤ綔鐘舵€?/th>
-                                                          </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                          <tr>
-                                                            <td>1</td>
-                                                            <td data-k="stItem">1</td>
-                                                            <td data-k="stStepNM">棰勯厤鐗?鍔犳枡</td>
-                                                            <td>2969341</td>
-                                                            <td>鍔犳枡</td>
-                                                            <td data-k="stValue">0.528</td>
-                                                            <td>OK</td>
-                                                            <td data-k="stStdValue">0.528</td>
-                                                            <td>KG</td>
-                                                            <td data-k="stMax">0.5333</td>
-                                                            <td data-k="stMin">0.5227</td>
-                                                            <td>鏄?/td>
-                                                            <td>OPC</td>
-                                                            <td>绉伴噸鍙?1</td>
-                                                            <td>灏辩华</td>
-                                                            <td>杩涜涓?/td>
-                                                          </tr>
-                                                        </tbody>
-                                                      </table>
-                                                    </div>
+            <!-- BPRRecord_MfgorderListPanel 1567×197: 上下两行 -->
+            <!-- 源码: MfgOrderDetailList在上(3,3,1241×64), label3"明细项目："在(5,70), SpecDetailList在下(2,96,1242×95) -->
+            <div class="blk" style="border:1px solid #C0C0C0;margin:2px 6px;background:#FAFBFC">
+              <div class="blk-bd" style="padding:0">
+                <!-- 上半: 工单列表 MfgOrderDetailList -->
+                <div class="grid-wrap" style="max-height:70px">
+                  <table class="grid">
+                    <thead>
+                      <tr>
+                        <th>WIP</th>
+                        <th>工单数量</th>
+                        <th>规格描述</th>
+                        <th>物料编号</th>
+                        <th>生产批号</th>
+                        <th>LabelDefld</th>
+                        <th>DataCode</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-k="MOD_WIP">—</td>
+                        <td data-k="MOD_MOQty">50.00</td>
+                        <td data-k="MOD_Description">25kg/桶</td>
+                        <td data-k="MOD_ProductNM">2969344</td>
+                        <td data-k="MOD_MFGBatch">B20260729-001</td>
+                        <td data-k="MOD_LableDefId">LBL-001</td>
+                        <td data-k="MOD_DateCode">20260729</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- 标题行: 源码 label3.Text="明细项目：" at (5,70) -->
+                <div style="padding:2px 8px;font:11pt '微软雅黑';font-weight:700;border-top:1px solid #E0E0E0">明细项目：</div>
+                <!-- 下半: 规格明细 SpecDetailList -->
+                <div class="grid-wrap" style="max-height:100px">
+                  <table class="grid">
+                    <thead>
+                      <tr>
+                        <th>项次</th>
+                        <th>项目名称</th>
+                        <th>规格描述</th>
+                        <th>检验方法</th>
+                        <th>内控标准</th>
+                        <th>结果</th>
+                        <th>ProcessSpecId</th>
+                        <th>Info</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-k="SDL_Item">1</td>
+                        <td data-k="SDL_PSDNM">外观检查</td>
+                        <td data-k="SDL_Description">无异物</td>
+                        <td data-k="SDL_Method">目视</td>
+                        <td data-k="SDL_Standard">澄清透明</td>
+                        <td data-k="SDL_Result">合格</td>
+                        <td data-k="SDL_ProcessSpecId">PS-001</td>
+                        <td data-k="SDL_Info">—</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
 
-                                                    <div style="padding:4px 10px;border-top:2px solid #9BBDE0">
-                                                      <div class="frow">
-                                                        <div class="fld"><label>褰撳墠姝ラ锛?/label><div class="val ro"
-                                                              style="width:180px" data-k="opCurStep">10</div>
-                                                        </div>
-                                                        <div class="fld"><label>鎬绘楠ゆ暟锛?/label><div class="val ro"
-                                                              style="width:180px" data-k="opTotalStep">60</div>
-                                                        </div>
-                                                        <div class="fld"><label>褰撳墠椤规锛?/label><div class="val ro"
-                                                              style="width:180px" data-k="opCurItem">1</div>
-                                                        </div>
-                                                        <div class="fld"><label>瑙勬牸鎻忚堪锛?/label><div class="val ro"
-                                                              style="width:180px;min-height:29px" data-k="opDesc">
-                                                              棰勯厤鐗╁姞鏂?/div></div>
-                                                        </div>
-                                                        <div class="frow">
-                                                          <div class="fld"><label>鏍囧噯鍊硷細</label>
-                                                            <div class="val ro" style="width:180px" data-k="opStd">0.528
-                                                            </div>
-                                                          </div>
-                                                          <div class="fld"><label>涓婇檺锛?/label><div class="val ro"
-                                                                style="width:180px" data-k="opMax">0.5333</div>
-                                                          </div>
-                                                          <div class="fld"><label>涓嬮檺锛?/label><div class="val ro"
-                                                                style="width:180px" data-k="opMin">0.5227</div>
-                                                          </div>
-                                                          <div class="fld"><label>鍗曚綅锛?/label><div class="val ro"
-                                                                style="width:180px" data-k="opUOM">KG</div>
-                                                          </div>
-                                                        </div>
-                                                        <div class="frow">
-                                                          <div class="fld"><label>鏈鍔犳枡閲嶉噺锛?/label><div
-                                                                class="val ro big" style="width:180px"
-                                                                data-k="opBBWeight">0.528</div>
-                                                          </div>
-                                                          <div class="fld"><label>鏁版嵁閲囬泦锛?/label><div class="val ro"
-                                                                style="width:180px" data-k="opDataCollectNM">OPC-Weight
-                                                              </div>
-                                                          </div>
-                                                          <div class="fld"><label>缁撴灉锛?/label><div class="val ro"
-                                                                style="width:180px" data-k="opResult">OK</div>
-                                                          </div>
-                                                          <div class="fld"><label>璁惧鍚嶏細</label>
-                                                            <div class="val ro" style="width:180px" data-k="opEquipNM">
-                                                              绉伴噸鍙?1</div>
-                                                          </div>
-                                                        </div>
-                                                        <div class="frow">
-                                                          <div class="fld"><label><input type="checkbox"
-                                                                data-k="opSkip"> 璺虫</label></div>
-                                                          <div class="fld"><label><input type="checkbox"
-                                                                data-k="opIsAniseed"> 澶ф枡</label></div><span
-                                                            class="timer" data-k="opTimer">00:05:30</span>
-                                                        </div>
-                                                        <div class="frow" style="gap:6px;margin-top:4px"><button
-                                                            class="btn primary"
-                                                            style="font:10pt '寰蒋闆呴粦';width:122px;height:47px"
-                                                            data-k="btnStart">寮€濮?/button><button class="btn primary"
-                                                              style="font:10pt '寰蒋闆呴粦';width:122px;height:47px"
-                                                              data-k="btnStartWorking">寮€濮嬩綔涓?/button><button
-                                                                class="btn"
-                                                                style="font:10pt '寰蒋闆呴粦';width:122px;height:47px"
-                                                                data-k="btnNextStep">涓嬩竴姝?/button><button class="btn"
-                                                                  style="font:10pt '寰蒋闆呴粦';width:122px;height:47px"
-                                                                  data-k="btnClearValue">娓呯┖</button><button class="btn"
-                                                                  style="font:10pt '寰蒋闆呴粦';width:122px;height:47px"
-                                                                  data-k="btnTransmission">淇敼璁惧鍚?/button></div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                              <div class="stats">
-                                                <div class="sh">&#x1F4CA; 璋冪敤缁熻<span class="tag tag-form"
-                                                    style="margin-left:4px">CS&#xB7;BPR浣滀笟</span></div>
-                                                <div style="display:flex;gap:8px;margin-bottom:6px">
-                                                  <div
-                                                    style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                                    <div style="font-weight:700;font-size:12pt;color:#1a3a5c">4</div>
-                                                    <div style="font-size:7pt;color:DimGray">鏁版嵁搴撹〃</div>
-                                                  </div>
-                                                  <div
-                                                    style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                                    <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
-                                                    <div style="font-size:7pt;color:DimGray">瀛樺偍杩囩▼</div>
-                                                  </div>
-                                                  <div
-                                                    style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                                    <div style="font-weight:700;font-size:12pt;color:#1a3a5c">1</div>
-                                                    <div style="font-size:7pt;color:DimGray">DAL绫?/div></div>
-                                                  </div>
-                                                  <div class="ss">
-                                                    <h4><span
-                                                        style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
-                                                      鏁版嵁搴撹〃</h4>
-                                                    <div style="font-size:8pt;line-height:1.7">
-                                                      <div><span
-                                                          style="font-family:Consolas,monospace;color:#1a3a5c">BPRLoadMaterial</span>
-                                                        <span class="tag tag-tbl">BPR閰嶆柟</span></div>
-                                                      <div><span
-                                                          style="font-family:Consolas,monospace;color:#1a3a5c">BPRRecord</span>
-                                                        <span class="tag tag-tbl">BPR璁板綍</span></div>
-                                                      <div><span
-                                                          style="font-family:Consolas,monospace;color:#1a3a5c">Product</span>
-                                                        <span class="tag tag-tbl">鐗╂枡</span></div>
-                                                      <div><span
-                                                          style="font-family:Consolas,monospace;color:#1a3a5c">MfgOrder</span>
-                                                        <span class="tag tag-tbl">宸ュ崟</span></div>
-                                                    </div>
-                                                  </div>
-                                                  <div class="ss">
-                                                    <h4><span
-                                                        style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
-                                                      瀛樺偍杩囩▼</h4>
-                                                    <div style="font-size:8pt;color:#888;padding:2px 4px">閫氳繃
-                                                      DAL&#x2192;WebAPI 鐩存帴鎿嶄綔锛屾湭浣跨敤鐙珛瀛樺偍杩囩▼</div>
-                                                  </div>
-                                                  <div class="ss">
-                                                    <h4><span
-                                                        style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
-                                                      鏁版嵁璁块棶灞?(DAL)</h4>
-                                                    <div style="font-size:8pt;line-height:1.7">
-                                                      <div><span
-                                                          style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_BPRRecordDAL</span>
-                                                        <span class="tag tag-bll">BPR浣滀笟</span></div>
-                                                      <div style="margin-left:10px;color:#888;font-size:7pt">
-                                                        GetBPRRecord / SaveBPRRecord / GetStepDetail</div>
-                                                    </div>
-                                                  </div>
-                                                  <div class="ss">
-                                                    <h4><span
-                                                        style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
-                                                      绐椾綋</h4>
-                                                    <div style="font-size:8pt;line-height:1.7">
-                                                      <div><span
-                                                          style="font-family:Consolas,monospace;color:#1a3a5c">frmME_BPRRecord</span>
-                                                        <span class="tag tag-form">BPR浣滀笟涓婚〉</span></div>
-                                                    </div>
-                                                  </div>
-                                                  <div class="src-note"><b>&#x2705; 婧愮爜楠岃瘉锛?/b>
-                                                      frmME_BPRRecord.Designer.cs<br>DataGridView&#xD7;3&#xB7;鎸夐挳10F&#xB7;璁℃椂鍣ㄥ畫浣?0F
-                                                  </div>
-                                                </div>
-                                              </div>
-                                              <aside class="card" id="card">
-                                                <div class="card-hd">
-                                                  <div><small>FIELD DATA LINEAGE</small>
-                                                    <h3 id="title"></h3>
-                                                  </div><button onclick="cl()"
-                                                    style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">鉁?/button>
-                                                </div>
-                                                <div class="card-bd">
-                                                  <div class="path" id="pth"></div>
-                                                  <dl>
-                                                    <dt>瀛楁鍚?/dt>
-                                                    <dd id="label"></dd>
-                                                  </dl>
-                                                  <dl>
-                                                    <dt>鏁版嵁鏉ユ簮</dt>
-                                                    <dd id="source"></dd>
-                                                  </dl>
-                                                  <dl>
-                                                    <dt>鎺т欢绫诲瀷</dt>
-                                                    <dd id="type"></dd>
-                                                  </dl>
-                                                  <dl>
-                                                    <dt>璋冪敤閾捐矾</dt>
-                                                    <dd id="formula"></dd>
-                                                  </dl>
-                                                </div>
-                                              </aside>
-                                              <script>
-                                                const map = {
-                                                  sMfgOrderNM: ['宸ュ崟鍙?,'SearchArea_MfgOrderNM','ComboGrid',['frmME_BPRRecord']],sRefrigerator:['鐢电','RefrigeratorId','ComboGrid',['frmME_BPRRecord']],moWIP:['WIP','MfgOrderDetailList路WIP','DataGridView',['BPRRecord_MfgOrderDetailList']],moQty:['MOQty','MfgOrderDetailList路MOQty','DataGridView',['BPRRecord_MfgOrderDetailList']],moProductNM:['浜у搧','MfgOrderDetailList路ProductNM','DataGridView',['BPRRecord_MfgOrderDetailList']],moBatch:['MFGBatch','MfgOrderDetailList路MFGBatch','DataGridView',['BPRRecord_MfgOrderDetailList']],moDateCode:['DateCode','MfgOrderDetailList路DateCode','DataGridView',['BPRRecord_MfgOrderDetailList']],specItem:['椤规','SpecDetailList路Item','DataGridView',['BPRRecord_SpecDetailList']],specPSDNM:['PSDNM','SpecDetailList路PSDNM','DataGridView',['BPRRecord_SpecDetailList']],stItem:['椤规','StepDetailList路Item','DataGridView',['BPRRecord_StepDetailList']],stStepNM:['姝ラ鍚 ?, 'StepDetailList路StepNM', 'DataGridView', ['BPRRecord_StepDetailList']], stValue: ['鍊?,'StepDetailList路Value','DataGridView',['BPRRecord_StepDetailList']],stStdValue:['鏍囧噯鍊 ?, 'StepDetailList路StandardValue', 'DataGridView', ['BPRRecord_StepDetailList']], stMax: ['涓婇檺', 'StepDetailList路MaxValue', 'DataGridView', ['BPRRecord_StepDetailList']], stMin: ['涓嬮檺', 'StepDetailList路MinValue', 'DataGridView', ['BPRRecord_StepDetailList']], opCurStep: ['褰撳墠姝ラ', 'txtCurrentStep', 'TextBox 10F', ['txtCurrentStep']], opTotalStep: ['鎬绘楠ゆ暟', 'txtTotalStep', 'TextBox 10F', ['txtTotalStep']], opCurItem: ['褰撳墠椤规', 'txtCurrentItem', 'TextBox 10F', ['txtCurrentItem']], opDesc: ['瑙勬牸鎻忚堪', 'txtDescription', 'TextBox 9F', ['txtDescription']], opStd: ['鏍囧噯鍊?,'txtStandardValue','TextBox 10F',['txtStandardValue']],opMax:['涓婇檺','txtMaxValue','TextBox 10F',['txtMaxValue']],opMin:['涓嬮檺','txtMinValue','TextBox 10F',['txtMinValue']],opUOM:['鍗曚綅','txtUomNM','TextBox 10F',['txtUomNM']],opBBWeight:['鏈鍔犳枡閲嶉噺','tbBBWeight','TextBox 14F Bold',['tbBBWeight']],opDataCollectNM:['鏁版嵁閲囬泦','txtDataCollectNM','TextBox 10F',['txtDataCollectNM']],opResult:['缁撴灉','txtResult','TextBox 10F',['txtResult']],opEquipNM:['璁惧鍚 ?, 'TextArea_EquipmentNM', 'TextBox 10F', ['TextArea_EquipmentNM']], opTimer: ['璁℃椂鍣?,'txtTimeShow','Label路瀹嬩綋20F',['txtTimeShow']],opSkip:['璺虫','CheckBox_Skip','CheckBox',['CheckBox_Skip']],opIsAniseed:['澶ф枡','cbIsAniseed','CheckBox',['cbIsAniseed']],btnQuery:['鏌ヨ','SearchArea_Query_Click','Button',['frmME_BPRRecord']],btnStartNoProcess:['鏃犻渶宸ヨ壓鍚姩','btnStartNoProcess_Click','Button',['frmME_BPRRecord']],btnProcessSwitch:['宸ヨ壓鍒囨崲','btnProcessSwitch_Click','Button',['frmME_BPRRecord']],btnStart:['寮€濮 ?, 'TextArea_Start_Click', 'Button 10F路122脳47', ['frmME_BPRRecord']], btnStartWorking: ['寮€濮嬩綔涓?,'TextArea_BtnStartWorking_Click','Button 10F路122脳47',['frmME_BPRRecord']],btnNextStep:['涓嬩竴姝 ?, 'TextArea_BtnNextStep_Click', 'Button 10F路122脳47', ['frmME_BPRRecord']], btnClearValue: ['娓呯┖', 'ClearValueText_Click', 'Button 10F路122脳47', ['frmME_BPRRecord']], btnTransmission: ['淇敼璁惧鍚?,'btnTransmission_Click','Button 10F路122脳47',['frmME_BPRRecord']]};
-const card = document.getElementById('card'); function show(k){ const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show')}function cl() { card.classList.remove('show') }
-                                                document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) })); var drag = null, hd = card.querySelector('.card-hd'); hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = function () { drag = null }; document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
-                                              </script>
-                                              <div class="toast" id="toast"></div>
+            <!-- BPRRecord_ProcessStepPanel: 工艺步骤明细 大表 -->
+            <div class="blk" style="border:1px solid #C0C0C0;margin:4px 6px;background:#FAFBFC">
+              <div class="blk-hd" style="background:#E8F0FE">工艺步骤明细 <span
+                  style="font-size:8pt;color:#888">BPRRecord_StepDetailList · 19列</span></div>
+              <div class="blk-bd" style="padding:0">
+                <div class="grid-wrap" style="max-height:180px">
+                  <table class="grid">
+                    <thead>
+                      <tr>
+                        <th>步骤</th>
+                        <th>项次</th>
+                        <th>步骤名称</th>
+                        <th>物料编号</th>
+                        <th>规格描述</th>
+                        <th>值</th>
+                        <th>结果</th>
+                        <th>标准值</th>
+                        <th>单位</th>
+                        <th>最大值</th>
+                        <th>最小值</th>
+                        <th>可跳过</th>
+                        <th>数据采集项</th>
+                        <th>读值方式</th>
+                        <th>设备名称</th>
+                        <th>启动按钮</th>
+                        <th>开始作业</th>
+                        <th>开始作业时间</th>
+                        <th>下一步</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-k="SDL_SN">1</td>
+                        <td data-k="SDL_StepItem">1</td>
+                        <td data-k="SDL_StepNM">投料步骤</td>
+                        <td data-k="SDL_StepProductNM">2969344</td>
+                        <td data-k="SDL_StepDescription">投入原料A</td>
+                        <td data-k="SDL_Value">50.15</td>
+                        <td data-k="SDL_StepResult">合格</td>
+                        <td data-k="SDL_StandardValue">50.00</td>
+                        <td data-k="SDL_UOMNM">kg</td>
+                        <td data-k="SDL_MaxValue">50.50</td>
+                        <td data-k="SDL_MinValue">49.50</td>
+                        <td data-k="SDL_IsSkipable">否</td>
+                        <td data-k="SDL_DataCollectNM">重量采集</td>
+                        <td data-k="SDL_DataMethod">OPC</td>
+                        <td data-k="SDL_AddEquipmentNM">QDZY-10007</td>
+                        <td data-k="SDL_AddEquipmentStatus">已启动</td>
+                        <td data-k="SDL_AddWorkStatus">作业中</td>
+                        <td data-k="SDL_AddStartWorkTime">14:30</td>
+                        <td data-k="SDL_AddNextStepStatus">—</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- TextPanel: 步骤操作区 1567×482 — 绝对定位四列布局 -->
+            <div class="blk"
+              style="border:1px solid #C0C0C0;border-radius:4px;margin:4px 6px 6px 6px;background:#FAFBFC">
+              <div class="blk-hd" style="background:linear-gradient(180deg,#F0F0F0,#D0D0D0)">- 步骤操作 <span
+                  style="font-weight:400;color:#888;font-size:8pt">TextPanel 1567×482</span></div>
+              <div class="blk-bd" style="padding:8px;display:flex;gap:0;position:relative;min-height:420px">
+
+                <!-- 第1列: 步骤参数 (x≈6~180) -->
+                <div
+                  style="flex:0 0 290px;display:grid;grid-template-columns:95px 180px;gap:4px 8px;align-items:start;font:9pt '微软雅黑'">
+                  <label style="padding-top:4px">当前步骤:</label><input data-k="txtCurrentStep" value="1" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">当前项次:</label><input data-k="txtCurrentItem" value="1" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">标准值:</label><input data-k="txtStandardValue" value="50.00" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">上限:</label><input data-k="txtMaxValue" value="50.50" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">下限:</label><input data-k="txtMinValue" value="49.50" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">单位:</label><input data-k="txtUomNM" value="kg" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                </div>
+
+                <!-- 第2列: 数据采集/规格 (x≈299~385) -->
+                <div
+                  style="flex:0 0 290px;display:grid;grid-template-columns:105px 180px;gap:4px 8px;align-items:start;font:9pt '微软雅黑'">
+                  <label style="padding-top:4px">数据采集名:</label><input data-k="txtDataCollectNM" value="重量采集" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">总步骤数:</label><input data-k="txtTotalStep" value="5" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">规格描述:</label><textarea data-k="txtDescription" readonly
+                    style="height:140px;font:9pt '微软雅黑';border:1px solid #C0C0C0;padding:4px;background:#FFFFE0;resize:none">投入原料A</textarea>
+                </div>
+
+                <!-- 第3列: 设备/重量/结果 (x≈575~729) -->
+                <div
+                  style="flex:0 0 310px;display:grid;grid-template-columns:130px 180px;gap:4px 8px;align-items:start;font:9pt '微软雅黑'">
+                  <label style="padding-top:4px;color:red">* 设备名:</label><input data-k="TextArea_EquipmentNM"
+                    value="QDZY-10007" style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px"
+                    title="KeyDown事件, ImeMode=Disable">
+                  <label style="padding-top:4px;color:red">* 值:</label><input data-k="TextArea_Value" value="50.15"
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;font-weight:bold;color:green"
+                    title="手输/OPC自动采集">
+                  <label style="padding-top:4px;color:red">* 结果:</label><input data-k="txtResult" value="合格" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">罐称重量:</label><input data-k="txtWeight" value="50.15" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0"
+                    title="ReadOnly, 有TextChanged+KeyPress事件">
+                  <label style="padding-top:6px">本步加料重量:</label><input data-k="tbBBWeight" value="0.00" readonly
+                    style="height:38px;font:14pt '微软雅黑';font-weight:bold;border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                  <label style="padding-top:4px">当前步骤开始时间:</label><input data-k="txtStartTime"
+                    value="2026-07-29 14:30:00" readonly
+                    style="height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px;background:#FFFFE0">
+                </div>
+
+                <!-- 第4列: 计时器 + 验证 + 按钮 -->
+                <div style="flex:0 0 310px;display:flex;flex-direction:column;gap:4px">
+                  <div style="display:flex;gap:8px;align-items:center;height:20px">
+                    <span data-k="EquipmentLabel" style="font:9pt;color:red;display:none;cursor:pointer"
+                      title="设备验证通过时Show(). 源码: EquipmentLabel.Show() when Add_EquipmentNM不为空">设备已验证</span>
+                    <span data-k="ValueLabel" style="font:9pt;color:red;display:none;cursor:pointer"
+                      title="值验证通过时Show(). 源码: ValueLabel.Show() / Hide()">值验证通过</span>
+                    <span data-k="lblzdTime" style="font:9pt;color:#888;display:none;cursor:pointer"
+                      title="记录时间差. 源码: Visible=false→true, 显示分:秒:毫秒">记录时间差</span>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+                    <span data-k="txtTimeShow" style="font:20pt '宋体';cursor:pointer" title="计时显示 宋体20pt">00:00:00</span>
+                    <span data-k="txtTimer" style="font:20pt '宋体';color:red;cursor:pointer"
+                      title="计时器(红色) 宋体20pt">00:00:00</span>
+                  </div>
+                  <label style="color:red;font:9pt;margin-top:4px"><input type="checkbox" data-k="cbIsAniseed">
+                    大料</label>
+                  <span style="color:red;font:9pt">(未预称原料)</span>
+                  <label style="font:9pt;margin-top:4px"><input type="checkbox" data-k="CheckBox_Skip"> 是否跳步</label>
+                  <!-- 按钮组: 启动/开始作业/下一步 -->
+                  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">
+                    <button class="btn primary" data-k="TextArea_Start"
+                      style="width:122px;height:47px;font:10pt '微软雅黑'">启动</button>
+                    <button class="btn primary" data-k="TextArea_BtnStartWorking"
+                      style="width:122px;height:47px;font:10pt '微软雅黑'">开始作业</button>
+                    <button class="btn" data-k="TextArea_BtnNextStep"
+                      style="width:122px;height:47px;font:10pt '微软雅黑'">下一步</button>
+                  </div>
+                  <!-- 按钮组: 清空/修改设备名 -->
+                  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">
+                    <button class="btn" data-k="ClearValueText"
+                      style="width:122px;height:47px;font:10pt '微软雅黑'">清空</button>
+                    <button class="btn" data-k="btnTransmission"
+                      style="width:122px;height:47px;font:10pt '微软雅黑'">修改设备名</button>
+                  </div>
+                </div>
+              </div>
+              <!-- 电箱 + 大文本框 底部行 -->
+              <div style="display:flex;gap:8px;padding:4px 8px;border-top:1px solid #E0E0E0">
+                <label style="font:10pt '微软雅黑';color:red">*</label>
+                <label style="font:10pt '微软雅黑'">电箱:</label>
+                <input data-k="RefrigeratorId" value="BOX-001"
+                  style="width:180px;height:29px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:0 4px"
+                  title="ComboGrid控件">
+                <span style="flex:1"></span>
+                <textarea data-k="txtValueBox" readonly
+                  style="width:314px;height:150px;font:10pt '微软雅黑';border:1px solid #C0C0C0;padding:4px;background:#FFFFE0;resize:none"
+                  title="Multiline, ReadOnly, ScrollBars=Both. 显示OPC采集日志"></textarea>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sh">&#x1F4CA; 调用统计<span class="tag tag-form" style="margin-left:4px">BPR作业 frmME_BPRRecord</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">3</div>
+          <div style="font-size:7pt;color:DimGray">DataGridView</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
+          <div style="font-size:7pt;color:DimGray">存储过程</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">3</div>
+          <div style="font-size:7pt;color:DimGray">DAL/BLL</div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
+          数据库表</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">ScrapOrderHead</span> <span
+              class="tag tag-tbl">工艺步骤明细 19列</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">ScrapOrderList</span> <span
+              class="tag tag-tbl">规格详情 8列</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">MfgOrder</span> <span
+              class="tag tag-tbl">工单</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">ProductLine</span> <span
+              class="tag tag-tbl">产线</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">Lot</span> <span class="tag tag-tbl">批次</span>
+          </div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
+          存储过程</h4>
+        <div style="font-size:8pt;color:#888;padding:2px 4px">通过 DAL&#x2192;WebAPI 直接操作，未使用独立存储过程</div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
+          数据访问层 (DAL)</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_BPRRecordBLL</span> <span
+              class="tag tag-bll">BPR业务逻辑</span></div>
+          <div style="margin-left:10px;color:#888;font-size:7pt">bprBLL → BPR业务逻辑层</div>
+          <div style="margin-top:2px"><span
+              style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_BPRRecordDAL</span> <span
+              class="tag tag-bll">BPR数据访问</span></div>
+          <div style="margin-left:10px;color:#888;font-size:7pt">BPRDAL → BPR数据操作</div>
+          <div style="margin-top:2px"><span
+              style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_IssueMaterialDAL</span> <span
+              class="tag tag-bll">发料数据</span></div>
+          <div style="margin-left:10px;color:#888;font-size:7pt">IMDAL → 发料称重关联数据</div>
+          <div style="margin-top:2px"><span style="font-family:Consolas,monospace;color:#1a3a5c"></div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
+          窗体</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">frmME_BPRRecord</span> <span
+              class="tag tag-form">BPR作业 1588×918</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c"></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c"></div>
+          <div style="margin-top:2px"><span style="font-family:Consolas,monospace;color:#1a3a5c">├─ 启动→开始作业→下一步
+              (OPC采集+计时)
+              <br>├─ 工艺设备切换 / 无工艺启动</div>
+        </div>
+      </div>
+      <div class="src-note"><b>&#x2705; 源码验证：</b> frmME_BPRRecord.cs / .Designer.cs<br>1588×918 · 3 DataGridView(34列) ·
+        TextArea_Start/StartWorking/NextStep<br>DAL: BPRRecordBLL · BPRRecordDAL · IssueMaterialDAL</div>
+      <div class="ss" style="margin-top:8px">
+        <h4>📋 BPR 步骤流程 <span style="font-size:7pt;color:#888;cursor:pointer" onclick="openFlowModal()" title="点击放大">🔍
+            点击放大</span></h4>
+        <div class="mermaid" id="bprFlowSmall" style="font-size:7pt;line-height:1.4;cursor:pointer"
+          onclick="openFlowModal()" title="点击放大查看完整流程">flowchart TB
+          A["称重确认"] --> B["选择工单<br /><small>SearchArea_MfgOrderNM</small>"]
+          B --> C["加载步骤+明细<br /><small>StepDetailList</small>"]
+          C --> D["🔁 步骤循环<br /><small>currentStep 0→Total-1</small>"]
+          D --> E["🚀 启动<br /><small>设备验证</small>"]
+          E --> F["▶ 开始作业<br /><small>计时开始</small>"]
+          F --> G["📡 数据采集<br /><small>OPC/手动</small>"]
+          G --> H{"值判定"}
+          H -->|"✅"| I["下一步"]
+          H -->|"❌"| J["异常处理"]
+          J --> G
+          I --> K{"预配物?"}
+          K -->|"是"| L["预配设备验证"]
+          K -->|"否"| M{"主配物?"}
+          M -->|"是"| N["设备切换检查"]
+          M -->|"否"| O["→"]
+          L --> O
+          N --> O
+          O --> P{"可跳步?"}
+          P -->|"是"| Q["电子签名<br />审计追踪"]
+          P -->|"否"| R["currentStep++"]
+          Q --> R
+          R --> S{"最后一步?"}
+          S -->|"否"| D
+          S -->|"是"| T["✅ BPR完成"]
+          T --> U["→ 产出阶段"]
+          style A fill:#fef3c7,stroke:#d97706
+          style T fill:#a5b4fc,stroke:#6366f1
+          style U fill:#cffafe,stroke:#0891b2
+          style D fill:#e0e7ff,stroke:#6366f1
+          linkStyle 12 stroke:#ef4444,stroke-width:1.5px
+          linkStyle 21 stroke:#10b981,stroke-width:2px
+          linkStyle 22 stroke:#10b981,stroke-width:2px
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ═══════ Flow Modal ═══════ -->
+  <div class="modal-overlay" id="flowModal" onclick="closeFlowModal(event)">
+    <div class="modal" style="width:95vw;max-width:1400px;background:#fff" onclick="event.stopPropagation()">
+      <div class="modal-hd">
+        <h3>📋 BPR 步骤流程 — 完整视图</h3>
+        <div style="display:flex;gap:4px;align-items:center">
+          <button onclick="zoomFlow(-0.2)"
+            style="border:1px solid #C0C0C0;background:#fff;width:28px;height:28px;border-radius:3px;cursor:pointer;font-size:14px;line-height:1"
+            title="缩小">−</button>
+          <span id="zoomLevel" style="font-size:9pt;min-width:36px;text-align:center">100%</span>
+          <button onclick="zoomFlow(0.2)"
+            style="border:1px solid #C0C0C0;background:#fff;width:28px;height:28px;border-radius:3px;cursor:pointer;font-size:14px;line-height:1"
+            title="放大">+</button>
+          <button onclick="resetZoom()"
+            style="border:1px solid #C0C0C0;background:#fff;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:9pt"
+            title="重置">重置</button>
+          <button onclick="closeFlowModal()"
+            style="border:none;background:none;font-size:20px;cursor:pointer;color:DimGray;margin-left:8px">✕</button>
+        </div>
+      </div>
+      <div class="modal-bd"
+        style="padding:8px;overflow:hidden;background:#f8f9fa;min-height:300px;display:flex;justify-content:center;align-items:flex-start">
+        <div id="bprFlowLarge"
+          style="transform-origin:top center;transition:transform .1s;display:flex;justify-content:center"></div>
+      </div>
+    </div>
+  </div>
+  <!-- ═══════ Toast ═══════ -->
+  <div class="toast" id="toast"></div>
+  <aside class="card" id="card">
+    <div class="card-hd">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title"></h3>
+      </div><button onclick="cl()"
+        style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">✕</button>
+    </div>
+    <div class="card-bd">
+      <div class="path" id="pth"></div>
+      <dl>
+        <dt>字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl>
+        <dt>数据来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl>
+        <dt>控件类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl>
+        <dt>调用链路</dt>
+        <dd id="formula"></dd>
+      </dl>
+      <dl>
+        <dt>备注</dt>
+        <dd id="note" style="color:#059669"></dd>
+      </dl>
+    </div>
+  </aside>
+  <script>
+    // ═══════ 字段血缘 Map ═══════
+    const map = {
+      SearchArea_MfgOrderNM: ['工单号', 'MfgOrder.MfgOrderNM', 'ComboGrid', ['SearchArea_Query→BindMfgOrderNM']],
+      lblGYVersion: ['工艺版本', 'BPR.ProcessSpecVersion', 'Label', ['查询工单→工艺版本']],
+      cboDevice: ['设备名', 'Config.ini', 'ComboBox', ['frmME_BPRRecord_Load→设备列表']],
+      SearchArea_Query: ['查询按钮', 'Button.Click', 'Button', ['SearchArea_Query_Click']],
+      btnProcessSwitch: ['工艺设备切换', 'Button.Click', 'Button 138×35', ['btnProcessSwitch_Click']],
+      btnStartNoProcess: ['无工艺启动', 'Button.Click', 'Button 138×35', ['btnStartNoProcess_Click']],
+      MOD_WIP: ['WIP', 'MfgOrder.WIP', 'DGV', ['MfgOrderDetailList']],
+      MOD_MOQty: ['工单数量', 'MfgOrder.MOQty', 'DGV', ['MfgOrderDetailList']],
+      MOD_Description: ['规格描述', 'MfgOrder.Description', 'DGV', ['MfgOrderDetailList']],
+      MOD_ProductNM: ['物料编号', 'Product.ProductNM', 'DGV', ['MfgOrderDetailList']],
+      MOD_MFGBatch: ['生产批号', 'MfgOrder.MFGBatch', 'DGV', ['MfgOrderDetailList']],
+      SDL_Item: ['项次', 'SpecDetail.Item', 'DGV', ['SpecDetailList→BPRDAL']],
+      SDL_PSDNM: ['项目名称', 'SpecDetail.PSDNM', 'DGV', ['SpecDetailList→BPRDAL']],
+      SDL_Description: ['规格描述', 'SpecDetail.Description', 'DGV', ['SpecDetailList→BPRDAL']],
+      SDL_Method: ['检验方法', 'SpecDetail.Method', 'DGV', ['SpecDetailList→BPRDAL']],
+      SDL_Standard: ['内控标准', 'SpecDetail.Standard', 'DGV', ['SpecDetailList→BPRDAL']],
+      SDL_Result: ['结果', 'SpecDetail.Result', 'DGV', ['SpecDetailList→BPRDAL']],
+      SDL_SN: ['步骤', 'StepDetail.SN', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_StepItem: ['项次', 'StepDetail.Item', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_StepNM: ['步骤名称', 'StepDetail.StepNM', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_Value: ['值', 'StepDetail.Value', 'DGV', ['StepDetailList→BPRDAL/OPC']],
+      SDL_StepResult: ['结果', 'StepDetail.Result', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_StandardValue: ['标准值', 'StepDetail.StandardValue', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_UOMNM: ['单位', 'UOM.UOMNM', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_MaxValue: ['最大值', 'StepDetail.MaxValue', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_MinValue: ['最小值', 'StepDetail.MinValue', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_DataCollectNM: ['数据采集项', 'StepDetail.DataCollectNM', 'DGV', ['StepDetailList→BPRDAL']],
+      SDL_DataMethod: ['读值方式', 'StepDetail.DataMethod', 'DGV', ['StepDetailList→BPRDAL(OPC/手动)']],
+      txtCurrentStep: ['当前步骤', 'currentStep', 'TextBox(ReadOnly)', ['BPR记录→currentStep'], '[自动]'],
+      txtCurrentItem: ['当前项次', 'currentSpec', 'TextBox(ReadOnly)', ['BPR记录→currentSpec'], '[自动]'],
+      txtStandardValue: ['标准值', 'StepDetail.StandardValue', 'TextBox(ReadOnly)', ['选中行→StandardValue'], '[自动]'],
+      txtMaxValue: ['最大值', 'StepDetail.MaxValue', 'TextBox(ReadOnly)', ['选中行→MaxValue'], '[自动]'],
+      txtMinValue: ['最小值', 'StepDetail.MinValue', 'TextBox(ReadOnly)', ['选中行→MinValue'], '[自动]'],
+      txtUomNM: ['单位', 'UOM.UOMNM', 'TextBox(ReadOnly)', ['选中行→UOMNM'], '[自动]'],
+      txtDataCollectNM: ['数据采集名', 'StepDetail.DataCollectNM', 'TextBox(ReadOnly)', ['选中行→DataCollectNM'], '[自动]'],
+      txtTotalStep: ['总步骤数', 'TotalStep', 'TextBox(ReadOnly)', ['BPR记录→TotalStep'], '[自动]'],
+      txtDescription: ['规格描述', 'StepDetail.Description', 'TextBox(ReadOnly,Multiline)', ['选中行→Description'], '[自动]'],
+      TextArea_EquipmentNM: ['设备名', '用户输入(KeyDown)', 'TextBox, ImeMode=Disable', ['KeyDown→Enter→验证设备']],
+      TextArea_Value: ['值', 'OPC采集/手输', 'TextBox', ['OPC→valueOpc 或 手动输入']],
+      txtResult: ['结果', 'OPC采集/自动判定', 'TextBox(ReadOnly)', ['OPC→_result→合格/不合格'], '[自动]'],
+      txtWeight: ['罐称重量', 'OPC/手输', 'TextBox(ReadOnly,TextChanged+KeyPress)', ['_weight→txtWeight, TextChanged→计算加料量'], '[手输/自动]'],
+      tbBBWeight: ['本步加料重量', '计算值', 'TextBox(ReadOnly,14pt Bold)', ['_weight计算→tbBBWeight'], '[自动计算]'],
+      txtStartTime: ['当前步骤开始时间', 'startDateTime', 'TextBox(ReadOnly)', ['开始作业→记录startDateTime'], '[自动]'],
+      txtTimeShow: ['计时显示', 'System.Timer', 'Label 宋体20pt', ['timer→CountDown→txtTimeShow'], '[实时]'],
+      txtTimer: ['计时器', 'System.Timer', 'Label 宋体20pt RED', ['timer→CountUp→txtTimer'], '[实时]'],
+      EquipmentLabel: ['设备验证', 'Add_EquipmentNM不为空→Show()', 'Label RED (默认Hide)', ['TextArea_Start_Click→checkEquipment→EquipmentLabel.Show()'], '[条件显示]'],
+      ValueLabel: ['值验证', '值验证通过→Show()', 'Label RED (默认Hide)', ['值验证→ValueLabel.Show() / Hide()'], '[条件显示]'],
+      lblzdTime: ['记录时间差', '时间差计算→Visible=true', 'Label (默认Visible=false)', ['记录时间→lblzdTime.Text=分:秒:毫秒'], '[条件显示]'],
+      cbIsAniseed: ['大料标记', 'CheckBox RED', 'CheckBox', ['cbIsAniseed_Click→大料标记']],
+      CheckBox_Skip: ['是否跳步', 'CheckBox', 'CheckBox', ['CheckBox_Skip_CheckedChanged→skip标志']],
+      TextArea_Start: ['启动', 'Button.Click', 'Button 122×47', ['TextArea_Start_Click→启动步骤']],
+      TextArea_BtnStartWorking: ['开始作业', 'Button.Click', 'Button 122×47', ['TextArea_BtnStartWorking_Click→workState=true']],
+      TextArea_BtnNextStep: ['下一步', 'Button.Click', 'Button 122×47', ['TextArea_BtnNextStep_Click→下一项']],
+      ClearValueText: ['清空', 'Button.Click', 'Button 122×47', ['ClearValueText_Click→清空值']],
+      btnTransmission: ['修改设备名', 'Button.Click', 'Button 122×47', ['btnTransmission_Click→修改设备名']],
+      RefrigeratorId: ['电箱', 'ComboGrid', 'ComboGrid', ['电箱选择→RefrigeratorId']],
+      txtValueBox: ['OPC日志', 'OPC数据流', 'TextBox(Multiline,ReadOnly,ScrollBars)', ['OPC→txtValueBox.AppendText'], '[OPC实时日志]'],
+    };;
+
+    // ═══════ Grid 行选中 (pointerdown 先于 click 触发) ═══════
+    document.querySelectorAll('table.grid tbody').forEach(function (tb) {
+      tb.addEventListener('pointerdown', function (e) { var tr = e.target.closest('tr'); if (!tr) return; tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel-row') }); tr.classList.add('sel-row') })
+    });
+    // ═══════ 字段血缘 Card ═══════
+    const card = document.getElementById('card');
+    function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; document.getElementById('note').textContent = f[4] || ''; card.classList.add('show') }
+    function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) }));
+    var drag = null, hd = card.querySelector('.card-hd');
+    hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) };
+    hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' };
+    hd.onpointerup = function () { drag = null };
+    document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+
+    // ═══════ Toast ═══════
+    let toastTimer;
+    function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show') }, 2000) }
+
+    // ═══════ Modal ═══════
+    function openModal(id) { document.getElementById(id).classList.add('show') }
+    function closeModal(id) { document.getElementById(id).classList.remove('show') }
+    // (BPR作业无弹窗)
+
+
+    // ═══════ 按钮交互 (frmME_BPRRecord) ═══════
+    document.querySelectorAll('button[data-k]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var k = this.dataset.k;
+        if (k === 'TextArea_Start') {
+          document.querySelector('[data-k="EquipmentLabel"]').style.display = 'inline';
+          document.querySelector('[data-k="ValueLabel"]').style.display = 'inline';
+          document.querySelector('[data-k="lblzdTime"]').style.display = 'inline';
+          document.querySelector('[data-k="lblzdTime"]').textContent = '00:05:23';
+          toast('🚀 启动步骤 → EquipmentLabel.Show() + ValueLabel.Show()');
+          return;
+        }
+        if (k === 'TextArea_BtnStartWorking') { toast('▶ 开始作业 workState=true, 记录startDateTime'); return }
+        if (k === 'TextArea_BtnNextStep') {
+          document.querySelector('[data-k="EquipmentLabel"]').style.display = 'none';
+          document.querySelector('[data-k="ValueLabel"]').style.display = 'none';
+          document.querySelector('[data-k="lblzdTime"]').style.display = 'none';
+          toast('⏭ 下一步 → ValueLabel.Hide() + 重置验证状态');
+          return;
+        }
+        if (k === 'ClearValueText') { document.querySelector('[data-k="TextArea_Value"]').value = ''; toast('清空值'); return }
+        if (k === 'btnTransmission') { toast('✏ 修改设备名'); return }
+        if (k === 'btnProcessSwitch') { toast('🔄 工艺设备切换'); return }
+        if (k === 'btnStartNoProcess') { toast('⚡ 无工艺启动'); return }
+        if (k === 'SearchArea_Query') { toast('🔍 查询工单'); return }
+        show(k);
+      })
+    });
+    // 设备名 KeyDown 回车事件
+    document.querySelector('[data-k="TextArea_EquipmentNM"]').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { toast('🔌 设备 ' + this.value + ' 已确认 (验证中...)'); }
+    });
+    // 大料复选框
+    document.querySelector('[data-k="cbIsAniseed"]').addEventListener('change', function () {
+      toast(this.checked ? '☑ 标记为大料' : '☐ 取消大料标记');
+    });
+
+    // ═══════ Flow Modal (缩放+拖动) ═══════
+    var flowZoom = 1, panX = 0, panY = 0, dragging = false, dragStartX = 0, dragStartY = 0, startPanX = 0, startPanY = 0;
+    function openFlowModal() {
+      var smallSvg = document.querySelector('#bprFlowSmall svg');
+      if (!smallSvg) return;
+      var large = document.getElementById('bprFlowLarge');
+      large.innerHTML = '';
+      var clone = smallSvg.cloneNode(true);
+      clone.style.width = '100%';
+      clone.style.height = 'auto';
+      clone.style.maxWidth = '1300px';
+      large.appendChild(clone);
+      flowZoom = 1; panX = 0; panY = 0;
+      updateTransform();
+      document.getElementById('flowModal').classList.add('show');
+    }
+    function zoomFlow(delta) {
+      flowZoom = Math.max(0.3, Math.min(3, flowZoom + delta));
+      updateTransform();
+    }
+    function resetZoom() { flowZoom = 1; panX = 0; panY = 0; updateTransform(); }
+    function updateTransform() {
+      var large = document.getElementById('bprFlowLarge');
+      if (large) {
+        large.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + flowZoom + ')';
+        document.getElementById('zoomLevel').textContent = Math.round(flowZoom * 100) + '%';
+      }
+    }
+    function closeFlowModal(e) {
+      if (e && e.target !== document.getElementById('flowModal')) return;
+      flowZoom = 1; panX = 0; panY = 0; dragging = false;
+      document.getElementById('flowModal').classList.remove('show');
+    }
+    // 滚轮缩放
+    document.addEventListener('wheel', function (e) {
+      var modal = document.getElementById('flowModal');
+      if (!modal || !modal.classList.contains('show')) return;
+      var bd = modal.querySelector('.modal-bd');
+      if (!bd || !bd.contains(e.target)) return;
+      e.preventDefault();
+      zoomFlow(e.deltaY < 0 ? 0.1 : -0.1);
+    }, { passive: false });
+    // 拖拽平移
+    document.addEventListener('mousedown', function (e) {
+      var modal = document.getElementById('flowModal');
+      if (!modal || !modal.classList.contains('show')) return;
+      var bd = modal.querySelector('.modal-bd');
+      if (!bd || !bd.contains(e.target)) return;
+      if (e.target.tagName === 'BUTTON') return;
+      dragging = true;
+      dragStartX = e.clientX; dragStartY = e.clientY;
+      startPanX = panX; startPanY = panY;
+      bd.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      panX = startPanX + (e.clientX - dragStartX);
+      panY = startPanY + (e.clientY - dragStartY);
+      updateTransform();
+    });
+    document.addEventListener('mouseup', function () {
+      if (!dragging) return;
+      dragging = false;
+      var bd = document.querySelector('#flowModal.show .modal-bd');
+      if (bd) bd.style.cursor = 'grab';
+    });
+
+    // ═══════ Grid 行选中 ═══════
+    document.querySelectorAll('table.grid tbody').forEach(function (tb) {
+      tb.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (!tr) return; tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel-row') }); tr.classList.add('sel-row') })
+    });
+  </script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { fontSize: '11px' }, flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', rankSpacing: 30, nodeSpacing: 20 } });
+    // 小图渲染完成后可点击放大
+    setTimeout(function () {
+      var s = document.querySelector('#bprFlowSmall');
+      if (s && s.querySelector('svg')) s.style.cursor = 'pointer';
+    }, 800);</script>
 </body>
 
 </html>

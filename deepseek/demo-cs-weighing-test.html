@@ -1,572 +1,832 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
   <meta charset="utf-8">
-  <title>绉伴噸璋冭瘯 路 CS瀹㈡埛绔?/title>
-    <style>
-      :root {
-        --hdr: #BCDCF4;
-        --grp: #5FA2D3;
-        --bg: #F0F0F0;
-        --w: #FFF;
-        --txt: #333;
-        --bdr: #C0C0C0
-      }
+  <title>称重调试 · CS客户端</title>
+  <style>
+    :root {
+      --hdr: #BCDCF4;
+      --grp: #5FA2D3;
+      --bg: #F0F0F0;
+      --w: #FFF;
+      --txt: #333;
+      --bdr: #C0C0C0;
+      --ghdr: #E8F0FE
+    }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-      body {
-        font: 9pt "Microsoft YaHei", "寰蒋闆呴粦", sans-serif;
-        background: #E8ECF0;
-        display: flex;
-        justify-content: center;
-        padding: 8px;
-        min-height: 100vh
-      }
+    body {
+      font: 9pt "Microsoft YaHei", "微软雅黑", sans-serif;
+      background: #E8ECF0;
+      display: flex;
+      justify-content: center;
+      padding: 8px;
+      min-height: 100vh
+    }
 
-      .win {
-        max-width: 900px;
-        width: 100%;
-        background: var(--bg);
-        border: 1px solid #8492A0;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
-      }
+    .win {
+      max-width: 1500px;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid #8492A0;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
+    }
 
-      .topbar {
-        height: 82px;
-        background: var(--hdr);
-        border-bottom: 1px solid #9BBDE0;
-        display: flex;
-        align-items: center;
-        padding: 0 16px;
-        gap: 20px
-      }
+    .topbar {
+      height: 82px;
+      background: var(--hdr);
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 20px
+    }
 
-      .topbar .logo {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #1a3a5c
-      }
+    .topbar .logo {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #1a3a5c
+    }
 
-      .topbar .info {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        flex: 1;
-        font-size: 9pt
-      }
+    .topbar .info {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+      font-size: 9pt
+    }
 
-      .topbar .info .time {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #000
-      }
+    .topbar .info .time {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000
+    }
 
-      .topbar .user {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #000;
-        margin-left: auto
-      }
+    .topbar .user {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000;
+      margin-left: auto
+    }
 
-      .topbar .ver {
-        font-size: 9pt;
-        color: DimGray
-      }
+    .topbar .ver {
+      font-size: 9pt;
+      color: DimGray
+    }
 
-      .body {
-        display: flex;
-        height: calc(100vh - 100px);
-        min-height: 600px
-      }
+    .body {
+      display: flex;
+      height: calc(100vh - 100px);
+      min-height: 600px
+    }
 
-      .left {
-        width: 179px;
-        background: WhiteSmoke;
-        border-right: 1px solid var(--bdr);
-        overflow-y: auto;
-        flex-shrink: 0
-      }
+    .left {
+      width: 179px;
+      background: WhiteSmoke;
+      border-right: 1px solid var(--bdr);
+      overflow-y: auto;
+      flex-shrink: 0
+    }
 
-      .left .grp-title {
-        padding: 8px 10px;
-        font-weight: 700;
-        font-size: 9pt;
-        background: var(--grp);
-        color: #fff;
-        position: sticky;
-        top: 0;
-        z-index: 1
-      }
+    .left .grp-title {
+      padding: 8px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      background: var(--grp);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1
+    }
 
-      .left .tree-item {
-        padding: 4px 8px 4px 18px;
-        cursor: pointer;
-        font-size: 9pt;
-        color: var(--txt);
-        border-left: 3px solid transparent
-      }
+    .left .tree-item {
+      padding: 4px 8px 4px 18px;
+      cursor: pointer;
+      font-size: 9pt;
+      color: var(--txt);
+      border-left: 3px solid transparent
+    }
 
-      .left .tree-item:hover {
-        background: #E8F0FE
-      }
+    .left .tree-item:hover {
+      background: #E8F0FE
+    }
 
-      .left .tree-item.sel {
-        background: #DAE8F5;
-        border-left-color: #1a56b0;
-        font-weight: 700
-      }
+    .left .tree-item.sel {
+      background: #DAE8F5;
+      border-left-color: #1a56b0;
+      font-weight: 700
+    }
 
-      .right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden
-      }
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
 
-      .content {
-        flex: 1;
-        overflow-y: auto;
-        background: var(--w);
-        padding: 10px
-      }
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      border-bottom: 1px solid var(--bdr)
+    }
 
-      .btn {
-        padding: 4px 16px;
-        border: 1px solid #C0C0C0;
-        border-radius: 3px;
-        background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
-        font: 15pt "瀹嬩綋", SimSun, serif;
-        cursor: pointer;
-        width: 142px;
-        height: 77px
-      }
+    .tab {
+      padding: 6px 16px;
+      border-right: 1px solid var(--bdr);
+      cursor: pointer;
+      font-size: 9pt;
+      color: DimGray;
+      background: var(--bg)
+    }
 
-      .btn:hover {
-        background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
-      }
+    .tab.sel {
+      background: var(--w);
+      color: var(--txt);
+      font-weight: 700
+    }
 
-      .btn.primary {
-        background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
-        border-color: #2D6AA0;
-        color: #fff
-      }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--w)
+    }
 
-      .grp {
-        border: 1px solid #C0C0C0;
-        border-radius: 4px;
-        margin-bottom: 8px;
-        padding: 8px
-      }
+    .btn {
+      padding: 4px 16px;
+      border: 1px solid #C0C0C0;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
+      font: 9pt "微软雅黑";
+      cursor: pointer;
+      height: 30px
+    }
 
-      .grp legend {
-        font: 10pt "寰蒋闆呴粦";
-        font-weight: 700;
-        padding: 0 6px
-      }
+    .btn:hover {
+      background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
+    }
 
-      .big {
-        font: 15pt "瀹嬩綋", SimSun, serif;
-        font-weight: 700;
-        padding: 4px 8px;
-        border: 1px solid #C0C0C0;
-        border-radius: 2px;
-        background: #fff;
-        text-align: center
-      }
+    .btn.primary {
+      background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
+      border-color: #2D6AA0;
+      color: #fff
+    }
 
-      .big.green {
-        color: Green
-      }
+    .sec-inactive {
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0);
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid var(--bdr);
+      height: 26px;
+      display: flex;
+      align-items: center
+    }
 
-      .big.yellow {
-        color: #B8860B
-      }
+    .blk {
+      margin: 4px 6px;
+      background: var(--w);
+      border: 1px solid #C8D0D8;
+      border-radius: 3px;
+      overflow: hidden
+    }
 
-      .stats {
-        width: 280px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 8px;
-        font-size: 9pt;
-        margin-left: 8px
-      }
+    .blk-hd {
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid #C8D0D8;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0)
+    }
 
-      .stats .sh {
-        font-weight: 700;
-        font-size: 10pt;
-        margin-bottom: 6px
-      }
+    .blk-bd {
+      padding: 4px
+    }
 
-      .stats .ss {
-        margin-bottom: 6px;
-        background: #fff;
-        border: 1px solid var(--bdr);
-        border-radius: 3px;
-        padding: 6px 8px
-      }
+    .blk-bd .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 4px
+    }
 
-      .stats .ss h4 {
-        font-size: 8pt;
-        color: DimGray;
-        margin-bottom: 3px
-      }
+    .blk-bd .row:last-child {
+      margin-bottom: 0
+    }
 
-      .stats .tag {
-        font-size: 7pt;
-        padding: 1px 5px;
-        border-radius: 3px
-      }
+    .blk-bd label {
+      font: 9pt "微软雅黑";
+      white-space: nowrap
+    }
 
-      .tag-tbl {
-        background: #E0F2FE;
-        color: #0369A1
-      }
+    .blk-bd input,
+    .blk-bd select {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 2px 6px
+    }
 
-      .tag-form {
-        background: #FEF3C7;
-        color: #92400E
-      }
+    .blk-bd .btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px
+    }
 
-      .src-note {
-        font-size: 7pt;
-        color: #92400E;
-        background: #FEFCE8;
-        padding: 5px 7px;
-        border-radius: 3px
-      }
+    .grid-wrap {
+      overflow-x: auto;
+      overflow-y: auto;
+      min-height: 80px;
+      max-height: 220px
+    }
 
-      .card {
-        position: fixed;
-        right: 16px;
-        bottom: 16px;
-        width: 380px;
-        background: #fff;
-        border: 1px solid #8492A0;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
-        display: none;
-        z-index: 100;
-        font-size: 9pt
-      }
+    table.grid {
+      width: 100%;
+      border-collapse: collapse;
+      font: 9pt "宋体", SimSun, serif
+    }
 
-      .card.show {
-        display: block
-      }
+    table.grid th {
+      background: var(--ghdr);
+      border: 1px solid #C0C0C0;
+      padding: 3px 5px;
+      font-weight: 600;
+      text-align: left;
+      font-size: 8pt;
+      white-space: nowrap
+    }
 
-      .card-hd {
-        background: var(--hdr);
-        padding: 8px 12px;
-        border-bottom: 1px solid #9BBDE0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: move
-      }
+    table.grid td {
+      border: 1px solid #E0E0E0;
+      padding: 2px 5px;
+      font-size: 8pt;
+      cursor: pointer
+    }
 
-      .card-hd h3 {
-        font-size: 10pt;
-        color: #1a3a5c
-      }
+    table.grid tr:hover td {
+      background: #BCDCF4
+    }
 
-      .card-bd {
-        padding: 8px 10px
-      }
+    .frow {
+      display: flex;
+      gap: 6px;
+      padding: 3px 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
 
-      .card-bd dt {
-        font-size: 8pt;
-        color: DimGray;
-        margin-bottom: 1px
-      }
+    .stats {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 8px;
+      font-size: 9pt;
+      margin-left: 8px
+    }
 
-      .card-bd dd {
-        font-size: 9pt;
-        color: var(--txt);
-        word-break: break-all;
-        margin-bottom: 3px
-      }
+    .stats .sh {
+      font-weight: 700;
+      font-size: 10pt;
+      margin-bottom: 6px
+    }
 
-      .path {
-        display: flex;
-        gap: 3px;
-        font-size: 8pt;
-        color: var(--grp);
-        margin-bottom: 5px;
-        flex-wrap: wrap
-      }
+    .stats .ss {
+      margin-bottom: 6px;
+      background: #fff;
+      border: 1px solid var(--bdr);
+      border-radius: 3px;
+      padding: 6px 8px
+    }
 
-      .path span {
-        background: #E8F0FE;
-        padding: 1px 4px;
-        border-radius: 2px
-      }
+    .stats .ss h4 {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 3px
+    }
 
-      .path .ar {
-        color: DimGray;
-        background: none
-      }
+    .stats .tag {
+      font-size: 7pt;
+      padding: 1px 5px;
+      border-radius: 3px
+    }
 
-      .toast {
-        position: fixed;
-        top: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #333;
-        color: #fff;
-        padding: 8px 20px;
-        border-radius: 4px;
-        font-size: 10pt;
-        z-index: 300;
-        opacity: 0;
-        transition: opacity .3s;
-        pointer-events: none
-      }
+    .tag-tbl {
+      background: #E0F2FE;
+      color: #0369A1
+    }
 
-      .toast.show {
-        opacity: 1
-      }
-    </style>
+    .tag-form {
+      background: #FEF3C7;
+      color: #92400E
+    }
+
+    .src-note {
+      font-size: 7pt;
+      color: #059669;
+      background: #f0fdf4;
+      padding: 5px 7px;
+      border-radius: 3px
+    }
+
+    /* 弹窗 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      z-index: 200;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px
+    }
+
+    .modal-overlay.show {
+      display: flex
+    }
+
+    .modal {
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .3);
+      border-radius: 4px;
+      width: 520px;
+      max-width: 95vw;
+      font-size: 9pt
+    }
+
+    .modal-hd {
+      background: var(--hdr);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #9BBDE0
+    }
+
+    .modal-hd h3 {
+      font-size: 11pt;
+      color: #1a3a5c
+    }
+
+    .modal-bd {
+      padding: 12px 14px
+    }
+
+    .modal-bd .fld {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px
+    }
+
+    .modal-bd .fld label {
+      width: 100px;
+      text-align: right;
+      font-size: 9pt;
+      white-space: nowrap
+    }
+
+    .modal-bd .fld input,
+    .modal-bd .fld select,
+    .modal-bd .fld textarea {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 3px 6px;
+      flex: 1
+    }
+
+    .modal-bd .fld textarea {
+      height: 60px;
+      resize: vertical
+    }
+
+    .modal-ft {
+      padding: 8px 14px;
+      border-top: 1px solid #E0E0E0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px
+    }
+
+    .toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-size: 10pt;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    .sel-row {
+      background: #BCDCF4 !important
+    }
+
+    .card {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 380px;
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+      display: none;
+      z-index: 100;
+      font-size: 9pt
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-hd {
+      background: var(--hdr);
+      padding: 8px 12px;
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-hd h3 {
+      font-size: 10pt;
+      color: #1a3a5c
+    }
+
+    .card-bd {
+      padding: 8px 10px
+    }
+
+    .card-bd dt {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 1px
+    }
+
+    .card-bd dd {
+      font-size: 9pt;
+      color: var(--txt);
+      word-break: break-all;
+      margin-bottom: 3px
+    }
+
+    .path {
+      display: flex;
+      gap: 3px;
+      font-size: 8pt;
+      color: var(--grp);
+      margin-bottom: 5px;
+      flex-wrap: wrap
+    }
+
+    .path span {
+      background: #E8F0FE;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .path .ar {
+      color: DimGray;
+      background: none
+    }
+  </style>
 </head>
 
 <body>
   <div style="display:flex;gap:8px">
     <div class="win">
       <div class="topbar">
-        <div class="logo">MES 鍒堕€犳墽琛岀郴缁?/div><div class="info"><span>馃搮 2026-07-29</span><span
-              class="time">14:30:00</span><span>鏄熸湡涓?/span><span>| 绯荤粺杩炴帴锛氭甯?/span></div><span
-            class="ver">褰撳墠鐗堟湰锛?.0.5.74</span><span class="user">馃懁 瓒呯骇绠＄悊鍛?/span></div>
-        <div class="body">
-          <div class="left">
-            <div class="grp-title">涓诲鑸?/div><div class="tree-item">鏃?/div><div class="grp-title">鐢熶骇鎵ц</div>
-                <div class="tree-item">宸ュ崟鍚姩</div>
-                <div class="tree-item">宸ュ崟</div>
-                <div class="tree-item">鍘熸枡绉伴噸</div>
-                <div class="tree-item">鍘熸枡绉伴噸澶嶆牳</div>
-                <div class="tree-item">浣欐枡绉伴噸</div>
-                <div class="tree-item sel">绉伴噸璋冭瘯</div>
-                <div class="tree-item">澶╁钩璋冭瘯</div>
-                <div class="tree-item">BPR浣滀笟</div>
-                <div class="tree-item">BPR浣滀笟淇敼</div>
-                <div class="tree-item">閰嶅埗缃愭竻娲楀惎鍔?/div><div class="tree-item">棰勯厤缃愭竻娲楀惎鍔?/div><div class="tree-item">
-                      鍌ㄧ綈娓呮礂鍚姩</div>
-                    <div class="tree-item">閰嶅埗鍚庢竻娲?/div><div class="tree-item">涓嶉攬閽㈡竻娲楁秷姣?/div><div class="tree-item">
-                          璁惧娓呮礂娑堟瘨</div>
-                        <div class="tree-item">閰嶅埗浜у嚭</div>
-                        <div class="tree-item">鍗婃垚鍝佷骇鍑?/div><div class="tree-item">閰嶅埗缃愯緭鍑?/div><div class="tree-item">
-                              鍌ㄧ綈杈撳叆</div>
-                            <div class="tree-item">鍌ㄧ綈杈撳嚭</div>
-                            <div class="tree-item">鎶ュ簾鍗?/div><div class="tree-item">缃愯閫€鏂?/div><div class="tree-item">
-                                  鍐呮爤鏉垮寘瑁?/div><div class="tree-item">鎴愬搧鍖呰</div>
-                                  <div class="tree-item">杩斿伐璁板綍琛?/div><div class="tree-item">鎵瑰彿閲嶅嵃</div>
-                                    <div class="tree-item">閰嶅埗浜у嚭TK缁戝畾</div>
-                                    <div class="tree-item">鐢熶骇绾垮垎鎵?/div><div class="tree-item">涓績绾胯緭鍏?/div><div
-                                          class="tree-item">閰嶅埗璁惧妫€鏌ヨ褰?/div><div class="tree-item">
-                                            閰嶅埗鍖哄煙鐢熶骇鍓嶆竻鍦鸿褰?/div><div class="tree-item">鐢熶骇鍓嶇敓浜х嚎娓呭満妫€鏌ヨ〃</div>
-                                            <div class="tree-item">鍦ㄧ嚎浜у搧瑁呯閲嶉噺妫€鏌ヨ〃</div>
-                                            <div class="tree-item">璁惧鍋滄満璁板綍</div>
-                                            <div class="tree-item">鐢熶骇瀹炵哗褰曞叆</div>
-                                          </div>
-                                          <div class="right">
-                                            <div class="content">
+        <div class="logo">MES 制造执行系统</div>
+        <div class="info"><span>📅 2026-07-29</span><span class="time">14:30:00</span><span>星期三</span><span>|
+            系统连接：正常</span></div><span class="ver">当前版本：3.0.5.74</span><span class="user">👤 超级管理员</span>
+      </div>
+      <div class="body">
+        <div class="left">
+          <div class="grp-title">主导航</div>
+          <div class="tree-item">无</div>
+          <div class="grp-title">生产执行</div>
+          <div class="tree-item">工单启动</div>
+          <div class="tree-item">工单</div>
+          <div class="tree-item">原料称重</div>
+          <div class="tree-item">原料称重复核</div>
+          <div class="tree-item">余料称重</div>
+          <div class="tree-item">称重调试</div>
+          <div class="tree-item">天平调试</div>
+          <div class="tree-item">BPR作业</div>
+          <div class="tree-item">BPR作业修改</div>
+          <div class="tree-item">配制罐清洗启动</div>
+          <div class="tree-item">预配罐清洗启动</div>
+          <div class="tree-item">储罐清洗启动</div>
+          <div class="tree-item">配制后清洗</div>
+          <div class="tree-item">不锈钢清洗消毒</div>
+          <div class="tree-item">设备清洗消毒</div>
+          <div class="tree-item">配制产出</div>
+          <div class="tree-item">半成品产出</div>
+          <div class="tree-item">配制罐输出</div>
+          <div class="tree-item">储罐输入</div>
+          <div class="tree-item">储罐输出</div>
+          <div class="tree-item sel">称重调试</div>
+          <div class="tree-item">罐装退料</div>
+          <div class="tree-item">内栈板包装</div>
+          <div class="tree-item">成品包装</div>
+          <div class="tree-item">返工记录表</div>
+          <div class="tree-item">批号重印</div>
+          <div class="tree-item">配制产出TK绑定</div>
+          <div class="tree-item">生产线分批</div>
+          <div class="tree-item">中心线输入</div>
+          <div class="tree-item">配制设备检查记录</div>
+          <div class="tree-item">配制区域生产前清场记录</div>
+          <div class="tree-item">生产前生产线清场检查表</div>
+          <div class="tree-item">在线产品装箱重量检查表</div>
+          <div class="tree-item">设备停机记录</div>
+          <div class="tree-item">生产实绩录入</div>
+        </div>
+        <div class="right">
+          <div class="tabs">
+            <div class="tab">首页</div>
+            <div class="tab sel">称重调试</div>
+          </div>
+          <div class="content">
 
-                                              <!-- groupBox3: 閫夋嫨绉伴噸鏈?-->
-                                              <fieldset class="grp">
-                                                <legend>閫夋嫨绉伴噸鏈?/legend>
-                                                  <div style="display:flex;gap:12px;align-items:center">
-                                                    <label style="font:10pt '寰蒋闆呴粦'">绉伴噸鏈猴細</label><select
-                                                      data-k="sWeightMachine" style="width:200px;height:28px">
-                                                      <option>绉伴噸鍙?1 / COM3</option>
-                                                      <option>绉伴噸鍙?2 / COM4</option>
-                                                    </select>
-                                                    <button class="btn" style="font:9pt '寰蒋闆呴粦';width:80px;height:30px"
-                                                      data-k="btnRefresh">鍒锋柊</button>
-                                                  </div>
-                                              </fieldset>
+            <!-- ═══════ frmME_WeightingTest · 称重调试 1497×643 ═══════ -->
+            <!-- 源码: this.Text="称重调试", 无DataGridView -->
+            <div class="blk" style="border:1px solid #C0C0C0;border-radius:4px;margin:6px;background:#FAFBFC">
+              <div class="blk-hd" style="background:linear-gradient(180deg,#F0F0F0,#D0D0D0)">- 称重调试 <span style="font-weight:400;color:#888;font-size:8pt">frmME_WeightingTest 1497×643</span><span style="float:right;font-size:8pt;color:#888">Text="称重调试" · DAL: MESZZZX_GetEquipmentDAL</span></div>
+              <div class="blk-bd" style="padding:8px">
+                <!-- ═══ 顶部: 设备号输入区 ═══ -->
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;padding:6px 8px;background:#F5F5F5;border:1px dashed #C0C0C0;border-radius:2px">
+                  <label style="font:12pt '微软雅黑';font-weight:700">设备号:</label>
+                  <input data-k="textBox1" placeholder="输入设备号后回车..." value="QDZY-10007" style="width:285px;height:38px;font:16pt '宋体';border:1px solid #C0C0C0;border-radius:2px;padding:0 8px" title="源码: textBox1, 宋体16.2pt, KeyDown→Enter→EquipmentInfo(equipmentNMTemp)→Start()">
+                  <span style="font-size:8pt;color:#888">按 Enter → EquipmentInfo → 连接TCP + 初始化串口</span>
+                </div>
+                <!-- ═══ 主体: 三列布局 ═══ -->
+                <div style="display:flex;gap:8px;align-items:flex-start">
+                  <!-- 左列: 选择称重机 + 选择语音 -->
+                  <div style="flex:0 0 340px;display:flex;flex-direction:column;gap:8px">
+                    <fieldset style="border:1px solid #C0C0C0;border-radius:3px;padding:8px 12px;height:125px">
+                      <legend style="font:12pt '微软雅黑';font-weight:700;color:#1a3a5c">选择称重机 <span style="font-weight:400;color:#888;font-size:8pt">groupBox3 328×125</span></legend>
+                      <select data-k="cmbEquipList" style="width:295px;height:35px;font:10pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;margin-top:12px" title="源码: DropDownList, 设备号回车后填充EquipmentInfo结果">
+                        <option>QDZY-10007</option><option>QDZY-10006</option><option>QDZY-10008</option><option>QDZY-11005</option><option>QDZY-30001</option><option>QDZY-10094</option>
+                      </select>
+                    </fieldset>
+                    <fieldset style="border:1px solid #C0C0C0;border-radius:3px;padding:8px 12px;height:125px">
+                      <legend style="font:12pt '微软雅黑';font-weight:700;color:#1a3a5c">选择语音 <span style="font-weight:400;color:#888;font-size:8pt">groupBox4 328×125</span></legend>
+                      <select data-k="cmbVoice" style="width:295px;height:35px;font:10pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;margin-top:12px" title="源码: SpeechSynthesizer.GetInstalledVoices()">
+                        <option>Microsoft Huihui Desktop</option><option>Microsoft Zira Desktop</option>
+                      </select>
+                    </fieldset>
+                  </div>
+                  <!-- 中列: 皮重 + 净重 GroupBox -->
+                  <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:810px">
+                    <fieldset style="border:1px solid #C0C0C0;border-radius:3px;padding:8px 12px;height:123px">
+                      <legend style="font:12pt '微软雅黑';font-weight:700;color:#1a3a5c">皮重信息 <span style="font-weight:400;color:#888;font-size:8pt">groupBox1 798×123</span></legend>
+                      <div style="display:flex;align-items:center;gap:8px;height:80px">
+                        <label style="font:21pt '微软雅黑';font-weight:700;width:80px">皮重:</label>
+                        <input data-k="SkinWeight" value="1.50" style="width:280px;height:75px;font:36pt 'Courier New';font-weight:bold;border:1px solid #C0C0C0;border-radius:3px;text-align:right;padding:0 8px" title="源码: SkinWeightTextBox, Courier New 36pt Bold. SkinWeightButton_Click → readWeight(串口)→SkinWeight.Text">
+                        <button class="btn primary" data-k="SkinWeightButton" style="width:142px;height:77px;font:15pt '宋体'" title="SkinWeightButton_Click: this.SkinWeight.Text = readWeight; SpeakInfo('皮重X千克')">皮重称重</button>
+                        <button class="btn" data-k="RemoveSkinWeightButton" style="width:142px;height:77px;font:15pt '宋体'" title="RemoveSkinWeightButton_Click: SkinWeight.Text='0.00'">去皮重</button>
+                      </div>
+                    </fieldset>
+                    <fieldset style="border:1px solid #C0C0C0;border-radius:3px;padding:8px 12px;height:222px">
+                      <legend style="font:12pt '微软雅黑';font-weight:700;color:#1a3a5c">净重信息 <span style="font-weight:400;color:#888;font-size:8pt">groupBox2 798×222</span></legend>
+                      <div style="display:flex;align-items:center;gap:8px;height:80px">
+                        <label style="font:21pt '微软雅黑';font-weight:700;width:80px;color:green">净重:</label>
+                        <input data-k="NetWeight" value="50.15" style="width:280px;height:75px;font:36pt 'Courier New';font-weight:bold;border:1px solid #C0C0C0;border-radius:3px;text-align:right;padding:0 8px;color:green" title="源码: NetWeightTextBox, Courier New 36pt Bold, ForeColor=Green. WeightButton_Click → readWeight→NetWeight, GrossWeight=皮重+净重">
+                        <button class="btn primary" data-k="WeightButton" style="width:142px;height:77px;font:15pt '宋体'" title="WeightButton_Click: NetWeight=readWeight, GrossWeight=皮重+净重, SpeakInfo('净重X千克')">净重称重</button>
+                        <button class="btn" data-k="btnRefresh" style="width:142px;height:77px;font:15pt '宋体'" title="btnRefresh_Click">刷新</button>
+                        <span data-k="WeightLabel" style="font:30pt '微软雅黑';font-weight:700;color:#1a3a5c;cursor:pointer" title="源码: timer2_Tick→TCP readWeight→WeightLabel.Text 30pt 微软雅黑">0.00</span>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:8px;height:80px;margin-top:8px">
+                        <label style="font:21pt '微软雅黑';font-weight:700;width:80px">毛重:</label>
+                        <input data-k="GrossWeight" value="51.65" readonly style="width:280px;height:75px;font:36pt 'Courier New';font-weight:bold;border:1px solid #C0C0C0;border-radius:3px;text-align:right;padding:0 8px;background:#FFFFE0;color:#B8860B" title="源码: ReadOnly=True, ForeColor=Yellow. GrossWeight.Text = SkinWeight + NetWeight">
+                        <span style="font:9pt '微软雅黑';color:#888">[自动: 皮重+净重]</span>
+                      </div>
+                    </fieldset>
+                  </div>
+                  <!-- 右列: WeightBar 垂直进度条 -->
+                  <div style="width:180px;flex-shrink:0;display:flex;flex-direction:column;align-items:center">
+                    <div data-k="MaxValueLabel" style="font:9pt '微软雅黑';cursor:pointer" title="源码: frmME_WeightingTest_Load→MaxValueLabel.Text=MaxValue">0.00</div>
+                    <div style="font:8pt;color:#888">上限 MaxValue</div>
+                    <div style="width:163px;height:8px;background:#000;margin:2px 0" title="button3: 分隔条, Enabled=false"></div>
+                    <div style="flex:1;width:163px;background:linear-gradient(to top,#0f0,#ff0,#f00);border:1px solid #C0C0C0;border-radius:2px;min-height:180px;position:relative" title="WeightBar: VerticalProgressBar, Maximum=10000">
+                      <div id="wbarFill" style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.15);height:50%;transition:height 0.3s"></div>
+                    </div>
+                    <div style="width:163px;height:8px;background:#000;margin:2px 0" title="button2: 分隔条, Enabled=false"></div>
+                    <div data-k="StdValueLabel" style="font:12pt '微软雅黑';font-weight:700;color:#1a3a5c;cursor:pointer" title="源码: StdValueLabel, 微软雅黑12pt">0.00</div>
+                    <div style="font:8pt;color:#888">标准 StdValue</div>
+                    <div style="width:163px;height:8px;background:#000;margin:4px 0 2px 0" title="button1: 分隔条, Enabled=false"></div>
+                    <div data-k="MinValueLabel" style="font:9pt '微软雅黑';cursor:pointer" title="源码: MinValueLabel.Text=MinValue">0.00</div>
+                    <div style="font:8pt;color:#888">下限 MinValue</div>
+                  </div>
+                </div>
+                <!-- ═══ 底部: 调试输出 textBox2 ═══ -->
+                <div style="margin-top:8px;padding:4px 8px;background:#F5F5F5;border:1px dashed #C0C0C0;border-radius:2px;font-size:8pt;color:#666">
+                  <b>调试输出 textBox2</b> (1006×34, 宋体13.8pt): 
+                  <span data-k="textBox2" style="font:12pt '宋体';color:#333;cursor:pointer" title="源码: textBox2.Font=宋体13.8pt, 1006×34. 显示TCP连接状态/调试信息">TCP已连接 192.168.5.213:4196 | readWeight=50.15 | timer2运行中</span>
+                </div>
+              </div>
+            </div>
 
-                                              <!-- groupBox1: 鐨噸淇℃伅 -->
-                                              <fieldset class="grp">
-                                                <legend>鐨噸淇℃伅</legend>
-                                                <div style="display:flex;gap:20px;align-items:center">
-                                                  <div><label style="font:10pt '寰蒋闆呴粦'">鐨噸锛?/label><span class="big"
-                                                        data-k="skinWeight"
-                                                        style="display:inline-block;min-width:160px">199.50</span></div>
-                                                  <button class="btn" data-k="btnSkinWeight">鐨噸绉伴噸</button>
-                                                </div>
-                                              </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sh">&#x1F4CA; 代码分析<span class="tag tag-form" style="margin-left:4px">称重调试 frmME_WeightingTest</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
+          <div style="font-size:7pt;color:DimGray">DataGridView</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
+          <div style="font-size:7pt;color:DimGray">存储过程</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">1</div>
+          <div style="font-size:7pt;color:DimGray">DAL类</div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
+          数据库表</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div style="font-size:8pt;color:#888;padding:2px 4px">无DataGridView<br>数据来源: TCP串口读取秤重硬件</div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
+          存储过程</h4>
+        <div style="font-size:8pt;color:#888;padding:2px 4px">无存储过程. MESZZZX_GetEquipmentDAL→WebAPI获取设备IP→TCP连接</div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
+          数据访问层 (DAL)</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_GetEquipmentDAL</span> <span class="tag tag-bll">设备查询</span></div>
+          <div style="margin-left:10px;color:#888;font-size:7pt">GetEquipmentInfo(body, grid) → 返回ServerNM(IP地址)</div>
+          <div style="margin-top:2px"><span style="font-family:Consolas,monospace;color:#1a3a5c">BaseMethod</span> <span class="tag tag-bll">通用方法</span></div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
+          窗体</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">frmME_WeightingTest</span> <span class="tag tag-form">称重调试 1497×643</span></div>
+          <div style="margin-top:3px;font-size:8pt"><b>通信:</b> SuperSocket TCP → 秤重设备<br>
+          <b>语音:</b> SpeechSynthesizer<br>
+          <b>定时器:</b> timer2 (实时更新 WeightBar + WeightLabel)<br>
+          <b>调试:</b> textBox1输入设备号回车→EquipmentInfo→TCP连接→textBox2输出状态</div>
+        </div>
+      </div>
+      <div class="src-note"><b>&#x2705; 源码验证：</b> frmME_WeightingTest.cs / .Designer.cs<br>
+        1497×643 · 4 GroupBox + WeightBar + textBox1(设备号) + textBox2(调试输出)<br>
+        DAL: MESZZZX_GetEquipmentDAL · timer2 · SpeechSynthesizer · AsyncTcpSession</div>
+    </div>
+  </div>
+  <!-- ═══════ Toast ═══════ -->
+  <div class="toast" id="toast"></div>
+    <aside class="card" id="card">
+    <div class="card-hd"><div><small>FIELD DATA LINEAGE</small><h3 id="title"></h3></div><button onclick="cl()" style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">✕</button></div>
+    <div class="card-bd"><div class="path" id="pth"></div><dl><dt>字段名</dt><dd id="label"></dd></dl><dl><dt>数据来源</dt><dd id="source"></dd></dl><dl><dt>控件类型</dt><dd id="type"></dd></dl><dl><dt>调用链路</dt><dd id="formula"></dd></dl><dl><dt>备注</dt><dd id="note" style="color:#059669"></dd></dl></div>
+  </aside>
+  <script>
+    // ═══════ 字段血缘 Map ═══════
+        // ═══════ 字段血缘 Map (称重调试 · frmME_WeightingTest) ═══════
+    const map = {
+      // === 设备号输入 ===
+      textBox1: ['设备号输入', '用户输入, KeyDown→Enter', 'TextBox 285×38, 宋体16.2pt', ['textBox1_KeyDown→EquipmentInfo(equipmentNMTemp)→Start()']],
+      // === groupBox3: 选择称重机 ===
+      cmbEquipList: ['称重机', 'EquipmentInfo→WebAPI返回', 'ComboBox(DropDownList) 295×35', ['textBox1_KeyDown→GetEquipmentDAL.GetEquipmentInfo']],
+      // === groupBox4: 选择语音 ===
+      cmbVoice: ['语音', 'SpeechSynthesizer.GetInstalledVoices()', 'ComboBox(DropDownList) 295×35', ['frmME_WeightingTest_Load→speechs.GetInstalledVoices()']],
+      // === groupBox1: 皮重信息 ===
+      SkinWeight: ['皮重值', '串口→readWeight', 'TextBox 280×75 Courier New 36pt Bold', ['SkinWeightButton_Click→this.SkinWeight.Text=readWeight, SpeakInfo("皮重X千克")'], '[硬件读取]'],
+      SkinWeightButton: ['皮重称重', 'Button.Click→SkinWeightButton_Click', 'Button 142×77 宋体15pt', ['readWeight→SkinWeight.Text, SpeakInfo语音播报']],
+      RemoveSkinWeightButton: ['去皮重', 'Button.Click→RemoveSkinWeightButton_Click', 'Button 142×77 宋体15pt', ['SkinWeight.Text="0.00"']],
+      // === groupBox2: 净重信息 ===
+      NetWeight: ['净重值', '串口→readWeight→NetWeight.Text', 'TextBox 280×75 Courier New 36pt Bold, ForeColor=Green', ['WeightButton_Click→NetWeight=readWeight, GrossWeight=皮重+净重, SpeakInfo("净重X千克")'], '[硬件读取]'],
+      WeightButton: ['净重称重', 'Button.Click→WeightButton_Click', 'Button 142×77 宋体15pt', ['readWeight→NetWeight, GrossWeight=皮重+净重, SpeakInfo语音播报']],
+      btnRefresh: ['刷新', 'Button.Click→btnRefresh_Click', 'Button 142×77 宋体15pt', ['btnRefresh_Click']],
+      GrossWeight: ['毛重值', 'SkinWeight + NetWeight', 'TextBox(ReadOnly) 280×75, ForeColor=Yellow', ['WeightButton_Click→GrossWeight.Text = 皮重+净重'], '[自动计算]'],
+      WeightLabel: ['实时读数', 'timer2_Tick→TCP→readWeight', 'Label 30pt 微软雅黑', ['timer2→TCP AsyncTcpSession→readWeight→WeightLabel.Text'], '[硬件实时]'],
+      // === 右列: WeightBar + 标签 ===
+      MaxValueLabel: ['上限', 'frmME_WeightingTest_Load→MaxValue', 'Label', ['外部SetMaxValue→MaxValueLabel.Text']],
+      StdValueLabel: ['标准值', 'frmME_WeightingTest_Load→StdValue', 'Label 微软雅黑12pt', ['外部SetStdValue→StdValueLabel.Text']],
+      MinValueLabel: ['下限', 'frmME_WeightingTest_Load→MinValue', 'Label', ['外部SetMinValue→MinValueLabel.Text']],
+      // === 底部调试 ===
+      textBox2: ['调试输出', 'TCP连接状态/readWeight', 'TextBox 1006×34, 宋体13.8pt', ['textBox1_KeyDown→textBox2.Text=test, timer2实时更新']],
+    };;
 
-                                              <!-- groupBox2: 鍑€閲嶄俊鎭?-->
-                                              <fieldset class="grp">
-                                                <legend>鍑€閲嶄俊鎭?/legend>
-                                                  <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-                                                    <div><label style="font:10pt '寰蒋闆呴粦'">姣涢噸锛?/label><span
-                                                          class="big yellow" data-k="grossWeight"
-                                                          style="display:inline-block;min-width:160px">4200.00</span>
-                                                    </div>
-                                                    <div><label style="font:10pt '寰蒋闆呴粦'">鍑€閲嶏細</label><span
-                                                        class="big green" data-k="netWeight"
-                                                        style="display:inline-block;min-width:160px">4000.50</span>
-                                                    </div>
-                                                    <button class="btn" data-k="btnNetWeight">鍑€閲嶇О閲?/button>
-                                                      <button class="btn" data-k="btnRemoveSkin">鍘荤毊閲?/button>
-                                                  </div>
-                                                  <div style="margin-top:8px;display:flex;gap:16px">
-                                                    <div><label style="font:10pt '寰蒋闆呴粦'">涓嬮檺锛?/label><span class="big"
-                                                          data-k="minValue"
-                                                          style="display:inline-block;min-width:120px">3950.00</span>
-                                                    </div>
-                                                    <div><label style="font:10pt '寰蒋闆呴粦'">鏍囧噯鍊硷細</label><span
-                                                        class="big" data-k="stdValue"
-                                                        style="display:inline-block;min-width:120px">4000.00</span>
-                                                    </div>
-                                                    <div><label style="font:10pt '寰蒋闆呴粦'">涓婇檺锛?/label><span class="big"
-                                                          data-k="maxValue"
-                                                          style="display:inline-block;min-width:120px">4050.00</span>
-                                                    </div>
-                                                  </div>
-                                                  <div
-                                                    style="margin-top:4px;height:40px;background:var(--w);border:1px solid #C0C0C0;border-radius:2px;display:flex;align-items:center;padding:0 8px">
-                                                    <div
-                                                      style="background:linear-gradient(90deg,#22c55e 0%,#22c55e 95%,#f59e0b 95%,#f59e0b 98%,#ef4444 98%,#ef4444 100%);height:20px;border-radius:3px;width:100%"
-                                                      title="WeightBar: 绉伴噸杩涘害鏉?></div>
-</div></fieldset>
+    // ═══════ Grid 行选中 (pointerdown 先于 click 触发) ═══════
+    document.querySelectorAll('table.grid tbody').forEach(function (tb) {
+      tb.addEventListener('pointerdown', function (e) { var tr = e.target.closest('tr'); if (!tr) return; tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel-row') }); tr.classList.add('sel-row') })
+    });
+    // ═══════ 字段血缘 Card ═══════
+    const card = document.getElementById('card');
+    function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; document.getElementById('note').textContent = f[4] || ''; card.classList.add('show') }
+    function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) }));
+    var drag = null, hd = card.querySelector('.card-hd');
+    hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) };
+    hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' };
+    hd.onpointerup = function () { drag = null };
+    document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
 
-<!-- groupBox4: 閫夋嫨璇煶 -->
-<fieldset class=" grp">
-                                                      <legend>閫夋嫨璇煶</legend>
-                                                      <select data-k="sVoice" style="width:200px;height:28px">
-                                                        <option>涓枃濂冲０</option>
-                                                        <option>涓枃鐢峰０</option>
-                                                      </select>
-                                              </fieldset>
+    // ═══════ Toast ═══════
+    let toastTimer;
+    function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show') }, 2000) }
 
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
+    // ═══════ Modal ═══════
+    function openModal(id) { document.getElementById(id).classList.add('show') }
+    function closeModal(id) { document.getElementById(id).classList.remove('show') }
+    // (称重调试无弹窗)
+    
 
-                                      <div class="stats">
-                                        <div class="sh">&#x1F4CA; 璋冪敤缁熻<span class="tag tag-form"
-                                            style="margin-left:4px">CS&#xB7;绉伴噸璋冭瘯</span></div>
-                                        <div style="display:flex;gap:8px;margin-bottom:6px">
-                                          <div
-                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">3</div>
-                                            <div style="font-size:7pt;color:DimGray">鏁版嵁搴撹〃</div>
-                                          </div>
-                                          <div
-                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
-                                            <div style="font-size:7pt;color:DimGray">瀛樺偍杩囩▼</div>
-                                          </div>
-                                          <div
-                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">1</div>
-                                            <div style="font-size:7pt;color:DimGray">DAL绫?/div></div>
-                                          </div>
-                                          <div class="ss">
-                                            <h4><span
-                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
-                                              鏁版嵁搴撹〃</h4>
-                                            <div style="font-size:8pt;line-height:1.7">
-                                              <div><span
-                                                  style="font-family:Consolas,monospace;color:#1a3a5c">DeviceConfig</span>
-                                                <span class="tag tag-tbl">璁惧閰嶇疆</span></div>
-                                              <div><span
-                                                  style="font-family:Consolas,monospace;color:#1a3a5c">WeighingTestHistory</span>
-                                                <span class="tag tag-tbl">绉伴噸娴嬭瘯璁板綍</span></div>
-                                              <div><span
-                                                  style="font-family:Consolas,monospace;color:#1a3a5c">Product</span>
-                                                <span class="tag tag-tbl">鐗╂枡</span></div>
-                                            </div>
-                                          </div>
-                                          <div class="ss">
-                                            <h4><span
-                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
-                                              瀛樺偍杩囩▼</h4>
-                                            <div style="font-size:8pt;color:#888;padding:2px 4px">閫氳繃 DAL&#x2192;WebAPI
-                                              鐩存帴鎿嶄綔锛屾湭浣跨敤鐙珛瀛樺偍杩囩▼</div>
-                                          </div>
-                                          <div class="ss">
-                                            <h4><span
-                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
-                                              鏁版嵁璁块棶灞?(DAL)</h4>
-                                            <div style="font-size:8pt;line-height:1.7">
-                                              <div><span
-                                                  style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_WeighingTestDAL</span>
-                                                <span class="tag tag-bll">绉伴噸璋冭瘯</span></div>
-                                              <div style="margin-left:10px;color:#888;font-size:7pt">GetDeviceConfig /
-                                                SaveTestResult</div>
-                                            </div>
-                                          </div>
-                                          <div class="ss">
-                                            <h4><span
-                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
-                                              绐椾綋</h4>
-                                            <div style="font-size:8pt;line-height:1.7">
-                                              <div><span
-                                                  style="font-family:Consolas,monospace;color:#1a3a5c">frmME_WeightingTest</span>
-                                                <span class="tag tag-form">绉伴噸璋冭瘯涓婚〉</span></div>
-                                            </div>
-                                          </div>
-                                          <div class="src-note"><b>&#x2705; 婧愮爜楠岃瘉锛?/b>
-                                              frmME_WeightingTest.Designer.cs<br>鎸夐挳瀹嬩綋15F&#xB7;groupBox&#xD7;4&#xB7;Color.Yellow/Green鐗规畩
-                                          </div>
-                                        </div>
-                                      </div>
+    // ═══════ 按钮交互 (frmME_WeightingTest 实际事件) ═══════
+    document.querySelectorAll('button[data-k]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var k = this.dataset.k;
+        // 皮重称重 → SkinWeightButton_Click: this.SkinWeight.Text = readWeight
+        if (k === 'SkinWeightButton') {
+          var v = (Math.random() * 5 + 0.5).toFixed(2);
+          document.querySelector('[data-k="SkinWeight"]').value = v;
+          updateGrossWeight();
+          toast('🔊 语音: 皮重 ' + v + ' 千克');
+          return;
+        }
+        // 去皮重 → RemoveSkinWeightButton_Click
+        if (k === 'RemoveSkinWeightButton') {
+          document.querySelector('[data-k="SkinWeight"]').value = '0.00';
+          updateGrossWeight();
+          toast('皮重已清零');
+          return;
+        }
+        // 净重称重 → WeightButton_Click
+        if (k === 'WeightButton') {
+          var nw = (Math.random() * 50 + 20).toFixed(2);
+          document.querySelector('[data-k="NetWeight"]').value = nw;
+          updateGrossWeight();
+          toast('🔊 语音: 净重 ' + nw + ' 千克');
+          return;
+        }
+        // 刷新 → btnRefresh_Click
+        if (k === 'btnRefresh') {
+          document.querySelector('[data-k="WeightLabel"]').textContent = (Math.random() * 50).toFixed(2);
+          toast('🔄 刷新实时读数 (模拟 timer2_Tick)');
+          return;
+        }
+        show(k);
+      })
+    });
+    // 毛重 = 皮重 + 净重
+    function updateGrossWeight() {
+      var sk = parseFloat(document.querySelector('[data-k="SkinWeight"]').value) || 0;
+      var nw = parseFloat(document.querySelector('[data-k="NetWeight"]').value) || 0;
+      document.querySelector('[data-k="GrossWeight"]').value = (sk + nw).toFixed(2);
+    }
+    // 设备号回车 → textBox1_KeyDown
+    document.querySelector('[data-k="textBox1"]').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        var eq = this.value;
+        document.querySelector('[data-k="textBox2"]').textContent = 'TCP已连接 ' + eq + ' | readWeight=50.15 | timer2运行中';
+        toast('🔌 设备 ' + eq + ' 已连接 (模拟 EquipmentInfo→TCP)');
+      }
+    });
 
-                                      <aside class="card" id="card">
-                                        <div class="card-hd">
-                                          <div><small>FIELD DATA LINEAGE</small>
-                                            <h3 id="title"></h3>
-                                          </div><button onclick="cl()"
-                                            style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">鉁?/button>
-                                        </div>
-                                        <div class="card-bd">
-                                          <div class="path" id="pth"></div>
-                                          <dl>
-                                            <dt>瀛楁鍚?/dt>
-                                            <dd id="label"></dd>
-                                          </dl>
-                                          <dl>
-                                            <dt>鏁版嵁鏉ユ簮</dt>
-                                            <dd id="source"></dd>
-                                          </dl>
-                                          <dl>
-                                            <dt>鎺т欢绫诲瀷</dt>
-                                            <dd id="type"></dd>
-                                          </dl>
-                                          <dl>
-                                            <dt>璋冪敤閾捐矾</dt>
-                                            <dd id="formula"></dd>
-                                          </dl>
-                                        </div>
-                                      </aside>
-
-                                      <script>
-                                        const map = {
-                                          sWeightMachine: ['绉伴噸鏈?,'COM绔彛閫夋嫨','ComboBox','閫夋嫨涓插彛绉伴噸璁惧',['frmME_WeightingTest']],
-sVoice: ['璇煶', '璇煶鎾姤閫夋嫨', 'ComboBox', '閫夋嫨璇煶鎾姤绫诲瀷', ['frmME_WeightingTest']],
-                                            skinWeight: ['鐨噸', 'SkinWeight TextBox', 'TextBox路瀹嬩綋15F', '绉伴噸鏈衡啋鐨噸璇绘暟', ['SkinWeight']],
-                                            grossWeight: ['姣涢噸', 'GrossWeight路ForeColor=Yellow', 'TextBox路瀹嬩綋15F', '绉伴噸鏈衡啋姣涢噸璇绘暟', ['GrossWeight']],
-                                            netWeight: ['鍑€閲?,'NetWeight路ForeColor = Green','TextBox路瀹嬩綋15F','姣涢噸 - 鐨噸 = 鍑€閲 ?, ['NetWeight']],
-                                            minValue: ['涓嬮檺', 'MinValueLabel', 'Label路瀹嬩綋15F', 'BPR閰嶆柟鈫掑～鍏?,['MinValueLabel']],
-stdValue: ['鏍囧噯鍊?,'StdValueLabel','Label路瀹嬩綋15F','BPR閰嶆柟鈫掑～鍏 ?, ['StdValueLabel']],
-                                              maxValue: ['涓婇檺', 'MaxValueLabel', 'Label路瀹嬩綋15F', 'BPR閰嶆柟鈫掑～鍏?,['MaxValueLabel']],
-btnRefresh: ['鍒锋柊', 'btnRefresh_Click', 'Button 9F路80脳30', '鍒锋柊绉伴噸鏈哄垪琛?,['frmME_WeightingTest']],
-btnSkinWeight: ['鐨噸绉伴噸', 'SkinWeightButton_Click', 'Button 瀹嬩綋15F路142脳77', '璇诲彇鐨噸鈫扴kinWeight', ['frmME_WeightingTest']],
-                                                  btnNetWeight: ['鍑€閲嶇О閲?,'WeightButton_Click','Button 瀹嬩綋15F路142脳77','璇诲彇姣涢噸鈫掕绠楀噣閲嶁啋WeightBar',['frmME_WeightingTest']],
-btnRemoveSkin: ['鍘荤毊閲?,'RemoveSkinWeightButton_Click','Button 瀹嬩綋15F路142脳77','娓呴浂鐨噸',['frmME_WeightingTest']]};
-const card = document.getElementById('card');
-                                          function show(k){ const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show')}
-                                        function cl() { card.classList.remove('show') }
-                                        document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) }));
-                                        var drag = null, hd = card.querySelector('.card-hd'); hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = function () { drag = null }; document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
-                                      </script>
-                                      <div class="toast" id="toast"></div>
+    // ═══════ Grid 行选中 ═══════
+    document.querySelectorAll('table.grid tbody').forEach(function (tb) {
+      tb.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (!tr) return; tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel-row') }); tr.classList.add('sel-row') })
+    });
+  </script>
 </body>
 
 </html>

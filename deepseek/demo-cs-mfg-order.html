@@ -1,680 +1,1187 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
   <meta charset="utf-8">
-  <title>宸ュ崟 路 CS瀹㈡埛绔?/title>
-    <style>
-      :root {
-        --hdr: #BCDCF4;
-        --grp: #5FA2D3;
-        --bg: #F0F0F0;
-        --w: #FFF;
-        --txt: #333;
-        --bdr: #C0C0C0;
-        --ghdr: #E8F0FE
-      }
+  <title>工单 · CS客户端</title>
+  <style>
+    :root {
+      --hdr: #BCDCF4;
+      --grp: #5FA2D3;
+      --bg: #F0F0F0;
+      --w: #FFF;
+      --txt: #333;
+      --bdr: #C0C0C0;
+      --ghdr: #E8F0FE
+    }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0
-      }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-      body {
-        font: 9pt "Microsoft YaHei", "寰蒋闆呴粦", sans-serif;
-        background: #E8ECF0;
-        display: flex;
-        justify-content: center;
-        padding: 8px;
-        min-height: 100vh
-      }
+    body {
+      font: 9pt "Microsoft YaHei", "微软雅黑", sans-serif;
+      background: #E8ECF0;
+      display: flex;
+      justify-content: center;
+      padding: 8px;
+      min-height: 100vh
+    }
 
-      .win {
-        max-width: 1500px;
-        width: 100%;
-        background: var(--bg);
-        border: 1px solid #8492A0;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
-      }
+    .win {
+      max-width: 1500px;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid #8492A0;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
+    }
 
-      .topbar {
-        height: 82px;
-        background: var(--hdr);
-        border-bottom: 1px solid #9BBDE0;
-        display: flex;
-        align-items: center;
-        padding: 0 16px;
-        gap: 20px
-      }
+    .topbar {
+      height: 82px;
+      background: var(--hdr);
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 20px
+    }
 
-      .topbar .logo {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #1a3a5c
-      }
+    .topbar .logo {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #1a3a5c
+    }
 
-      .topbar .info {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        flex: 1;
-        font-size: 9pt
-      }
+    .topbar .info {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+      font-size: 9pt
+    }
 
-      .topbar .info .time {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #000
-      }
+    .topbar .info .time {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000
+    }
 
-      .topbar .user {
-        font: 15pt "寰蒋闆呴粦";
-        font-weight: 700;
-        color: #000;
-        margin-left: auto
-      }
+    .topbar .user {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000;
+      margin-left: auto
+    }
 
-      .topbar .ver {
-        font-size: 9pt;
-        color: DimGray
-      }
+    .topbar .ver {
+      font-size: 9pt;
+      color: DimGray
+    }
 
-      .body {
-        display: flex;
-        height: calc(100vh - 100px);
-        min-height: 600px
-      }
+    .body {
+      display: flex;
+      height: calc(100vh - 100px);
+      min-height: 600px
+    }
 
-      .left {
-        width: 179px;
-        background: WhiteSmoke;
-        border-right: 1px solid var(--bdr);
-        overflow-y: auto;
-        flex-shrink: 0
-      }
+    .left {
+      width: 179px;
+      background: WhiteSmoke;
+      border-right: 1px solid var(--bdr);
+      overflow-y: auto;
+      flex-shrink: 0
+    }
 
-      .left .grp-title {
-        padding: 8px 10px;
-        font-weight: 700;
-        font-size: 9pt;
-        background: var(--grp);
-        color: #fff;
-        position: sticky;
-        top: 0;
-        z-index: 1
-      }
+    .left .grp-title {
+      padding: 8px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      background: var(--grp);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1
+    }
 
-      .left .tree-item {
-        padding: 4px 8px 4px 18px;
-        cursor: pointer;
-        font-size: 9pt;
-        color: var(--txt);
-        border-left: 3px solid transparent
-      }
+    .left .tree-item {
+      padding: 4px 8px 4px 18px;
+      cursor: pointer;
+      font-size: 9pt;
+      color: var(--txt);
+      border-left: 3px solid transparent
+    }
 
-      .left .tree-item:hover {
-        background: #E8F0FE
-      }
+    .left .tree-item:hover {
+      background: #E8F0FE
+    }
 
-      .left .tree-item.sel {
-        background: #DAE8F5;
-        border-left-color: #1a56b0;
-        font-weight: 700
-      }
+    .left .tree-item.sel {
+      background: #DAE8F5;
+      border-left-color: #1a56b0;
+      font-weight: 700
+    }
 
-      .right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden
-      }
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
 
-      .tabs {
-        display: flex;
-        background: var(--bg);
-        border-bottom: 1px solid var(--bdr)
-      }
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      border-bottom: 1px solid var(--bdr)
+    }
 
-      .tab {
-        padding: 6px 16px;
-        border-right: 1px solid var(--bdr);
-        cursor: pointer;
-        font-size: 9pt;
-        color: DimGray;
-        background: var(--bg)
-      }
+    .tab {
+      padding: 6px 16px;
+      border-right: 1px solid var(--bdr);
+      cursor: pointer;
+      font-size: 9pt;
+      color: DimGray;
+      background: var(--bg)
+    }
 
-      .tab.sel {
-        background: var(--w);
-        color: var(--txt);
-        font-weight: 700
-      }
+    .tab.sel {
+      background: var(--w);
+      color: var(--txt);
+      font-weight: 700
+    }
 
-      .content {
-        flex: 1;
-        overflow-y: auto;
-        background: var(--w)
-      }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--w)
+    }
 
-      .btn {
-        padding: 4px 16px;
-        border: 1px solid #C0C0C0;
-        border-radius: 3px;
-        background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
-        font: 9pt "寰蒋闆呴粦";
-        cursor: pointer;
-        height: 30px
-      }
+    .btn {
+      padding: 4px 16px;
+      border: 1px solid #C0C0C0;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
+      font: 9pt "微软雅黑";
+      cursor: pointer;
+      height: 30px
+    }
 
-      .btn:hover {
-        background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
-      }
+    .btn:hover {
+      background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
+    }
 
-      .btn.primary {
-        background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
-        border-color: #2D6AA0;
-        color: #fff
-      }
+    .btn.primary {
+      background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
+      border-color: #2D6AA0;
+      color: #fff
+    }
 
-      .sec-hdr {
-        background: linear-gradient(180deg, #E8F4FD, #BCDCF4);
-        padding: 4px 10px;
-        font-weight: 700;
-        font-size: 9pt;
-        color: #1a3a5c;
-        border-bottom: 1px solid #9BBDE0;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        gap: 6px
-      }
+    .sec-inactive {
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0);
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid var(--bdr);
+      height: 26px;
+      display: flex;
+      align-items: center
+    }
 
-      .sec-inactive {
-        background: linear-gradient(180deg, #F0F0F0, #D0D0D0)
-      }
+    .blk {
+      margin: 4px 6px;
+      background: var(--w);
+      border: 1px solid #C8D0D8;
+      border-radius: 3px;
+      overflow: hidden
+    }
 
-      .grid-wrap {
-        overflow-x: auto
-      }
+    .blk-hd {
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid #C8D0D8;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0)
+    }
 
-      table.grid {
-        width: 100%;
-        border-collapse: collapse;
-        font: 9pt "寰蒋闆呴粦", "Microsoft YaHei", sans-serif
-      }
+    .blk-bd {
+      padding: 4px
+    }
 
-      table.grid th {
-        background: var(--ghdr);
-        border: 1px solid #C0C0C0;
-        padding: 4px 6px;
-        font-weight: 600;
-        text-align: left;
-        font-size: 9pt
-      }
+    .blk-bd .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 4px
+    }
 
-      table.grid td {
-        border: 1px solid #E0E0E0;
-        padding: 3px 6px;
-        font-size: 9pt;
-        cursor: pointer
-      }
+    .blk-bd .row:last-child {
+      margin-bottom: 0
+    }
 
-      table.grid tr:hover td {
-        background: #BCDCF4
-      }
+    .blk-bd label {
+      font: 9pt "微软雅黑";
+      white-space: nowrap
+    }
 
-      .frow {
-        display: flex;
-        gap: 8px;
-        padding: 4px 10px;
-        flex-wrap: wrap;
-        align-items: center
-      }
+    .blk-bd input,
+    .blk-bd select {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 2px 6px
+    }
 
-      .stats {
-        width: 280px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 8px;
-        font-size: 9pt;
-        margin-left: 8px
-      }
+    .blk-bd .btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px
+    }
 
-      .stats .sh {
-        font-weight: 700;
-        font-size: 10pt;
-        margin-bottom: 6px
-      }
+    .grid-wrap {
+      overflow-x: auto;
+      overflow-y: auto;
+      min-height: 80px;
+      max-height: 220px
+    }
 
-      .stats .ss {
-        margin-bottom: 6px;
-        background: #fff;
-        border: 1px solid var(--bdr);
-        border-radius: 3px;
-        padding: 6px 8px
-      }
+    table.grid {
+      width: 100%;
+      border-collapse: collapse;
+      font: 9pt "宋体", SimSun, serif
+    }
 
-      .stats .ss h4 {
-        font-size: 8pt;
-        color: DimGray;
-        margin-bottom: 3px
-      }
+    table.grid th {
+      background: var(--ghdr);
+      border: 1px solid #C0C0C0;
+      padding: 3px 5px;
+      font-weight: 600;
+      text-align: left;
+      font-size: 8pt;
+      white-space: nowrap
+    }
 
-      .stats .tag {
-        font-size: 7pt;
-        padding: 1px 5px;
-        border-radius: 3px
-      }
+    table.grid td {
+      border: 1px solid #E0E0E0;
+      padding: 2px 5px;
+      font-size: 8pt;
+      cursor: pointer
+    }
 
-      .tag-tbl {
-        background: #E0F2FE;
-        color: #0369A1
-      }
+    table.grid tr:hover td {
+      background: #BCDCF4
+    }
 
-      .tag-form {
-        background: #FEF3C7;
-        color: #92400E
-      }
+    .frow {
+      display: flex;
+      gap: 6px;
+      padding: 3px 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
 
-      .src-note {
-        font-size: 7pt;
-        color: #92400E;
-        background: #FEFCE8;
-        padding: 5px 7px;
-        border-radius: 3px
-      }
+    .stats {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 8px;
+      font-size: 9pt;
+      margin-left: 8px
+    }
 
-      .card {
-        position: fixed;
-        right: 16px;
-        bottom: 16px;
-        width: 380px;
-        background: #fff;
-        border: 1px solid #8492A0;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
-        display: none;
-        z-index: 100;
-        font-size: 9pt
-      }
+    .stats .sh {
+      font-weight: 700;
+      font-size: 10pt;
+      margin-bottom: 6px
+    }
 
-      .card.show {
-        display: block
-      }
+    .stats .ss {
+      margin-bottom: 6px;
+      background: #fff;
+      border: 1px solid var(--bdr);
+      border-radius: 3px;
+      padding: 6px 8px
+    }
 
-      .card-hd {
-        background: var(--hdr);
-        padding: 8px 12px;
-        border-bottom: 1px solid #9BBDE0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: move
-      }
+    .stats .ss h4 {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 3px
+    }
 
-      .card-hd h3 {
-        font-size: 10pt;
-        color: #1a3a5c
-      }
+    .stats .tag {
+      font-size: 7pt;
+      padding: 1px 5px;
+      border-radius: 3px
+    }
 
-      .card-bd {
-        padding: 8px 10px
-      }
+    .tag-tbl {
+      background: #E0F2FE;
+      color: #0369A1
+    }
 
-      .card-bd dt {
-        font-size: 8pt;
-        color: DimGray;
-        margin-bottom: 1px
-      }
+    .tag-form {
+      background: #FEF3C7;
+      color: #92400E
+    }
 
-      .card-bd dd {
-        font-size: 9pt;
-        color: var(--txt);
-        word-break: break-all;
-        margin-bottom: 3px
-      }
+    .src-note {
+      font-size: 7pt;
+      color: #059669;
+      background: #f0fdf4;
+      padding: 5px 7px;
+      border-radius: 3px
+    }
 
-      .path {
-        display: flex;
-        gap: 3px;
-        font-size: 8pt;
-        color: var(--grp);
-        margin-bottom: 5px;
-        flex-wrap: wrap
-      }
+    /* 弹窗 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      z-index: 200;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px
+    }
 
-      .path span {
-        background: #E8F0FE;
-        padding: 1px 4px;
-        border-radius: 2px
-      }
+    .modal-overlay.show {
+      display: flex
+    }
 
-      .path .ar {
-        color: DimGray;
-        background: none
-      }
+    .modal {
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .3);
+      border-radius: 4px;
+      width: 520px;
+      max-width: 95vw;
+      font-size: 9pt
+    }
 
-      .toast {
-        position: fixed;
-        top: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #333;
-        color: #fff;
-        padding: 8px 20px;
-        border-radius: 4px;
-        font-size: 10pt;
-        z-index: 300;
-        opacity: 0;
-        transition: opacity .3s;
-        pointer-events: none
-      }
+    .modal-hd {
+      background: var(--hdr);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #9BBDE0
+    }
 
-      .toast.show {
-        opacity: 1
-      }
-    </style>
+    .modal-hd h3 {
+      font-size: 11pt;
+      color: #1a3a5c
+    }
+
+    .modal-bd {
+      padding: 12px 14px
+    }
+
+    .modal-bd .fld {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px
+    }
+
+    .modal-bd .fld label {
+      width: 100px;
+      text-align: right;
+      font-size: 9pt;
+      white-space: nowrap
+    }
+
+    .modal-bd .fld input,
+    .modal-bd .fld select,
+    .modal-bd .fld textarea {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 3px 6px;
+      flex: 1
+    }
+
+    .modal-bd .fld textarea {
+      height: 60px;
+      resize: vertical
+    }
+
+    .modal-ft {
+      padding: 8px 14px;
+      border-top: 1px solid #E0E0E0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px
+    }
+
+    .toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-size: 10pt;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    .sel-row {
+      background: #BCDCF4 !important
+    }
+
+    .card {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 380px;
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+      display: none;
+      z-index: 100;
+      font-size: 9pt
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-hd {
+      background: var(--hdr);
+      padding: 8px 12px;
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-hd h3 {
+      font-size: 10pt;
+      color: #1a3a5c
+    }
+
+    .card-bd {
+      padding: 8px 10px
+    }
+
+    .card-bd dt {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 1px
+    }
+
+    .card-bd dd {
+      font-size: 9pt;
+      color: var(--txt);
+      word-break: break-all;
+      margin-bottom: 3px
+    }
+
+    .path {
+      display: flex;
+      gap: 3px;
+      font-size: 8pt;
+      color: var(--grp);
+      margin-bottom: 5px;
+      flex-wrap: wrap
+    }
+
+    .path span {
+      background: #E8F0FE;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .path .ar {
+      color: DimGray;
+      background: none
+    }
+  </style>
 </head>
 
 <body>
   <div style="display:flex;gap:8px">
     <div class="win">
       <div class="topbar">
-        <div class="logo">MES 鍒堕€犳墽琛岀郴缁?/div><div class="info"><span>馃搮 2026-07-29</span><span
-              class="time">14:30:00</span><span>鏄熸湡涓?/span><span>| 绯荤粺杩炴帴锛氭甯?/span></div><span
-            class="ver">褰撳墠鐗堟湰锛?.0.5.74</span><span class="user">馃懁 瓒呯骇绠＄悊鍛?/span></div>
-        <div class="body">
-          <div class="left">
-            <div class="grp-title">涓诲鑸?/div><div class="tree-item">鏃?/div><div class="grp-title">鐢熶骇鎵ц</div>
-                <div class="tree-item">宸ュ崟鍚姩</div>
-                <div class="tree-item sel">宸ュ崟</div>
-                <div class="tree-item">鍘熸枡绉伴噸</div>
-                <div class="tree-item">鍘熸枡绉伴噸澶嶆牳</div>
-                <div class="tree-item">浣欐枡绉伴噸</div>
-                <div class="tree-item">绉伴噸璋冭瘯</div>
-                <div class="tree-item">澶╁钩璋冭瘯</div>
-                <div class="tree-item">BPR浣滀笟</div>
-                <div class="tree-item">BPR浣滀笟淇敼</div>
-                <div class="tree-item">閰嶅埗缃愭竻娲楀惎鍔?/div><div class="tree-item">棰勯厤缃愭竻娲楀惎鍔?/div><div class="tree-item">
-                      鍌ㄧ綈娓呮礂鍚姩</div>
-                    <div class="tree-item">閰嶅埗鍚庢竻娲?/div><div class="tree-item">涓嶉攬閽㈡竻娲楁秷姣?/div><div class="tree-item">
-                          璁惧娓呮礂娑堟瘨</div>
-                        <div class="tree-item">閰嶅埗浜у嚭</div>
-                        <div class="tree-item">鍗婃垚鍝佷骇鍑?/div><div class="tree-item">閰嶅埗缃愯緭鍑?/div><div class="tree-item">
-                              鍌ㄧ綈杈撳叆</div>
-                            <div class="tree-item">鍌ㄧ綈杈撳嚭</div>
-                            <div class="tree-item">鎶ュ簾鍗?/div><div class="tree-item">缃愯閫€鏂?/div><div class="tree-item">
-                                  鍐呮爤鏉垮寘瑁?/div><div class="tree-item">鎴愬搧鍖呰</div>
-                                  <div class="tree-item">杩斿伐璁板綍琛?/div><div class="tree-item">鎵瑰彿閲嶅嵃</div>
-                                    <div class="tree-item">閰嶅埗浜у嚭TK缁戝畾</div>
-                                    <div class="tree-item">鐢熶骇绾垮垎鎵?/div><div class="tree-item">涓績绾胯緭鍏?/div><div
-                                          class="tree-item">閰嶅埗璁惧妫€鏌ヨ褰?/div><div class="tree-item">
-                                            閰嶅埗鍖哄煙鐢熶骇鍓嶆竻鍦鸿褰?/div><div class="tree-item">鐢熶骇鍓嶇敓浜х嚎娓呭満妫€鏌ヨ〃</div>
-                                            <div class="tree-item">鍦ㄧ嚎浜у搧瑁呯閲嶉噺妫€鏌ヨ〃</div>
-                                            <div class="tree-item">璁惧鍋滄満璁板綍</div>
-                                            <div class="tree-item">鐢熶骇瀹炵哗褰曞叆</div>
-                                          </div>
-                                          <div class="right">
-                                            <div class="tabs">
-                                              <div class="tab">棣栭〉</div>
-                                              <div class="tab sel">宸ュ崟</div>
-                                            </div>
-                                            <div class="content">
+        <div class="logo">MES 制造执行系统</div>
+        <div class="info"><span>📅 2026-07-29</span><span class="time">14:30:00</span><span>星期三</span><span>|
+            系统连接：正常</span></div>
+        <span class="ver">当前版本：3.0.5.74</span><span class="user">👤 超级管理员</span>
+      </div>
+      <div class="body">
+        <div class="left">
+          <div class="grp-title">主导航</div>
+          <div class="tree-item">无</div>
+          <div class="grp-title">生产执行</div>
+          <div class="tree-item">工单启动</div>
+          <div class="tree-item sel">工单</div>
+          <div class="tree-item">原料称重</div>
+          <div class="tree-item">原料称重复核</div>
+          <div class="tree-item">余料称重</div>
+          <div class="tree-item">称重调试</div>
+          <div class="tree-item">天平调试</div>
+          <div class="tree-item">BPR作业</div>
+          <div class="tree-item">BPR作业修改</div>
+          <div class="tree-item">配制罐清洗启动</div>
+          <div class="tree-item">预配罐清洗启动</div>
+          <div class="tree-item">储罐清洗启动</div>
+          <div class="tree-item">配制后清洗</div>
+          <div class="tree-item">不锈钢清洗消毒</div>
+          <div class="tree-item">设备清洗消毒</div>
+          <div class="tree-item">配制产出</div>
+          <div class="tree-item">半成品产出</div>
+          <div class="tree-item">配制罐输出</div>
+          <div class="tree-item">储罐输入</div>
+          <div class="tree-item">储罐输出</div>
+          <div class="tree-item">报废单</div>
+          <div class="tree-item">罐装退料</div>
+          <div class="tree-item">内栈板包装</div>
+          <div class="tree-item">成品包装</div>
+          <div class="tree-item">返工记录表</div>
+          <div class="tree-item">批号重印</div>
+          <div class="tree-item">配制产出TK绑定</div>
+          <div class="tree-item">生产线分批</div>
+          <div class="tree-item">中心线输入</div>
+          <div class="tree-item">配制设备检查记录</div>
+          <div class="tree-item">配制区域生产前清场记录</div>
+          <div class="tree-item">生产前生产线清场检查表</div>
+          <div class="tree-item">在线产品装箱重量检查表</div>
+          <div class="tree-item">设备停机记录</div>
+          <div class="tree-item">生产实绩录入</div>
+        </div>
+        <div class="right">
+          <div class="tabs">
+            <div class="tab">首页</div>
+            <div class="tab sel">工单</div>
+          </div>
+          <div class="content">
 
-                                              <!-- searchPanel -->
-                                              <div
-                                                style="padding:4px 10px;background:var(--bg);display:flex;gap:8px;align-items:center">
-                                                <label style="font:10pt '寰蒋闆呴粦'">宸ュ崟锛?/label><input
-                                                    data-k="sMfgOrderNM" value="MO-SO251206750-02"
-                                                    style="width:200px;height:28px;font:9pt '寰蒋闆呴粦';border:1px solid #C0C0C0"><button
-                                                    class="btn primary" data-k="btnQuery">鏌ヨ</button></div>
+            <!-- ① searchPanel: 查询行 45px -->
+            <div class="blk">
+              <div class="blk-hd">工单查询 <span
+                  style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">searchPanel 1689×45 Dock=Top</span>
+              </div>
+              <div class="blk-bd" style="padding:4px 8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                <label style="font:9pt '微软雅黑'">工单号：<span style="font-size:7pt;color:#2563eb">[输入]</span></label>
+                <input data-k="SearchArea_MfgOrderNM" value="MO-202607-001"
+                  style="width:315px;height:27px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px">
+                <button class="btn primary" data-k="QueryButton"
+                  style="width:124px;height:33px;font:12pt '微软雅黑'">查询</button>
+                <button class="btn primary" data-k="SearchArea_CloseButton"
+                  style="width:124px;height:33px;font:12pt '微软雅黑'">结案</button>
+                <button class="btn" data-k="SearchArea_UnCloseButton"
+                  style="width:124px;height:33px;font:12pt '微软雅黑'">结案还原</button>
+                <button class="btn" data-k="SearchArea_UpdateButton"
+                  style="width:124px;height:33px;font:12pt '微软雅黑'">修改</button>
+              </div>
+            </div>
 
-                                              <div class="grid-wrap" style="max-height:100px">
-                                                <table class="grid">
-                                                  <thead>
-                                                    <tr>
-                                                      <th>#</th>
-                                                      <th>宸ュ崟缂栧彿</th>
-                                                      <th>鐗╂枡缂栧彿</th>
-                                                      <th>鍝佸悕</th>
-                                                      <th>鎵瑰彿</th>
-                                                      <th>鏁伴噺</th>
-                                                      <th>鍗曚綅</th>
-                                                      <th>鍙戞斁鏃ユ湡</th>
-                                                      <th>BPR</th>
-                                                      <th>鐘舵€?/th>
-                                                    </tr>
-                                                  </thead>
-                                                  <tbody>
-                                                    <tr>
-                                                      <td>1</td>
-                                                      <td data-k="moNM">MO-SO251206750-02</td>
-                                                      <td data-k="moProductNM">2969341</td>
-                                                      <td data-k="moName">绀轰緥娲楀彂姘?/td>
-                                                      <td data-k="moBatch">2630</td>
-                                                      <td data-k="moQty">1760</td>
-                                                      <td>KG</td>
-                                                      <td>2026-07-15</td>
-                                                      <td>娲楀彂姘?BPR</td>
-                                                      <td>宸插彂鏀?/td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                              </div>
+            <!-- ② MfgOrderList: 工单列表 239px -->
+            <div class="blk">
+              <div class="blk-hd">工单列表 <span
+                  style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">dgvMfgOrderList 1689×239, 15列</span>
+              </div>
+              <div class="grid-wrap" style="min-height:100px;max-height:239px">
+                <table class="grid" id="mfgGrid">
+                  <thead>
+                    <tr>
+                      <th>工单号</th>
+                      <th>物料编号</th>
+                      <th>数量</th>
+                      <th>完成数</th>
+                      <th>抽样数量</th>
+                      <th>计划开工时间</th>
+                      <th>计划完工时间</th>
+                      <th>工单状态</th>
+                      <th>修改人</th>
+                      <th>修改时间</th>
+                      <th>状态</th>
+                      <th>工单Id</th>
+                      <th>产品类型</th>
+                      <th>采购类型</th>
+                      <th>返工原因</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td data-k="g_MfgOrderNM">MO-202607-001</td>
+                      <td data-k="g_ProductNM">MAT-001</td>
+                      <td data-k="g_Qty">5000</td>
+                      <td data-k="g_CompliteQty">3200</td>
+                      <td data-k="g_SampleQty">10</td>
+                      <td data-k="g_ReleaseDate">2026-07-25</td>
+                      <td data-k="g_PlanFinishDate">2026-07-30</td>
+                      <td data-k="g_State">生产中</td>
+                      <td data-k="g_ModifyBy">超级管理员</td>
+                      <td data-k="g_ModifyTime">2026-07-29</td>
+                      <td data-k="g_MoStatus">1</td>
+                      <td data-k="g_MfgOrderId">1001</td>
+                      <td data-k="g_ProductType">成品</td>
+                      <td data-k="g_PurchaseType">正常</td>
+                      <td data-k="g_Reason">—</td>
+                    </tr>
+                    <tr>
+                      <td data-k="g_MfgOrderNM">MO-202607-002</td>
+                      <td data-k="g_ProductNM">MAT-002</td>
+                      <td data-k="g_Qty">3000</td>
+                      <td data-k="g_CompliteQty">1500</td>
+                      <td data-k="g_SampleQty">5</td>
+                      <td data-k="g_ReleaseDate">2026-07-26</td>
+                      <td data-k="g_PlanFinishDate">2026-07-31</td>
+                      <td data-k="g_State">生产中</td>
+                      <td data-k="g_ModifyBy">超级管理员</td>
+                      <td data-k="g_ModifyTime">2026-07-29</td>
+                      <td data-k="g_MoStatus">1</td>
+                      <td data-k="g_MfgOrderId">1002</td>
+                      <td data-k="g_ProductType">成品</td>
+                      <td data-k="g_PurchaseType">正常</td>
+                      <td data-k="g_Reason">—</td>
+                    </tr>
+                    <tr>
+                      <td data-k="g_MfgOrderNM">MO-202607-003</td>
+                      <td data-k="g_ProductNM">MAT-003</td>
+                      <td data-k="g_Qty">2000</td>
+                      <td data-k="g_CompliteQty">2000</td>
+                      <td data-k="g_SampleQty">8</td>
+                      <td data-k="g_ReleaseDate">2026-07-20</td>
+                      <td data-k="g_PlanFinishDate">2026-07-28</td>
+                      <td data-k="g_State">已结案</td>
+                      <td data-k="g_ModifyBy">李四</td>
+                      <td data-k="g_ModifyTime">2026-07-29</td>
+                      <td data-k="g_MoStatus">2</td>
+                      <td data-k="g_MfgOrderId">1003</td>
+                      <td data-k="g_ProductType">成品</td>
+                      <td data-k="g_PurchaseType">正常</td>
+                      <td data-k="g_Reason">—</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-                                              <div class="sec-hdr">鍙戞枡鎵规</div>
-                                              <div class="grid-wrap" style="max-height:80px">
-                                                <table class="grid">
-                                                  <thead>
-                                                    <tr>
-                                                      <th>#</th>
-                                                      <th>鐢熶骇鎵瑰彿</th>
-                                                      <th>娴佹按鍙?/th>
-                                                      <th>鍙戞枡鏁伴噺</th>
-                                                      <th>鍗曚綅</th>
-                                                      <th>浜у搧鍚嶇О</th>
-                                                      <th>鍏朵粬淇℃伅</th>
-                                                    </tr>
-                                                  </thead>
-                                                  <tbody>
-                                                    <tr>
-                                                      <td>1</td>
-                                                      <td data-k="dispBatch">2630</td>
-                                                      <td data-k="dispLotNM">005226290006001</td>
-                                                      <td data-k="dispQty">1760</td>
-                                                      <td>KG</td>
-                                                      <td>ZW_NE OP SER</td>
-                                                      <td>鈥?/td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                              </div>
+            <!-- ③ TextAreaPanel: 工单详情 225px, 3列 -->
+            <div class="blk">
+              <div class="blk-hd">工单详细信息 <span
+                  style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">TextAreaPanel 1689×225 Dock=Top,
+                  17字段</span></div>
+              <div class="blk-bd" style="padding:4px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 12px">
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">工单编号：<span
+                      style="font-size:7pt;color:#888">[自动]</span></label><input data-k="TextArea_MfgOrderNM"
+                    value="MO-202607-001"
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">物料编号：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_ProductNM"
+                    value="MAT-001"
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label style="font:9pt '微软雅黑';width:80px">完成数：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_CompliteQty"
+                    value="3200"
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">规格描述：<span
+                      style="font-size:7pt;color:#888">[自动]</span></label><input data-k="TextArea_Description" readonly
+                    value=""
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label style="font:9pt '微软雅黑';width:80px">销售单：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_SalesOrder"
+                    value=""
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label style="font:9pt '微软雅黑';width:80px">客户：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_CustomerNM"
+                    value=""
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">客户订单号：<span
+                      style="font-size:7pt;color:#888">[自动]</span></label><input data-k="TextArea_CustomerOrderNM"
+                    readonly value=""
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">计划开工日期：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_ReleaseDate"
+                    value="2026-07-25"
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">计划完工日期：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_PlanFinishDate"
+                    value="2026-07-30"
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">生产批号：<span
+                      style="font-size:7pt;color:#888">[自动]</span></label><input data-k="TextArea_MfgBatch"
+                    value="B20260725-001" readonly
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;background:#F5F5F5">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label style="font:9pt '微软雅黑';width:80px">数量：<span
+                      style="font-size:7pt;color:#888">[自动]</span></label><input data-k="TextArea_Qty" value="5000"
+                    readonly
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;background:#F5F5F5">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label style="font:9pt '微软雅黑';width:80px">单位：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_UOMNM" value="kg"
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">工单状态：<span
+                      style="font-size:7pt;color:#888">[自动]</span></label><input data-k="TextArea_WorkStatus"
+                    value="生产中" readonly
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;background:#F5F5F5">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label style="font:9pt '微软雅黑';width:80px">修改人：<span
+                      style="font-size:7pt;color:#888">[自动]</span></label><input data-k="TextArea_ModifyBy"
+                    value="超级管理员" readonly
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;background:#F5F5F5">
+                </div>
+                <div style="display:flex;align-items:center;gap:4px"><label
+                    style="font:9pt '微软雅黑';width:80px">修改时间：<span
+                      style="font-size:7pt;color:#2563eb">[输入]</span></label><input data-k="TextArea_LastModifyTime"
+                    value="2026-07-29" readonly
+                    style="flex:1;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px;padding:2px 6px;background:#F5F5F5">
+                </div>
+              </div>
+            </div>
 
-                                              <div class="sec-hdr">鎵规姹囨€?/div><div class="grid-wrap"
-                                                  style="max-height:80px">
-                                                  <table class="grid">
-                                                    <thead>
-                                                      <tr>
-                                                        <th>#</th>
-                                                        <th>鐢熶骇鎵瑰彿</th>
-                                                        <th>鍦ㄥ簱鐘舵€?/th>
-                                                        <th>鍘熸暟閲?/th>
-                                                        <th>鏁伴噺</th>
-                                                      </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                      <tr>
-                                                        <td>1</td>
-                                                        <td data-k="sumBatch">2630</td>
-                                                        <td data-k="sumStatus">鍦ㄥ簱</td>
-                                                        <td data-k="sumOrigQty">1760</td>
-                                                        <td data-k="sumQty">150</td>
-                                                      </tr>
-                                                    </tbody>
-                                                  </table>
-                                                </div>
+            <!-- ④ DispatchListPanel: 发料信息 267px -->
+            <div class="blk">
+              <div class="blk-hd">发料信息 <span
+                  style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">DispatchListPanel 1689×267,
+                  Left=已发料明细(12列) | Right=发料批次(3列)</span></div>
+              <div class="blk-bd" style="padding:4px;display:flex;gap:4px">
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:700;font-size:9pt;padding:2px 4px;background:#E8F0FE;margin-bottom:2px">已发料明细
+                    <span style="font-weight:400;color:#888;font-size:7pt">DispatchedMaterialList 999×240, 13列</span>
+                  </div>
+                  <div class="grid-wrap" style="min-height:80px;max-height:200px">
+                    <table class="grid">
+                      <thead>
+                        <tr>
+                          <th>项次</th>
+                          <th>物料编号</th>
+                          <th>品名</th>
+                          <th>需求数量</th>
+                          <th>线边数量</th>
+                          <th>差异</th>
+                          <th>实发数量</th>
+                          <th>发料数量</th>
+                          <th>退回数量</th>
+                          <th>未收退料</th>
+                          <th>备货数量</th>
+                          <th>单位</th>
+                          <th>typeint</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td data-k="d_Item">1</td>
+                          <td data-k="d_ProductNM">ZW_NE OP SER</td>
+                          <td data-k="d_Note">主料</td>
+                          <td data-k="d_RequireQty">50</td>
+                          <td data-k="d_LineQty">0</td>
+                          <td data-k="d_DifferenceQty">3.5</td>
+                          <td data-k="d_ActDispatchedQty">46.5</td>
+                          <td data-k="d_DispatchQty">50</td>
+                          <td data-k="d_ReturnQty">3.5</td>
+                          <td data-k="d_ReturnApplyQty">0</td>
+                          <td data-k="d_DispatchPrepareQty">50</td>
+                          <td data-k="d_UOMNM">kg</td>
+                          <td data-k="d_Type">1</td>
+                        </tr>
+                        <tr>
+                          <td data-k="d_Item">2</td>
+                          <td data-k="d_ProductNM">ZW_PH ADJUST</td>
+                          <td data-k="d_Note">辅料</td>
+                          <td data-k="d_RequireQty">12.5</td>
+                          <td data-k="d_LineQty">0</td>
+                          <td data-k="d_DifferenceQty">0</td>
+                          <td data-k="d_ActDispatchedQty">12.5</td>
+                          <td data-k="d_DispatchQty">12.5</td>
+                          <td data-k="d_ReturnQty">0</td>
+                          <td data-k="d_ReturnApplyQty">0</td>
+                          <td data-k="d_DispatchPrepareQty">12.5</td>
+                          <td data-k="d_UOMNM">kg</td>
+                          <td data-k="d_Type">1</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div style="width:400px;flex-shrink:0">
+                  <div style="font-weight:700;font-size:9pt;padding:2px 4px;background:#E8F0FE;margin-bottom:2px">发料批次列表
+                    <span style="font-weight:400;color:#888;font-size:7pt">DispatchedLotList 690×240</span>
+                  </div>
+                  <div class="grid-wrap" style="min-height:80px;max-height:200px">
+                    <table class="grid">
+                      <thead>
+                        <tr>
+                          <th>生产批号</th>
+                          <th>流水号</th>
+                          <th>数量</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td data-k="dl_MFGBatch">B20260725-001</td>
+                          <td data-k="dl_LotNM">20260729-001</td>
+                          <td data-k="dl_Qty">50</td>
+                        </tr>
+                        <tr>
+                          <td data-k="dl_MFGBatch">B20260725-001</td>
+                          <td data-k="dl_LotNM">20260729-002</td>
+                          <td data-k="dl_Qty">12.5</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                                                <div class="sec-hdr">鎵规鏄庣粏</div>
-                                                <div class="grid-wrap" style="max-height:80px">
-                                                  <table class="grid">
-                                                    <thead>
-                                                      <tr>
-                                                        <th>#</th>
-                                                        <th>鐢熶骇鎵瑰彿</th>
-                                                        <th>娴佹按鍙?/th>
-                                                        <th>鍘熷紑濮嬫椂闂?/th>
-                                                        <th>鍘熸暟閲?/th>
-                                                        <th>鏁伴噺</th>
-                                                      </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                      <tr>
-                                                        <td>1</td>
-                                                        <td data-k="lotBatch">2630</td>
-                                                        <td data-k="lotLotNM">005226290006001</td>
-                                                        <td data-k="lotOrigStart">2026-07-15 08:00</td>
-                                                        <td data-k="lotOrigQty">1760</td>
-                                                        <td data-k="lotQty">150</td>
-                                                      </tr>
-                                                    </tbody>
-                                                  </table>
-                                                </div>
+            <!-- ⑤ ListPanel2: 批次信息 284px -->
+            <div class="blk">
+              <div class="blk-hd">批次信息 <span style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">ListPanel2
+                  1689×284, Left=产出批次(8列) | Right=生产批次汇总(4列)</span></div>
+              <div class="blk-bd" style="padding:4px;display:flex;gap:4px">
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:700;font-size:9pt;padding:2px 4px;background:#E8F0FE;margin-bottom:2px">
+                    产出批次明细列表 <span style="font-weight:400;color:#888;font-size:7pt">LotList 1004×254, 8列</span></div>
+                  <div class="grid-wrap" style="min-height:80px;max-height:200px">
+                    <table class="grid">
+                      <thead>
+                        <tr>
+                          <th>生产批号</th>
+                          <th>流水号</th>
+                          <th>原开始时间</th>
+                          <th>原数量</th>
+                          <th>数量</th>
+                          <th>产线</th>
+                          <th>设备</th>
+                          <th>是否已入库</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td data-k="l_MfgBatch">B20260725-001</td>
+                          <td data-k="l_LotNM">LOT-001</td>
+                          <td data-k="l_StartDate">2026-07-25 08:00</td>
+                          <td data-k="l_OrigQty">5000</td>
+                          <td data-k="l_Qty">3200</td>
+                          <td data-k="l_ProductLine">产线A</td>
+                          <td data-k="l_Equipment">EQ-01</td>
+                          <td data-k="l_IsStock">在库</td>
+                        </tr>
+                        <tr>
+                          <td data-k="l_MfgBatch">B20260726-001</td>
+                          <td data-k="l_LotNM">LOT-002</td>
+                          <td data-k="l_StartDate">2026-07-26 08:00</td>
+                          <td data-k="l_OrigQty">3000</td>
+                          <td data-k="l_Qty">1500</td>
+                          <td data-k="l_ProductLine">产线B</td>
+                          <td data-k="l_Equipment">EQ-02</td>
+                          <td data-k="l_IsStock">在库</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div style="width:380px;flex-shrink:0">
+                  <div style="font-weight:700;font-size:9pt;padding:2px 4px;background:#E8F0FE;margin-bottom:2px">生产批次汇总
+                    <span style="font-weight:400;color:#888;font-size:7pt">LotSummaryList 685×254</span>
+                  </div>
+                  <div class="grid-wrap" style="min-height:80px;max-height:200px">
+                    <table class="grid">
+                      <thead>
+                        <tr>
+                          <th>生产批号</th>
+                          <th>在库状态</th>
+                          <th>原数量</th>
+                          <th>数量</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td data-k="ls_MFGBatch">B20260725-001</td>
+                          <td data-k="ls_LotEstate">在库</td>
+                          <td data-k="ls_OrigQty">5000</td>
+                          <td data-k="ls_Qty">3200</td>
+                        </tr>
+                        <tr>
+                          <td data-k="ls_MFGBatch">B20260726-001</td>
+                          <td data-k="ls_LotEstate">在库</td>
+                          <td data-k="ls_OrigQty">3000</td>
+                          <td data-k="ls_Qty">1500</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                                                <!-- ReductionPanel: GradientInactiveCaption -->
-                                                <div class="sec-hdr sec-inactive">缁撴杩樺師鍒楄〃锛?/div><div
-                                                    style="padding:2px 10px;display:flex;gap:8px;align-items:center">
-                                                    <label style="font:9pt '寰蒋闆呴粦'">璁″垝寮€濮嬫棩鏈燂細</label><input
-                                                      value="2026-07-29"
-                                                      style="width:219px;height:29px;font:10pt '寰蒋闆呴粦';border:1px solid #C0C0C0">
-                                                  </div>
-                                                  <div class="grid-wrap" style="max-height:80px">
-                                                    <table class="grid">
-                                                      <thead>
-                                                        <tr>
-                                                          <th>#</th>
-                                                          <th>鎿嶄綔</th>
-                                                          <th>鎿嶄綔鏃堕棿</th>
-                                                          <th>鎿嶄綔浜?/th>
-                                                          <th>鎿嶄綔璁惧</th>
-                                                        </tr>
-                                                      </thead>
-                                                      <tbody>
-                                                        <tr>
-                                                          <td>1</td>
-                                                          <td data-k="redOp">杩樺師宸ュ崟</td>
-                                                          <td data-k="redTime">2026-07-20 09:00</td>
-                                                          <td data-k="redUser">瓒呯骇绠＄悊鍛?/td>
-                                                          <td data-k="redDevice">PC-001</td>
-                                                        </tr>
-                                                      </tbody>
-                                                    </table>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div class="stats">
-                                            <div class="sh">&#x1F4CA; 璋冪敤缁熻<span class="tag tag-form"
-                                                style="margin-left:4px">CS&#xB7;宸ュ崟</span></div>
-                                            <div style="display:flex;gap:8px;margin-bottom:6px">
-                                              <div
-                                                style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                                <div style="font-weight:700;font-size:12pt;color:#1a3a5c">4</div>
-                                                <div style="font-size:7pt;color:DimGray">鏁版嵁搴撹〃</div>
-                                              </div>
-                                              <div
-                                                style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                                <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
-                                                <div style="font-size:7pt;color:DimGray">瀛樺偍杩囩▼</div>
-                                              </div>
-                                              <div
-                                                style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
-                                                <div style="font-weight:700;font-size:12pt;color:#1a3a5c">1</div>
-                                                <div style="font-size:7pt;color:DimGray">DAL绫?/div></div>
-                                              </div>
-                                              <div class="ss">
-                                                <h4><span
-                                                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
-                                                  鏁版嵁搴撹〃</h4>
-                                                <div style="font-size:8pt;line-height:1.7">
-                                                  <div><span
-                                                      style="font-family:Consolas,monospace;color:#1a3a5c">MfgOrder</span>
-                                                    <span class="tag tag-tbl">宸ュ崟</span></div>
-                                                  <div><span
-                                                      style="font-family:Consolas,monospace;color:#1a3a5c">DispatchHistory</span>
-                                                    <span class="tag tag-tbl">鍙戞枡鍘嗗彶</span></div>
-                                                  <div><span
-                                                      style="font-family:Consolas,monospace;color:#1a3a5c">Lot</span>
-                                                    <span class="tag tag-tbl">鎵规</span></div>
-                                                  <div><span
-                                                      style="font-family:Consolas,monospace;color:#1a3a5c">Product</span>
-                                                    <span class="tag tag-tbl">鐗╂枡</span></div>
-                                                </div>
-                                              </div>
-                                              <div class="ss">
-                                                <h4><span
-                                                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
-                                                  瀛樺偍杩囩▼</h4>
-                                                <div style="font-size:8pt;color:#888;padding:2px 4px">閫氳繃
-                                                  DAL&#x2192;WebAPI 鐩存帴鎿嶄綔锛屾湭浣跨敤鐙珛瀛樺偍杩囩▼</div>
-                                              </div>
-                                              <div class="ss">
-                                                <h4><span
-                                                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
-                                                  鏁版嵁璁块棶灞?(DAL)</h4>
-                                                <div style="font-size:8pt;line-height:1.7">
-                                                  <div><span
-                                                      style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_MfgOrderDAL</span>
-                                                    <span class="tag tag-bll">宸ュ崟绠＄悊</span></div>
-                                                  <div style="margin-left:10px;color:#888;font-size:7pt">GetMfgOrderList
-                                                    / GetDispatchList / GetLotSummary</div>
-                                                </div>
-                                              </div>
-                                              <div class="ss">
-                                                <h4><span
-                                                    style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
-                                                  绐椾綋</h4>
-                                                <div style="font-size:8pt;line-height:1.7">
-                                                  <div><span
-                                                      style="font-family:Consolas,monospace;color:#1a3a5c">frmME_MfgOrder</span>
-                                                    <span class="tag tag-form">宸ュ崟涓婚〉</span></div>
-                                                </div>
-                                              </div>
-                                              <div class="src-note"><b>&#x2705; 婧愮爜楠岃瘉锛?/b>
-                                                  frmME_MfgOrder.Designer.cs<br>ReductionTitlePanel=GradientInactiveCaption&#xB7;SelectionBackColor=#BCDCF4
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <aside class="card" id="card">
-                                            <div class="card-hd">
-                                              <div><small>FIELD DATA LINEAGE</small>
-                                                <h3 id="title"></h3>
-                                              </div><button onclick="cl()"
-                                                style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">鉁?/button>
-                                            </div>
-                                            <div class="card-bd">
-                                              <div class="path" id="pth"></div>
-                                              <dl>
-                                                <dt>瀛楁鍚?/dt>
-                                                <dd id="label"></dd>
-                                              </dl>
-                                              <dl>
-                                                <dt>鏁版嵁鏉ユ簮</dt>
-                                                <dd id="source"></dd>
-                                              </dl>
-                                              <dl>
-                                                <dt>鎺т欢绫诲瀷</dt>
-                                                <dd id="type"></dd>
-                                              </dl>
-                                              <dl>
-                                                <dt>璋冪敤閾捐矾</dt>
-                                                <dd id="formula"></dd>
-                                              </dl>
-                                            </div>
-                                          </aside>
-                                          <script>const map = { sMfgOrderNM: ['宸ュ崟', 'searchPanel', 'ComboGrid', ['frmME_MfgOrder']], moNM: ['宸ュ崟缂栧彿', 'MfgOrderList路宸ュ崟缂栧彿', 'DataGridView', ['MfgOrderList']], moProductNM: ['鐗╂枡缂栧彿', 'MfgOrderList路鐗╂枡缂栧彿', 'DataGridView', ['MfgOrderList']], moName: ['鍝佸悕', 'MfgOrderList路鍝佸悕', 'DataGridView', ['MfgOrderList']], moBatch: ['鎵瑰彿', 'MfgOrderList路鎵瑰彿', 'DataGridView', ['MfgOrderList']], moQty: ['鏁伴噺', 'MfgOrderList路鏁伴噺', 'DataGridView', ['MfgOrderList']], dispBatch: ['鐢熶骇鎵瑰彿', 'DispatchBatchPanel路鐢熶骇鎵瑰彿', 'DataGridView', ['DispatchBatchPanel']], dispLotNM: ['娴佹按鍙?,'DispatchBatchPanel路娴佹按鍙 ?, 'DataGridView', ['DispatchBatchPanel']], dispQty: ['鍙戞枡鏁伴噺', 'DispatchBatchPanel路鍙戞枡鏁伴噺', 'DataGridView', ['DispatchBatchPanel']], sumBatch: ['鐢熶骇鎵瑰彿', 'LotSummaryList路鐢熶骇鎵瑰彿', 'DataGridView', ['LotSummaryList']], sumStatus: ['鍦ㄥ簱鐘舵€?,'LotSummaryList路鍦ㄥ簱鐘舵€?, 'DataGridView', ['LotSummaryList']], sumOrigQty: ['鍘熸暟閲?,'LotSummaryList路鍘熸暟閲 ?, 'DataGridView', ['LotSummaryList']], sumQty: ['鏁伴噺', 'LotSummaryList路鏁伴噺', 'DataGridView', ['LotSummaryList']], lotBatch: ['鐢熶骇鎵瑰彿', 'LotList路鐢熶骇鎵瑰彿', 'DataGridView', ['LotList']], lotLotNM: ['娴佹按鍙?,'LotList路娴佹按鍙 ?, 'DataGridView', ['LotList']], lotOrigStart: ['鍘熷紑濮嬫椂闂?,'LotList路鍘熷紑濮嬫椂闂 ?, 'DataGridView', ['LotList']], lotOrigQty: ['鍘熸暟閲?,'LotList路鍘熸暟閲 ?, 'DataGridView', ['LotList']], lotQty: ['鏁伴噺', 'LotList路鏁伴噺', 'DataGridView', ['LotList']], redOp: ['鎿嶄綔', 'ReductionList路鎿嶄綔', 'DataGridView', ['ReductionList']], redTime: ['鎿嶄綔鏃堕棿', 'ReductionList路鎿嶄綔鏃堕棿', 'DataGridView', ['ReductionList']], redUser: ['鎿嶄綔浜?,'ReductionList路鎿嶄綔浜 ?, 'DataGridView', ['ReductionList']], redDevice: ['鎿嶄綔璁惧', 'ReductionList路鎿嶄綔璁惧', 'DataGridView', ['ReductionList']], btnQuery: ['鏌ヨ', '鎼滅储鎸夐挳', 'Button', ['frmME_MfgOrder']] };
-                                            const card = document.getElementById('card'); function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show') } function cl() { card.classList.remove('show') } document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) })); var drag = null, hd = card.querySelector('.card-hd'); hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = function () { drag = null }; document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });</script>
-                                          <div class="toast" id="toast"></div>
+            <!-- ⑥ ReductionPanel: 操作记录 161px -->
+            <div class="blk">
+              <div class="blk-hd">操作记录 <span
+                  style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">ReductionPanel 1689×161
+                  Dock=Top</span></div>
+              <div class="blk-bd" style="padding:4px">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+                  <label style="font:9pt '微软雅黑'">结案还原列表：</label>
+                  <label style="font:9pt '微软雅黑'">计划开始日期：<span style="font-size:7pt;color:#2563eb">[输入]</span></label>
+                  <input type="date" value="2026-07-01"
+                    style="width:219px;height:29px;font:9pt '微软雅黑';border:1px solid #C0C0C0">
+                </div>
+                <div class="grid-wrap" style="min-height:60px;max-height:100px">
+                  <table class="grid">
+                    <thead>
+                      <tr>
+                        <th>操作</th>
+                        <th>操作时间</th>
+                        <th>操作人</th>
+                        <th>操作设备</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-k="r_TxnId">结案还原</td>
+                        <td data-k="r_TxnTime">2026-07-29 16:00</td>
+                        <td data-k="r_TxnUserNM">超级管理员</td>
+                        <td data-k="r_TxnStationNM">BS-Web</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sh">📊 调用统计<span class="tag tag-form" style="margin-left:4px">CS·工单</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">3</div>
+          <div style="font-size:7pt;color:DimGray">数据库表</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">2</div>
+          <div style="font-size:7pt;color:DimGray">存储过程</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">2</div>
+          <div style="font-size:7pt;color:DimGray">DAL</div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4>数据库表</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas;color:#1a3a5c">MfgOrder</span> <span class="tag tag-tbl">工单主表</span>
+          </div>
+          <div><span style="font-family:Consolas;color:#1a3a5c">MfgOrderBOM</span> <span
+              class="tag tag-tbl">工单BOM</span></div>
+          <div><span style="font-family:Consolas;color:#1a3a5c">Lot</span> <span class="tag tag-tbl">批次</span></div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4>存储过程</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas;color:#1a3a5c">Pro_MfgOrder_Close_Check</span> <span
+              class="tag tag-sp">结案前校验 (code=200/998/999)</span></div>
+          <div><span style="font-family:Consolas;color:#1a3a5c">Pro_MfgOrder_Close</span> <span
+              class="tag tag-sp">执行结案</span></div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4>数据访问层</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas;color:#1a3a5c">MESZZZX_MfgOrderDAL</span> <span
+              class="tag tag-bll">工单DAL</span></div>
+          <div><span style="font-family:Consolas;color:#1a3a5c">CKZY_WorkOrder</span> <span
+              class="tag tag-bll">Web工单BLL</span></div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4>窗体</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas;color:#1a3a5c">frmME_MfgOrder</span> <span class="tag tag-form">工单主页
+              1710×875</span></div>
+        </div>
+      </div>
+      <div class="src-note"><b>✅ 源码验证：</b> frmME_MfgOrder.cs / .Designer.cs<br>ButtomPanel(Fill) · 6 Panel(Top) · 4
+        Button · 5 DataGridView · 17 Field</div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <aside class="card" id="card">
+    <div class="card-hd">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title"></h3>
+      </div><button onclick="cl()"
+        style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">✕</button>
+    </div>
+    <div class="card-bd">
+      <div class="path" id="pth"></div>
+      <dl>
+        <dt>字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl>
+        <dt>数据来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl>
+        <dt>控件类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl>
+        <dt>调用链路</dt>
+        <dd id="formula"></dd>
+      </dl>
+    </div>
+  </aside>
+  <script>
+    // ═══════ 字段血缘 Map - frmME_MfgOrder ═══════
+    const map = {
+      // searchPanel
+      SearchArea_MfgOrderNM: ['工单查询', 'MfgOrder.MfgOrderNM', 'TextBox 315×27', ['searchPanel→QueryButton→BindYQDPC']],
+      QueryButton: ['查询', 'QueryButton', 'Button 124×33', ['searchPanel→QueryButton_Click→BindYQDPC()']],
+      SearchArea_CloseButton: ['结案', 'CloseButton', 'Button 124×33', ['→dal.CloseCheck()→code=200/998/999→Pro_MfgOrder_Close']],
+      SearchArea_UnCloseButton: ['结案还原', 'UnCloseButton', 'Button 124×33', ['→Pro_MfgOrder_UnClose_New']],
+      SearchArea_UpdateButton: ['修改', 'UpdateButton', 'Button 124×33', ['→MfgOrderDAL.Update']],
+      // TextAreaPanel
+      TextArea_MfgOrderNM: ['工单编号', 'MfgOrder.MfgOrderNM', 'TextBox 267×29', ['TextAreaPanel→Bind']],
+      TextArea_ProductNM: ['物料编号', 'MfgOrder.ProductNM', 'ComboGrid 267×31', ['TextAreaPanel→dtProductNM']],
+      TextArea_CompliteQty: ['完成数', 'MfgOrder.CompliteQty', 'TextBox 267×29 ReadOnly', ['TextAreaPanel→Bind']],
+      TextArea_Description: ['规格描述', 'MfgOrder.Description', 'TextBox 267×29', ['TextAreaPanel→Bind']],
+      TextArea_SalesOrder: ['销售单', 'MfgOrder.SalesOrder', 'ComboGrid 267×31', ['TextAreaPanel→dtSalesOrderNM']],
+      TextArea_CustomerNM: ['客户', 'MfgOrder.CustomerNM', 'ComboGrid 267×31', ['TextAreaPanel→dtCustomerNM']],
+      TextArea_CustomerOrderNM: ['客户订单号', 'MfgOrder.CustomerOrderNM', 'TextBox 267×29', ['TextAreaPanel→Bind']],
+      TextArea_ReleaseDate: ['计划开工日期', 'MfgOrder.ReleaseDate', 'DateTimePicker 267×29', ['TextAreaPanel→Bind']],
+      TextArea_PlanFinishDate: ['计划完工日期', 'MfgOrder.PlanFinishDate', 'DateTimePicker 267×29', ['TextAreaPanel→Bind']],
+      TextArea_MfgBatch: ['生产批号', 'MfgOrder.MfgBatch', 'TextBox 267×29 ReadOnly', ['TextAreaPanel→Bind']],
+      TextArea_Qty: ['数量', 'MfgOrder.Qty', 'TextBox 267×29 ReadOnly', ['TextAreaPanel→Bind']],
+      TextArea_UOMNM: ['单位', 'MfgOrder.UOMNM', 'ComboGrid 267×31', ['TextAreaPanel→dtUOMNM']],
+      TextArea_WorkStatus: ['工单状态', 'MfgOrder.WorkStatus', 'TextBox 267×29 ReadOnly', ['TextAreaPanel→Bind']],
+      TextArea_ModifyBy: ['修改人', 'MfgOrder.LastModifyBy', 'TextBox 267×29 ReadOnly', ['TextAreaPanel→Bind']],
+      TextArea_LastModifyTime: ['修改时间', 'MfgOrder.LastModifyTime', 'DateTimePicker 267×29', ['TextAreaPanel→Bind']],
+      // dgvMfgOrderList 工单列表 (15列)
+      g_MfgOrderNM: ['工单号', 'MfgOrder.MfgOrderNM', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_ProductNM: ['物料编号', 'MfgOrder.ProductNM', 'DataGridView col', ['MfgOrderList(关联)→dgvMfgOrderList']],
+      g_Qty: ['数量', 'MfgOrder.Qty', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_CompliteQty: ['完成数', 'MfgOrder.CompliteQty', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_SampleQty: ['抽样数量', 'MfgOrder.SampleQty', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_ReleaseDate: ['计划开工时间', 'MfgOrder.ReleaseDate', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_PlanFinishDate: ['计划完工时间', 'MfgOrder.PlanFinishDate', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_State: ['工单状态', 'MfgOrder.State', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_ModifyBy: ['修改人', 'MfgOrder.LastModifyBy', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_ModifyTime: ['修改时间', 'MfgOrder.LastModifyTime', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_MoStatus: ['状态', 'MfgOrder.MOStatus', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_MfgOrderId: ['工单Id', 'MfgOrder.MfgOrderId', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_ProductType: ['产品类型', 'MfgOrder.ProductTypeId', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_PurchaseType: ['采购类型', 'MfgOrder.PurchaseType', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      g_Reason: ['返工原因', 'MfgOrder.Reason', 'DataGridView col', ['MfgOrderList→dgvMfgOrderList']],
+      // DispatchedMaterialList 已发料明细
+      d_Item: ['项次', 'DispatchedMaterial.Item', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_ProductNM: ['物料编号', 'DispatchedMaterial.ProductNM', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_Note: ['品名', 'DispatchedMaterial.Note', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_RequireQty: ['需求数量', 'DispatchedMaterial.RequireQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_LineQty: ['线边数量', 'DispatchedMaterial.LineQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_DifferenceQty: ['差异', 'DispatchedMaterial.DifferenceQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_ActDispatchedQty: ['实发数量', 'DispatchedMaterial.ActDispatchedQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_DispatchQty: ['发料数量', 'DispatchedMaterial.DispatchQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_ReturnQty: ['退回数量', 'DispatchedMaterial.ReturnQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_ReturnApplyQty: ['未收退料', 'DispatchedMaterial.ReturnApplyQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_DispatchPrepareQty: ['备货数量', 'DispatchedMaterial.DispatchPrepareQty', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_UOMNM: ['单位', 'DispatchedMaterial.UOMNM', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      d_Type: ['typeint', 'DispatchedMaterial.typeint', 'DataGridView col', ['DispatchDetailPanel→DispatchedMaterialList']],
+      // DispatchedLotList 发料批次
+      dl_MFGBatch: ['生产批号', 'DispatchLot.MFGBatch', 'DataGridView col', ['DispatchBatchPanel→DispatchedLotList']],
+      dl_LotNM: ['流水号', 'DispatchLot.LotNM', 'DataGridView col', ['DispatchBatchPanel→DispatchedLotList']],
+      dl_Qty: ['数量', 'DispatchLot.Qty', 'DataGridView col', ['DispatchBatchPanel→DispatchedLotList']],
+      // LotList 产出批次
+      l_MfgBatch: ['生产批号', 'Lot.MfgBatch', 'DataGridView col', ['LotListPanel→LotList']],
+      l_LotNM: ['流水号', 'Lot.LotNM', 'DataGridView col', ['LotListPanel→LotList']],
+      l_StartDate: ['原开始时间', 'Lot.OriginalStartDate', 'DataGridView col', ['LotListPanel→LotList']],
+      l_OrigQty: ['原数量', 'Lot.OriginalQty', 'DataGridView col', ['LotListPanel→LotList']],
+      l_Qty: ['数量', 'Lot.Qty', 'DataGridView col', ['LotListPanel→LotList']],
+      l_ProductLine: ['产线', 'Lot.ProductLineNM', 'DataGridView col', ['LotListPanel→LotList']],
+      l_Equipment: ['设备', 'Lot.EquipmentNM', 'DataGridView col', ['LotListPanel→LotList']],
+      l_IsStock: ['是否已入库', 'Lot.IsStockDesc', 'DataGridView col', ['LotListPanel→LotList']],
+      // LotSummaryList 批次汇总
+      ls_MFGBatch: ['生产批号', 'LotSummary.MFGBatch', 'DataGridView col', ['LotSummaryPanel→LotSummaryList']],
+      ls_LotEstate: ['在库状态', 'LotSummary.LotEstate', 'DataGridView col', ['LotSummaryPanel→LotSummaryList']],
+      ls_OrigQty: ['原数量', 'LotSummary.OriginalQty', 'DataGridView col', ['LotSummaryPanel→LotSummaryList']],
+      ls_Qty: ['数量', 'LotSummary.Qty', 'DataGridView col', ['LotSummaryPanel→LotSummaryList']],
+      // ReductionList 操作记录
+      r_TxnId: ['操作', 'Reduction.TxnId', 'DataGridView col', ['ReductionPanel→ReductionList']],
+      r_TxnTime: ['操作时间', 'Reduction.TxnTime', 'DataGridView col', ['ReductionPanel→ReductionList']],
+      r_TxnUserNM: ['操作人', 'Reduction.TxnUserNM', 'DataGridView col', ['ReductionPanel→ReductionList']],
+      r_TxnStationNM: ['操作设备', 'Reduction.TxnStationNM', 'DataGridView col', ['ReductionPanel→ReductionList']],
+    };
+
+    // ═══════ Grid 行选中 (pointerdown 先于 click 触发) ═══════
+    document.querySelectorAll('table.grid tbody').forEach(function (tb) {
+      tb.addEventListener('pointerdown', function (e) { var tr = e.target.closest('tr'); if (!tr) return; tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel-row') }); tr.classList.add('sel-row') })
+    });
+    // ═══════ 字段血缘 Card ═══════
+    const card = document.getElementById('card');
+    function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show') }
+    function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) }));
+    var drag = null, hd = card.querySelector('.card-hd');
+    hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) };
+    hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' };
+    hd.onpointerup = function () { drag = null };
+    document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+
+    // ═══════ Toast ═══════
+    let toastTimer;
+    function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show') }, 2000) }
+
+    // ═══════ Modal ═══════
+    function openModal(id) { document.getElementById(id).classList.add('show') }
+    function closeModal(id) { document.getElementById(id).classList.remove('show') }
+    function submitHead() { closeModal('modalHead'); toast('✅ 工单已保存（模拟）') }
+    function submitList() { closeModal('modalList'); toast('✅ 明细已保存（模拟）') }
+
+    // ═══════ 按钮交互 - frmME_MfgOrder ═══════
+    document.querySelectorAll('button[data-k]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation(); var k = this.dataset.k;
+        if (k === 'QueryButton') { toast('🔍 查询工单号 → BindYQDPC() 加载dgvMfgOrderList'); return }
+        if (k === 'SearchArea_CloseButton') { toast('🔒 调用 CloseCheck → code=200 正常结案 / 998 强制结案(偏差≥5%) / 999 阻断'); return }
+        if (k === 'SearchArea_UnCloseButton') { toast('↩️ 结案还原 → Pro_MfgOrder_UnClose_New'); return }
+        if (k === 'SearchArea_UpdateButton') { toast('✏️ 修改工单信息（模拟）'); return }
+        show(k);
+      })
+    });
+  </script>
 </body>
 
 </html>
