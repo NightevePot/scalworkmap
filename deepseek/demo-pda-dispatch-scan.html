@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>发料扫描 · 字段血缘演示</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .wrap {
+      display: flex;
+      gap: 20px;
+      max-width: 1000px
+    }
+
+    .pda {
+      width: 380px;
+      background: #0f0f23;
+      border-radius: 20px;
+      padding: 16px 12px 20px;
+      border: 3px solid #2a2a4a;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+      flex-shrink: 0
+    }
+
+    .pda-top {
+      text-align: center;
+      color: #888;
+      font-size: 10px;
+      margin-bottom: 8px
+    }
+
+    .pda-screen {
+      background: #fff;
+      border-radius: 6px;
+      min-height: 480px;
+      overflow: hidden
+    }
+
+    .pda-hdr {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between
+    }
+
+    .pda-body {
+      padding: 12px;
+      font-size: 12px;
+      color: #333
+    }
+
+    .pda-body label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #555;
+      margin: 4px 0 2px
+    }
+
+    .pda-body input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      background: #f8f8f8
+    }
+
+    .pda-body .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      text-align: center
+    }
+
+    .btn-blue {
+      background: #1a56b0;
+      color: #fff
+    }
+
+    .btn-green {
+      background: #059669;
+      color: #fff
+    }
+
+    .btn-orange {
+      background: #d97706;
+      color: #fff
+    }
+
+    .pda-list {
+      font-size: 11px;
+      margin-top: 8px
+    }
+
+    .pda-list .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 8px;
+      border-bottom: 1px solid #f0f0f0
+    }
+
+    .pda-list .item .label {
+      color: #888
+    }
+
+    .pda-list .item .val {
+      font-weight: 600
+    }
+
+    .pda-footer {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 0
+    }
+
+    .pda-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #2a2a4a
+    }
+
+    .stats {
+      width: 280px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
+      flex-shrink: 0;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      font-size: 11px
+    }
+
+    .stats .sh {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    .stats .ss {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9
+    }
+
+    .stats .ss h4 {
+      font-size: 10px;
+      color: #888;
+      margin-bottom: 4px
+    }
+
+    .stats .item {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      margin-bottom: 2px
+    }
+
+    .stats .nm {
+      font-weight: 600;
+      color: #1a56b0
+    }
+
+    .stats .tag {
+      font-size: 8px;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .t-frag {
+      background: #d1fae5;
+      color: #047857
+    }
+
+    .t-api {
+      background: #e0f2fe;
+      color: #0369a1
+    }
+
+    .card {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 350px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+      display: none;
+      z-index: 100;
+      font-size: 11px
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-hd {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-bd {
+      padding: 10px 12px
+    }
+
+    .card-bd dt {
+      font-size: 9px;
+      color: #888;
+      margin-bottom: 1px
+    }
+
+    .card-bd dd {
+      font-size: 11px;
+      color: #333;
+      margin-bottom: 3px
+    }
+
+    .path {
+      display: flex;
+      gap: 3px;
+      font-size: 9px;
+      color: #1a56b0;
+      margin-bottom: 4px;
+      flex-wrap: wrap
+    }
+
+    .path span {
+      background: #e8f0fe;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .path .ar {
+      color: #888;
+      background: none
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="pda">
+      <div class="pda-top">━━ PDA 手持终端 ━━</div>
+      <div class="pda-screen">
+        <div class="pda-hdr"><span>📷 发料扫描</span><span>Fragment_B</span></div>
+        <div class="pda-body">
+          <label>扫描流水号</label><input data-k="scanLotNM" placeholder="扫码LotNM..." value="005226290006001"
+            style="font-size:16px;font-weight:700;text-align:center">
+          <div class="pda-list">
+            <div class="item"><span class="label">物料编号</span><span class="val" data-k="productNM">2969341</span></div>
+            <div class="item"><span class="label">品名</span><span class="val">ZW_NE OP SER</span></div>
+            <div class="item"><span class="label">批号</span><span class="val" data-k="batch">2630</span></div>
+            <div class="item"><span class="label">应发数量</span><span class="val" data-k="shouldQty">1760</span></div>
+            <div class="item"><span class="label">已发数量</span><span class="val" data-k="doneQty">0</span></div>
+          </div>
+          <label>本次发料数量</label><input data-k="dispatchQty" value="1760" type="number">
+          <button class="btn btn-blue" data-k="btnDoDispatch">📷 确认发料 (DoDispatchLot)</button>
+          <div style="margin-top:8px;padding:8px;background:#fefce8;border-radius:4px;font-size:10px;color:#92400e">⚠
+            系统自动校验流水号有效性及数量上限</div>
+        </div>
+      </div>
+      <div class="pda-footer">
+        <div class="pda-btn"></div>
+        <div class="pda-btn"></div>
+        <div class="pda-btn"></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="sh">📊 PDA调用统计<span class="tag t-frag">PDA·Android</span></div>
+      <div class="ss">
+        <h4>📱 Fragment</h4>
+        <div class="item"><span class="nm">Fragment_B</span><span class="tag t-frag">发料扫描</span></div>
+      </div>
+      <div class="ss">
+        <h4>🔌 WCF</h4>
+        <div class="item"><span class="nm">/DoDispatchLot</span><span class="tag t-api">发料服务</span></div>
+      </div>
+      <div class="ss">
+        <h4>📊 表</h4>
+        <div class="item"><span class="nm">DispatchHistory</span></div>
+        <div class="item"><span class="nm">Lot</span></div>
+      </div>
+      <div class="ss" style="background:#f0fdf4">
+        <h4>📷 扫码说明</h4>
+        <div style="font-size:10px;color:#065f46">扫 <b>物料标签上的 LotNM 流水号</b><br>校验：LotNM 有效+未超发+批次匹配<br>调用 WCF
+          /DoDispatchLot 写入发料记录</div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="card" id="card">
+    <div class="card-hd">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title"></h3>
+      </div><button onclick="cl()"
+        style="border:none;background:none;color:#fff;font-size:16px;cursor:pointer">✕</button>
+    </div>
+    <div class="card-bd">
+      <div class="path" id="pth"></div>
+      <dl>
+        <dt>字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl>
+        <dt>数据来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl>
+        <dt>控件类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl>
+        <dt>调用链路</dt>
+        <dd id="formula"></dd>
+      </dl>
+    </div>
+  </aside>
+  <script>const map = { scanLotNM: ['扫描流水号', 'EditText', 'b_saomiaofaliao', '扫码枪输入LotNM', ['Fragment_B']], productNM: ['物料编号', 'Product.ProductNM', 'TextView', 'scan→lookup', ['Fragment_B']], batch: ['批号', 'MfgOrder.MFGBatch', 'TextView', 'scan→fill', ['Fragment_B']], shouldQty: ['应发数量', 'DispatchHistory.Qty', 'TextView', 'dispatch→fill', ['Fragment_B']], doneQty: ['已发数量', '累计发料量', 'TextView', '实时累加', ['Fragment_B']], dispatchQty: ['本次发料数量', 'EditText', 'number', '手动/默认=应发', ['Fragment_B']], btnDoDispatch: ['确认发料', 'onDoDispatchLotWcf', 'Button', '/DoDispatchLot→DispatchHistory', ['Fragment_B']] };
+    const card = document.getElementById('card'); function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show') } function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) })); var drag = null, hd = card.querySelector('.card-hd'); hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = function () { drag = null }; document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });</script>
+</body>
+
+</html>

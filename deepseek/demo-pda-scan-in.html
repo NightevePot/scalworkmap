@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>PDA扫码入库 · 字段血缘演示</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px
+    }
+
+    .wrap {
+      display: flex;
+      gap: 20px;
+      max-width: 1000px
+    }
+
+    /* PDA 设备框 */
+    .pda {
+      width: 380px;
+      background: #0f0f23;
+      border-radius: 20px;
+      padding: 16px 12px 20px;
+      border: 3px solid #2a2a4a;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+      flex-shrink: 0
+    }
+
+    .pda-top {
+      text-align: center;
+      color: #888;
+      font-size: 10px;
+      margin-bottom: 8px
+    }
+
+    .pda-screen {
+      background: #fff;
+      border-radius: 6px;
+      min-height: 500px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    .pda-hdr {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .pda-body {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      font-size: 12px;
+      color: #333
+    }
+
+    .pda-body label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #555;
+      margin: 8px 0 3px
+    }
+
+    .pda-body input,
+    .pda-body select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      background: #f8f8f8
+    }
+
+    .pda-body input:focus {
+      border-color: #1a56b0;
+      background: #fff
+    }
+
+    .pda-body .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      text-align: center
+    }
+
+    .btn-blue {
+      background: #1a56b0;
+      color: #fff
+    }
+
+    .btn-green {
+      background: #059669;
+      color: #fff
+    }
+
+    .btn-gray {
+      background: #e5e7eb;
+      color: #333
+    }
+
+    .pda-list {
+      font-size: 11px;
+      margin-top: 8px
+    }
+
+    .pda-list .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-bottom: 1px solid #f0f0f0
+    }
+
+    .pda-list .item .label {
+      color: #888
+    }
+
+    .pda-list .item .val {
+      font-weight: 600
+    }
+
+    .pda-footer {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 0
+    }
+
+    .pda-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #2a2a4a
+    }
+
+    /* Stats */
+    .stats {
+      width: 280px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
+      flex-shrink: 0;
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      font-size: 11px
+    }
+
+    .stats .sh {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    .stats .ss {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9
+    }
+
+    .stats .ss h4 {
+      font-size: 10px;
+      color: #888;
+      margin-bottom: 4px
+    }
+
+    .stats .item {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      margin-bottom: 2px;
+      cursor: pointer
+    }
+
+    .stats .nm {
+      font-weight: 600;
+      color: #1a56b0
+    }
+
+    .stats .tag {
+      font-size: 8px;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .t-frag {
+      background: #d1fae5;
+      color: #047857
+    }
+
+    .t-api {
+      background: #e0f2fe;
+      color: #0369a1
+    }
+
+    .card {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 350px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+      display: none;
+      z-index: 100;
+      font-size: 11px
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-hd {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px 10px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-bd {
+      padding: 10px 12px
+    }
+
+    .card-bd dt {
+      font-size: 9px;
+      color: #888;
+      margin-bottom: 1px
+    }
+
+    .card-bd dd {
+      font-size: 11px;
+      color: #333;
+      margin-bottom: 3px
+    }
+
+    .path {
+      display: flex;
+      gap: 3px;
+      font-size: 9px;
+      color: #1a56b0;
+      margin-bottom: 4px;
+      flex-wrap: wrap
+    }
+
+    .path span {
+      background: #e8f0fe;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .path .ar {
+      color: #888;
+      background: none
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="pda">
+      <div class="pda-top">━━ PDA 手持终端 ━━</div>
+      <div class="pda-screen">
+        <div class="pda-hdr"><span>📦 扫码入库</span><span>DoInWH</span></div>
+        <div class="pda-body">
+          <label>工单号</label>
+          <div style="font:bold 14px '微软雅黑';padding:6px 8px;background:#f0f4ff;border-radius:4px" data-k="mfgOrderNM">
+            MO-SO251206750-02</div>
+          <label>扫描流水号</label><input data-k="scanLotNM" placeholder="扫描或输入LotNM..." value="005226290006001">
+          <label>数量</label><input data-k="qty" value="1760" type="number">
+          <label>库位</label><select data-k="location">
+            <option>A-01-03</option>
+            <option>A-02-01</option>
+          </select>
+          <div class="pda-list" style="margin-top:10px">
+            <div class="item"><span class="label">产品</span><span class="val" data-k="productNM">示例洗发水</span></div>
+            <div class="item"><span class="label">批号</span><span class="val" data-k="batch">2630</span></div>
+            <div class="item"><span class="label">单位</span><span class="val">KG</span></div>
+          </div>
+          <button class="btn btn-green" data-k="btnConfirm" style="margin-top:14px">✓ 确认入库</button>
+          <button class="btn btn-gray" data-k="btnCancel">✕ 取消</button>
+        </div>
+      </div>
+      <div class="pda-footer">
+        <div class="pda-btn"></div>
+        <div class="pda-btn"></div>
+        <div class="pda-btn"></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="sh">📊 PDA调用统计<span class="tag t-frag" style="margin-left:4px">PDA·Android</span></div>
+      <div class="ss">
+        <h4>📱 Fragment/Activity</h4>
+        <div class="item"><span class="nm">DoInWH</span><span class="tag t-frag">扫码入库</span></div>
+      </div>
+      <div class="ss">
+        <h4>🔌 WCF接口</h4>
+        <div class="item"><span class="nm">/DoInWH</span><span class="tag t-api">入库服务</span></div>
+      </div>
+      <div class="ss">
+        <h4>📊 涉及表</h4>
+        <div class="item"><span class="nm">InWHOrder</span></div>
+        <div class="item"><span class="nm">Lot</span></div>
+      </div>
+      <div class="ss" style="background:#f0fdf4">
+        <h4>📷 扫码说明</h4>
+        <div style="font-size:10px;color:#065f46">扫 <b>物料标签上的 LotNM 流水号</b><br>校验：该流水号已暂收+未入库<br>确认后生成 InWHOrder 入库单
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="card" id="card">
+    <div class="card-hd">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title"></h3>
+      </div><button onclick="cl()"
+        style="border:none;background:none;color:#fff;font-size:16px;cursor:pointer">✕</button>
+    </div>
+    <div class="card-bd">
+      <div class="path" id="pth"></div>
+      <dl>
+        <dt>字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl>
+        <dt>数据来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl>
+        <dt>控件类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl>
+        <dt>调用链路</dt>
+        <dd id="formula"></dd>
+      </dl>
+    </div>
+  </aside>
+
+  <script>const map = { mfgOrderNM: ['工单号', 'MfgOrder.MfgOrderNM', 'TextView', 'scan→lookup', ['DoInWH']], scanLotNM: ['扫描流水号', 'Lot.LotNM', 'EditText', '扫码枪输入', ['DoInWH']], qty: ['数量', 'EditText', 'number', '手动输入/自动', ['DoInWH']], location: ['库位', 'ComboBox', '下拉', '选择目标库位', ['DoInWH']], productNM: ['产品名称', 'Product.ProductNM', 'TextView', 'scan→fill', ['DoInWH']], batch: ['批号', 'MfgOrder.MFGBatch', 'TextView', 'scan→fill', ['DoInWH']], btnConfirm: ['确认入库', 'DoInWH WCF', 'Button', '校验→/DoInWH→InWHOrder', ['DoInWH']], btnCancel: ['取消', 'finish()', 'Button', '返回', ['DoInWH']] };
+    const card = document.getElementById('card'); function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show') } function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) })); var drag = null, hd = card.querySelector('.card-hd'); hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = function () { drag = null }; document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });</script>
+</body>
+
+</html>

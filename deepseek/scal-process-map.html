@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
@@ -445,11 +445,11 @@
   <div class="header">
     <h1>SCAL 端到端流程地图</h1>
     <div class="sys-tags">
-      <span class="sys-tag sys-erp">ERP · 外部系统</span>
-      <span class="sys-tag sys-bs">BS · Web MES</span>
-      <span class="sys-tag sys-cs">CS · 桌面MES</span>
-      <span class="sys-tag sys-pda">PDA · 手持</span>
-      <span class="sys-tag sys-db">DB · 数据库</span>
+      <span class="sys-tag sys-erp">🏭 ERP·外部</span>
+      <span class="sys-tag sys-bs">🌐 BS·Web MES</span>
+      <span class="sys-tag sys-cs">🖥️ CS·桌面MES</span>
+      <span class="sys-tag sys-pda">📱 PDA·手持</span>
+      <span class="sys-tag sys-db">🗄️ DB·数据库</span>
     </div>
   </div>
 
@@ -463,16 +463,19 @@
           style="flex:1;min-width:300px;background:#f0fdf4;border:2px dashed #22c55e;border-radius:10px;padding:14px 18px">
           <div style="font-weight:700;font-size:13px;color:#166534;margin-bottom:6px">📐 生产模型配置（基础参考数据，外侧引用）</div>
           <div style="display:flex;gap:10px;font-size:11px;color:#4b5563">
-            <a href="demo-bom.html" target="_blank" style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s" onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'" onmouseleave="this.style.boxShadow=''"><b>BOM</b>
+            <a href="demo-bom.html" target="_blank"
+              style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s"
+              onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'"
+              onmouseleave="this.style.boxShadow=''"><b>BOM</b>
               物料清单<br /><small>MESSCMX_BOM</small></a>
             <span style="color:#22c55e;align-self:center">→</span>
-            <a href="demo-process-config.html" target="_blank" style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s" onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'" onmouseleave="this.style.boxShadow=''"><b>工艺维护</b>
+            <a href="demo-process-config.html" target="_blank"
+              style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s"
+              onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'"
+              onmouseleave="this.style.boxShadow=''"><b>操作指导</b>
               工艺步骤/参数<br /><small>MESGYLC_Recipe</small></a>
-            <span style="color:#22c55e;align-self:center">→</span>
-            <a href="demo-process-config.html" target="_blank" style="background:#fff;border:1px solid #86efac;border-radius:6px;padding:4px 10px;text-decoration:none;color:#166534;cursor:pointer;transition:all .2s" onmouseenter="this.style.boxShadow='0 2px 8px rgba(34,197,94,.2)'" onmouseleave="this.style.boxShadow=''"><b>BPR配方</b>
-              批次配方定义<br /><small>MESGYLC_BPR</small></a>
           </div>
-          <div style="font-size:10px;color:#6b7280;margin-top:6px">↓ BOM引用 ④领料 | ↓ 工艺引用 ⑤称料 | ↓ 配方引用 ⑥BPR作业</div>
+          <div style="font-size:10px;color:#6b7280;margin-top:6px">↓ BOM引用 ④领料/发料 | ↓ 操作指导 ⑤称料/⑥BPR作业</div>
         </div>
         <div
           style="flex:1;min-width:300px;background:#fefce8;border:2px dashed #eab308;border-radius:10px;padding:14px 18px">
@@ -495,7 +498,7 @@
 
     const overviewDef = `graph LR
   P["<b>① 采购</b><br/>Procurement<br/><i>ERP·黑盒</i>"] == "条码申请<br/>→扫码入库" ==> R["<b>② 入库</b><br/>Receiving<br/><i>PDA主导</i>"]
-  R == "→抽样标签" ==> Q["<b>③ 质检</b><br/>Inspection<br/><i>BS主导</i>"]
+  R == "暂收→抽样" ==> Q["<b>③ 质检</b><br/>Inspection<br/><i>BS主导</i>"]
   Q == "放行→领料" ==> L["<b>④ 领料/发料</b><br/>Dispatch<br/><i>PDA主导</i>"]
   L == "发料→称重" ==> W["<b>⑤ 称料</b><br/>Weighing<br/><i>CS主导</i>"]
   W == "称重→BPR" ==> BPR["<b>⑥ BPR作业</b><br/>BPR Operation<br/><i>BS主导</i>"]
@@ -519,81 +522,68 @@
   </div>`,
 
       receiving: `graph TB
-    A["📥 从采购:标签分发"] --> B["PDA暂收<br/><small>WMS移动端</small>"]
-    B --> C["扫描流水号LotNM<br/><small>校验采购单+物料</small>"]
-    C --> D["暂收确认<br/><small>生成暂收单</small>"]
-    D --> E["PDA扫码入库<br/><small>DoInWH</small>"]
-    E --> F["入库单生成<br/><small>InWHOrder</small>"]
-    F --> G["📤 → 质检阶段"]
-    D -.->|"BS查询"| H["📱暂收单<br/><small>demo-temp-receipt.html</small>"]
-    E -.->|"BS查询"| I["📱收料查询<br/><small>demo-receive-query.html</small>"]
+    A["📥 标签分发"] --> B["📱PDA暂收<br/><small>扫采购单+物料标签</small><br/><small>生成暂收单 · 🔗demo</small>"]
+    B --> D["暂收完成<br/><small>📤 主链路出口</small>"]
+    B -.-> C["📱PDA扫码入库<br/><small>DoInWH·扫LotNM</small><br/><small>校验:已暂收+未入库 · 🔗demo</small>"]
+    C --> E["入库单生成<br/><small>InWHOrder·库存就绪</small>"]
     style A fill:#d1fae5,stroke:#059669,color:#065f46
     style B fill:#d1fae5,stroke:#059669,color:#065f46
-    style C fill:#d1fae5,stroke:#059669,color:#065f46
+    style C fill:#a7f3d0,stroke:#059669,color:#065f46
     style D fill:#d1fae5,stroke:#059669,color:#065f46
-    style E fill:#a7f3d0,stroke:#059669,color:#065f46
-    style F fill:#d1fae5,stroke:#059669,color:#065f46
-    style G fill:#d1fae5,stroke:#059669,color:#065f46
-    style H fill:#d1fae5,stroke:#059669,color:#065f46
-    style I fill:#d1fae5,stroke:#059669,color:#065f46`,
+    style E fill:#d1fae5,stroke:#059669,color:#065f46
+    linkStyle 0 stroke-width:2.5px
+    linkStyle 1 stroke-width:3px,stroke:#059669
+    linkStyle 2 stroke-dasharray:5,stroke:#047857
+    linkStyle 3 stroke-dasharray:5,stroke:#047857`,
 
       quality: `graph TB
-    A["📥 从入库:暂收入库"] --> B["<b>📱 抽样标签</b><br/><small>SamplingLabelQueriesBLL</small>"]
-    B --> C["<b>📱 送检</b><br/><small>ZLKZ_SendBLL</small>"]
-    C --> C2["<b>📱 检验</b><br/><small>MESZLKZ_InspectionBLL</small>"]
-    C2 --> C3["<b>📱 质检结果判定</b><br/><small>MESZLKZ_FinalInspectionBLL</small>"]
-    C3 --> D{"<b>检验合格？</b><br/><small>人工判定</small>"}
-    D -->|"✅ 合格"| E["放行<br/><small>MESZLKZ_ReleaseHoldBLL</small>"]
-    D -->|"❌ 不合格"| F["扣留/报废返工<br/><small>人工操作</small>"]
-    D -->|"⏳ 待定"| G["复检<br/><small>MESZLKZ_ReInspecBLL</small>"]
-    G --> C3
-    E --> H["📤 → 称料阶段"]
-    F --> I["退货 / 报废 / 让步接收<br/><small>人工决策</small>"]
-    E -.->|"📱demo"| E2["<b>📱 放行/滞留</b><br/><small>demo-release-hold.html</small>"]
+    A["📥 从入库:抽样完成"] --> B["送检<br/><small>ZLKZ_SendBLL</small>"]
+    B --> C["[WEB]检验结果输入<br/><small>MESZLKZ_InspectionBLL</small>"]
+    C --> D["[WEB]质检结果判定<br/><small>MESZLKZ_FinalInspectionBLL</small>"]
+    D --> E{"检验合格？<br/><small>人工判定</small>"}
+    E -->|"✅ 合格"| F["放行<br/><small>MESZLKZ_ReleaseHoldBLL</small>"]
+    E -->|"❌ 不合格"| G["扣留/报废返工<br/><small>人工操作</small>"]
+    E -->|"⏳ 待定"| H["复检<br/><small>MESZLKZ_ReInspecBLL</small>"]
+    H --> D
+    F --> I["📤 → 领料阶段"]
+    G --> J["退货 / 报废 / 让步接收<br/><small>人工决策</small>"]
     style A fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
     style B fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
     style C fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
-    style C2 fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
-    style C3 fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
-    style D fill:#fde68a,stroke:#f59e0b,color:#92400e
-    style E fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style D fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
+    style E fill:#fde68a,stroke:#f59e0b,color:#92400e
     style F fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
     style G fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
     style H fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
     style I fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
-    style E2 fill:#d1fae5,stroke:#059669,color:#065f46
+    style J fill:#ede9fe,stroke:#7c3aed,color:#5b21b6
     linkStyle 5 stroke:#10b981,stroke-width:2.5px
     linkStyle 6 stroke:#ef4444,stroke-width:2.5px
     linkStyle 7 stroke:#f59e0b,stroke-width:2.5px
     linkStyle 8 stroke:#f59e0b,stroke-width:1.5px
-    linkStyle 9 stroke:#10b981,stroke-width:2px
-    linkStyle 10 stroke:#ef4444,stroke-width:2px`,
+    linkStyle 9 stroke:#10b981,stroke-width:2px`,
 
       loading: `graph TB
-    A["📥 从质检:放行"] --> B["工单领料<br/><small>PDA: GongDanLingLiaoFragment</small>"]
-    B --> C["发料扫描<br/><small>DoDispatchLot</small>"]
-    C --> D["领料确认<br/><small>DispatchConfirm</small>"]
+    A["📥 从质检:放行"] --> B["📱工单领料<br/><small>PDA: GongDanLingLiaoFragment</small>"]
+    B --> C["📱发料扫描<br/><small>DoDispatchLot</small>"]
+    C --> D["📱领料确认<br/><small>DispatchConfirm</small>"]
     D --> E["DispatchHistory 生成<br/><small>LotEstate = 10 (线边仓)</small>"]
     E --> F["📤 → 称料阶段"]
-    B -.->|"BS查询"| G["📱工单<br/><small>demo-work-order.html</small>"]
     style A fill:#fee2e2,stroke:#dc2626,color:#991b1b
     style B fill:#fee2e2,stroke:#dc2626,color:#991b1b
     style C fill:#fee2e2,stroke:#dc2626,color:#991b1b
     style D fill:#fee2e2,stroke:#dc2626,color:#991b1b
     style E fill:#fecaca,stroke:#dc2626,color:#991b1b
-    style F fill:#fee2e2,stroke:#dc2626,color:#991b1b
-    style G fill:#d1fae5,stroke:#059669,color:#065f46`,
+    style F fill:#fee2e2,stroke:#dc2626,color:#991b1b`,
 
       weighing: `graph TB
-    A["📥 从领料:发料完成<br/><small>DispatchHistory 已存在</small>"] --> B["投前称重确认<br/><small>CS: frmME_IssueMaterial_Weighting</small>"]
+    A["📥 从领料:发料完成<br/><small>DispatchHistory 已存在</small>"] --> B["🖥️原料称重<br/><small>CS: frmME_IssueMaterial_Weighting</small>"]
     B --> C{"称重结果"}
-    C -->|"✅ 在允差内"| D["称重测试<br/><small>frmME_WeightingTest</small>"]
+    C -->|"✅ 在允差内"| D["🖥️称重调试<br/><small>frmME_WeightingTest</small>"]
     C -->|"❌ 超差"| E["异常处理<br/><small>调整/退回</small>"]
     E --> B
-    D --> F["称重流水号生成<br/><small>LotNM + W001</small>"]
+    D --> F["🖥️余料称重<br/><small>LotNM + W001</small>"]
     F --> G["📤 → BPR作业阶段"]
-    B -.->|"BS查询"| H["📱物料称重查询<br/><small>demo-weighing-query.html</small>"]
-    D -.->|"BS报表"| I["📱预称报表<br/><small>demo-pre-weight.html</small>"]
     style A fill:#fef3c7,stroke:#d97706,color:#92400e
     style B fill:#fef3c7,stroke:#d97706,color:#92400e
     style C fill:#fde68a,stroke:#d97706,color:#92400e
@@ -601,16 +591,12 @@
     style E fill:#fef3c7,stroke:#d97706,color:#92400e
     style F fill:#fef3c7,stroke:#d97706,color:#92400e
     style G fill:#fef3c7,stroke:#d97706,color:#92400e
-    style H fill:#d1fae5,stroke:#059669,color:#065f46
-    style I fill:#d1fae5,stroke:#059669,color:#065f46
     linkStyle 1 stroke:#10b981,stroke-width:2.5px
     linkStyle 2 stroke:#ef4444,stroke-width:2.5px
-    linkStyle 3 stroke:#ef4444,stroke-width:2px
-    linkStyle 5 stroke:#059669,stroke-width:1.5px,stroke-dasharray:5
-    linkStyle 6 stroke:#059669,stroke-width:1.5px,stroke-dasharray:5`,
+    linkStyle 3 stroke:#ef4444,stroke-width:2px`,
 
       bpr: `graph TB
-    A["📥 从称料:称重确认"] --> B["BPR配制作业<br/><small>BS: BPR作业页面</small>"]
+    A["📥 从称料:称重确认"] --> B["🖥️BPR作业<br/><small>BS: BPR作业页面</small>"]
     B --> C["预配物<br/><small>工艺步骤执行</small>"]
     C --> D["主配物<br/><small>加料→搅拌→循环→均质→出料→确认</small>"]
     D --> E{"是否跳步？"}
@@ -636,13 +622,13 @@
     linkStyle 5 stroke:#10b981,stroke-width:2px`,
 
       formula: `graph TB
-    A["📥 从BPR作业:配制完成"] --> B["工单启动<br/><small>PDA: StartMfgOrder</small>"]
-    B --> C["设备启动<br/><small>CS: frmME_EquipmentStart</small>"]
+    A["📥 从BPR作业:配制完成"] --> B["📱工单启动<br/><small>PDA: StartMfgOrder</small>"]
+    B --> C["🖥️设备启动<br/><small>CS: frmME_EquipmentStart</small>"]
     C --> D["操作指导<br/><small>MESGYLC_Recipe · 加载工艺配方</small>"]
-    D --> E["配制产出<br/><small>CS: frmME_PZOutput</small>"]
-    E --> H{"<b>产出判定</b><br/><small>人工判定</small>"}
+    D --> E["🖥️配制产出<br/><small>CS: frmME_PZOutput</small>"]
+    E --> H{"产出判定<br/><small>人工判定</small>"}
     H -->|"✅ 合格"| I["成品入库<br/><small>CompliteProductInWarehouse</small>"]
-    H -->|"❌ 不合格"| J["报废/返工<br/><small>frmME_ScrapOrder</small>"]
+    H -->|"❌ 不合格"| J["🖥️报废单<br/><small>frmME_ScrapOrder</small>"]
     J --> E
     I --> K["📤 → 结案阶段"]
     style A fill:#cffafe,stroke:#0891b2,color:#0e7490
@@ -668,10 +654,11 @@
     D --> G["MOStatus=2<br/><small>工单已结案</small>"]
     G --> H["线边归档<br/><small>LotDeduction</small>"]
     G --> I["ERP接口<br/><small>InterfaceBusiness</small>"]
-    D -.->|"并行报表"| J["📱BPR记录查询<br/><small>demo-bpr-record.html</small>"]
-    D -.->|"并行追溯"| K["📱数据链查询<br/><small>demo-data-link.html</small>"]
-    D -.->|"并行追溯"| L["📱质量追溯<br/><small>demo-quality-trace.html</small>"]
-    D -.->|"并行报表"| M["📱预称报表<br/><small>demo-pre-weight.html</small>"]
+    D -.->|"并行报表"| J["[WEB]BPR记录查询<br/><small>🔗demo</small>"]
+    D -.->|"并行追溯"| K["[WEB]数据链查询<br/><small>🔗demo</small>"]
+    D -.->|"并行追溯"| L["[WEB]质量追溯<br/><small>🔗demo</small>"]
+    D -.->|"并行报表"| M["[WEB]预称报表<br/><small>🔗demo</small>"]
+    D -.->|"并行审计"| N["[WEB]审计追踪<br/><small>🔗demo</small>"]
     style A fill:#f3f4f6,stroke:#6b7280,color:#374151
     style B fill:#f3f4f6,stroke:#6b7280,color:#374151
     style C fill:#e5e7eb,stroke:#6b7280,color:#374151
@@ -685,11 +672,14 @@
     style K fill:#d1fae5,stroke:#059669,color:#065f46
     style L fill:#d1fae5,stroke:#059669,color:#065f46
     style M fill:#d1fae5,stroke:#059669,color:#065f46
+    style N fill:#d1fae5,stroke:#059669,color:#065f46
     linkStyle 3 stroke:#10b981,stroke-width:2.5px
     linkStyle 4 stroke:#f59e0b,stroke-width:2.5px
     linkStyle 5 stroke:#ef4444,stroke-width:2.5px
     linkStyle 6 stroke:#f59e0b,stroke-width:2px
-    linkStyle 7 stroke:#10b981,stroke-width:2.5px`
+    linkStyle 7 stroke:#10b981,stroke-width:2.5px
+    linkStyle 8 stroke:#10b981,stroke-width:2px
+    linkStyle 9 stroke:#059669,stroke-width:1.5px,stroke-dasharray:5`,
     };
 
     const stageIds = ['procurement', 'receiving', 'quality', 'loading', 'weighing', 'bpr', 'formula', 'closure'];
@@ -701,7 +691,7 @@
     // ===== CONNECTION DEFINITIONS =====
     const connNames = [
       '采购 → 入库：条码申请·标签打印·扫码入库',
-      '入库 → 质检：入库完成·抽样标签',
+      '入库 → 质检：暂收完成·抽样标签',
       '质检 → 领料：放行·工单领料',
       '领料 → 称料：发料完成·投前称重',
       '称料 → BPR作业：称重确认·BPR配制',
@@ -709,19 +699,19 @@
       '产出 → 结案：成品入库·结案归档'
     ];
     const connDefs = [
-      // 0: 采购→入库（交接：标签分发到收货区）
+      // 0: 采购→入库
       `graph TB
-        A["🏷️ 标签分发完成<br/><small>LotNM流水号已生成</small>"] --> B["物理贴标<br/><small>ZDesigner打印·贴标到货物</small>"]
-        B --> C["货物送至收货区"]
-        C --> D["PDA扫描LotNM<br/><small>触发暂收/入库流程</small>"]
-        style A fill:#dbeafe,stroke:#2563eb
-        style B fill:#fef3c7,stroke:#d97706
+        A["🔒 ERP采购单<br/><small>外部ERP系统</small>"] --> B["<b>🌐 条码申请</b><br/><small>BS: CKZY_LotApplyBLL</small><br/><small>生成LotNM流水号</small>"]
+        B --> C["🏷️ 标签打印<br/><small>BS: SendLabelQueryBLL</small><br/><small>ZDesigner打印·人工贴标→收货区</small>"]
+        C --> D["PDA扫码入库<br/><small>扫描标签LotNM</small>"]
+        style A fill:#fce7f3,stroke:#ec4899,stroke-dasharray:5 5
+        style B fill:#dbeafe,stroke:#2563eb
         style C fill:#fef3c7,stroke:#d97706
         style D fill:#d1fae5,stroke:#059669`,
-      // 1: 入库→质检（交接：入库完成触发抽样）
+      // 1: 入库→质检
       `graph TB
-        A["InWHOrder 入库完成<br/><small>LotNM已入系统库存</small>"] --> B["抽样规则匹配<br/><small>物料类别+供应商判定</small>"]
-        B --> C["生成SampleLot<br/><small>Pro_CreateSampleLot_New</small>"]
+        A["暂收完成<br/><small>暂收单已生成</small>"] --> B["抽样规则匹配<br/><small>物料类别+供应商判定</small>"]
+        B --> C["[WEB]抽样标签<br/><small>生成SampleLot<br/>Pro_CreateSampleLot_New</small>"]
         C --> D["送检阶段入口<br/><small>ZLKZ_SendBLL</small>"]
         style A fill:#d1fae5,stroke:#059669
         style B fill:#fef3c7,stroke:#f59e0b
@@ -952,29 +942,36 @@
 
     // ===== FLOWCHART NODE → DEMO HOTSPOTS =====
     const nodeDemoMap = {
-      '📱条码申请': 'demo-barcode-apply.html',
-      '📱抽样标签': 'sampling-label.html',
-      '📱抽样标签生成': 'sampling-label.html',
-      '📱PDA暂收入库': 'demo-pda-receiving.html',
-      '📱送检': 'demo-inspection-check.html',
-      '📱检验': 'demo-inspection-check.html',
-      '📱质检结果判定': 'demo-inspection.html',
-      '📱放行/滞留': 'demo-release-hold.html',
-      '📱BPR记录查询': 'demo-bpr-record.html',
-      '📱收货/暂收查询': 'demo-receive-query.html',
-      '📱暂收单': 'demo-temp-receipt.html',
-      '📱收料查询': 'demo-receive-query.html',
-      '📱物料称重查询': 'demo-work-order.html',
-      '📱预称报表': 'demo-pre-weight.html',
-      '📱质量追溯': 'demo-quality-trace.html',
-      '📱工单': 'demo-work-order.html',
-      '📱数据链查询': 'demo-data-link.html',
-      '📱BOM': 'demo-bom.html',
-      '📱工艺维护': 'demo-process-config.html',
-      '📱BPR配方': 'demo-process-config.html',
-      '📱BPR作业': 'demo-bpr-operation.html',
-      '📱BPR配制作业': 'demo-bpr-operation.html',
-      '📱审计追踪': 'demo-audit-trail.html'
+      '[WEB]条码申请': 'demo-barcode-apply.html',
+      '[WEB]抽样标签': 'sampling-label.html',
+      '📱PDA暂收': 'demo-pda-receiving.html',
+      '📱工单启动': 'demo-pda-start-mo.html',
+      '📱工单领料': 'demo-pda-dispatch.html',
+      '📱发料扫描': 'demo-pda-dispatch-scan.html',
+      '📱领料确认': 'demo-pda-dispatch-confirm.html',
+      '📱PDA扫码入库': 'demo-pda-scan-in.html',
+      '[WEB]检验结果输入': 'demo-inspection-check.html',
+      '[WEB]质检结果判定': 'demo-inspection.html',
+      '[WEB]放行/滞留': 'demo-release-hold.html',
+      '[WEB]BPR记录查询': 'demo-bpr-record.html',
+      '[WEB]暂收单': 'demo-temp-receipt.html',
+      '[WEB]收料查询': 'demo-receive-query.html',
+      '[WEB]物料称重查询': 'demo-weighing-query.html',
+      '[WEB]预称报表': 'demo-pre-weight.html',
+      '[WEB]质量追溯': 'demo-quality-trace.html',
+      '[WEB]工单': 'demo-work-order.html',
+      '[WEB]数据链查询': 'demo-data-link.html',
+      '[WEB]BOM': 'demo-bom.html',
+      '[WEB]操作指导': 'demo-process-config.html',
+      '🖥️BPR作业': 'demo-cs-bpr-record.html',
+      '[WEB]审计追踪': 'demo-audit-trail.html',
+      '🖥️原料称重': 'demo-cs-template.html',
+      '🖥️称重调试': 'demo-cs-weighing-test.html',
+      '🖥️余料称重': 'demo-cs-surplus-material.html',
+      '🖥️设备启动': 'demo-cs-equipment-start.html',
+      '🖥️配制产出': 'demo-cs-pz-output.html',
+      '🖥️报废单': 'demo-cs-scrap-order.html',
+      '🖥️工单(CS)': 'demo-cs-mfg-order.html'
     };
 
     function addDetailHotspots() {
@@ -990,7 +987,7 @@
           }
           if (file) {
             ng.style.cursor = 'pointer';
-            ng.title = '📱 点击查看操作演示（新窗口打开）';
+            ng.title = '点击查看操作演示（新窗口打开）';
             ng.addEventListener('click', (e) => { e.stopPropagation(); window.open(file, '_blank'); });
             ng.addEventListener('mouseenter', function () { const r = this.querySelector('rect'); if (r) { r.style.stroke = '#10b981'; r.style.strokeWidth = '2.5'; } });
             ng.addEventListener('mouseleave', function () { const r = this.querySelector('rect'); if (r) { r.style.stroke = ''; r.style.strokeWidth = ''; } });
@@ -1060,7 +1057,7 @@
       // 边标签关键词 → connIndex 映射
       const edgeMap = [
         ['条码申请', '扫码入库'], // 0: 采购→入库
-        ['抽样标签'],              // 1: 入库→质检
+        ['暂收', '抽样'],           // 1: 入库→质检
         ['放行', '领料'],          // 2: 质检→领料
         ['发料', '称重'],          // 3: 领料→称料
         ['称重', 'BPR'],           // 4: 称料→BPR

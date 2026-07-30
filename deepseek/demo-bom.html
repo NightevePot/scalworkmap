@@ -1,53 +1,568 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>BOM · 字段血缘演示</title>
-<style>:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9}*{box-sizing:border-box;margin:0;padding:0}body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}.demo-main{flex:1;max-width:1050px}.bar{height:50px;display:flex;color:#fff;background:var(--green)}.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:default}.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}.sub-arr{color:#94a3b8;font-size:10px}.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line)}.toolbar table{width:100%}.toolbar th{text-align:right;font-size:12px;font-weight:600;padding:3px 6px}.toolbar td{padding:3px 12px 3px 4px}.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}.btn-pri{background:var(--blue);color:#fff}.content{padding:8px 10px}.dg{background:#fff;border:1px solid var(--line);margin-bottom:10px}.dg table{width:100%;border-collapse:collapse}.dg th{background:#f0f4f7;border-bottom:2px solid var(--line);padding:7px 8px;font-size:12px;text-align:left;white-space:nowrap}.dg td{padding:6px 8px;border-bottom:1px solid #e8ecf0;font-size:12px;cursor:pointer;transition:background .15s}.dg td:hover{background:#e8f0fe}.dg tr.tree-child{background:#fafbfc}.dg tr.tree-child td:first-child{padding-left:28px}.tree-toggle{cursor:pointer;color:var(--blue);font-weight:700;margin-right:4px}
-.card{position:fixed;right:24px;bottom:24px;width:340px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;z-index:100;overflow:hidden}.card.show{display:block}.card-head{background:var(--soft);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;cursor:move}.card-head h3{font-size:13px;color:var(--blue)}.card-head small{font-size:10px;color:#94a3b8;display:block}.close-btn{border:none;background:none;font-size:18px;cursor:pointer;color:#94a3b8}.card-body{padding:12px 14px}.meta{margin-bottom:8px}.meta dt{font-size:10px;color:#94a3b8;text-transform:uppercase;margin-bottom:2px}.meta dd{font-size:12px;color:#17232d;word-break:break-all}.pth{display:flex;gap:4px;font-size:10px;color:var(--blue);margin-bottom:8px;flex-wrap:wrap}.pth span{background:#e8f0fe;padding:2px 6px;border-radius:3px}.ar{color:#94a3b8;background:none!important;padding:2px 0!important}
-.stats-panel{width:280px;flex-shrink:0;position:sticky;top:12px}.sh{font-weight:700;font-size:13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.badge{font-size:10px;background:var(--green);color:#fff;padding:2px 8px;border-radius:10px;font-weight:400}.stats-body{font-size:11px}.ss{margin-bottom:14px}.ss h4{font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase}.si{margin-bottom:3px;display:flex;align-items:center;gap:4px}.sn{font-weight:600;color:var(--blue);cursor:help}.st{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}.bll{background:#dbeafe;color:#1d4ed8}.tbl{background:#e0f2fe;color:#0369a1}.sp{background:#fef3c7;color:#92400e}.ctrl{background:#ede9fe;color:#6d28d9}.stats-count-row{display:flex;gap:20px;margin-bottom:12px}.scn{font-size:18px;font-weight:700;color:var(--blue)}.scl{font-size:10px;color:#94a3b8}</style></head>
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>BOM · 字段血缘演示</title>
+  <style>
+    :root {
+      --green: #00a65a;
+      --blue: #1688ca;
+      --line: #d3dce1;
+      --soft: #f5f8f9
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      min-width: 980px;
+      color: #17232d;
+      background: #fff;
+      font: 12px "Microsoft YaHei", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px
+    }
+
+    .demo-main {
+      flex: 1;
+      max-width: 1050px
+    }
+
+    .bar {
+      height: 50px;
+      display: flex;
+      color: #fff;
+      background: var(--green)
+    }
+
+    .brand {
+      width: 215px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .nav {
+      display: flex
+    }
+
+    .nav span {
+      width: 70px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .nav span.active {
+      background: rgba(0, 0, 0, .16);
+      box-shadow: inset 0 -3px 0 #fff
+    }
+
+    .bar-info {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: 700;
+      font-size: 11px;
+      gap: 8px;
+      margin-left: auto
+    }
+
+    .bar-badge {
+      background: rgba(255, 255, 255, .2);
+      padding: 2px 8px;
+      border-radius: 10px
+    }
+
+    .sub-tabs {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #cfd4d7;
+      gap: 4px;
+      font-size: 11px
+    }
+
+    .sub-tab {
+      padding: 4px 12px;
+      border: 1px solid #d5d9dc;
+      border-bottom: 0;
+      color: #4e5d67;
+      background: #fff;
+      border-radius: 3px 3px 0 0;
+      cursor: default
+    }
+
+    .sub-tab.active {
+      border-top: 3px solid var(--green);
+      color: #173f5f;
+      font-weight: 700
+    }
+
+    .sub-arr {
+      color: #94a3b8;
+      font-size: 10px
+    }
+
+    .toolbar {
+      background: var(--soft);
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .toolbar table {
+      width: 100%
+    }
+
+    .toolbar th {
+      text-align: right;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 6px
+    }
+
+    .toolbar td {
+      padding: 3px 12px 3px 4px
+    }
+
+    .toolbar input {
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      font-size: 12px;
+      outline: none;
+      height: 28px
+    }
+
+    .btn {
+      border: none;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 5px 14px
+    }
+
+    .btn-pri {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .btn-sec {
+      background: #fff;
+      color: #17232d;
+      border: 1px solid var(--line)
+    }
+
+    .content {
+      padding: 8px 10px
+    }
+
+    .dg {
+      background: #fff;
+      border: 1px solid var(--line)
+    }
+
+    .dg table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .dg th {
+      background: #f0f4f7;
+      border-bottom: 2px solid var(--line);
+      padding: 7px 8px;
+      font-size: 12px;
+      text-align: left
+    }
+
+    .dg td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e8ecf0;
+      font-size: 12px;
+      cursor: pointer
+    }
+
+    .dg td:hover {
+      background: #e8f0fe
+    }
+
+    .dg .num {
+      width: 36px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 10px
+    }
+
+    .card {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 340px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .15);
+      display: none;
+      z-index: 100;
+      overflow: hidden
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-head {
+      background: var(--soft);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-head h3 {
+      font-size: 13px;
+      color: var(--blue)
+    }
+
+    .card-head small {
+      font-size: 10px;
+      color: #94a3b8;
+      display: block
+    }
+
+    .close-btn {
+      border: none;
+      background: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #94a3b8
+    }
+
+    .card-body {
+      padding: 12px 14px
+    }
+
+    .meta {
+      margin-bottom: 8px
+    }
+
+    .meta dt {
+      font-size: 10px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      margin-bottom: 2px
+    }
+
+    .meta dd {
+      font-size: 12px;
+      color: #17232d;
+      word-break: break-all
+    }
+
+    .pth {
+      display: flex;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--blue);
+      margin-bottom: 8px;
+      flex-wrap: wrap
+    }
+
+    .pth span {
+      background: #e8f0fe;
+      padding: 2px 6px;
+      border-radius: 3px
+    }
+
+    .ar {
+      color: #94a3b8;
+      background: none !important;
+      padding: 2px 0 !important
+    }
+
+    .stats-panel {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 12px
+    }
+
+    .sh {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .badge {
+      font-size: 10px;
+      background: var(--green);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 400
+    }
+
+    .stats-body {
+      font-size: 11px
+    }
+
+    .ss {
+      margin-bottom: 14px
+    }
+
+    .ss h4 {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      text-transform: uppercase
+    }
+
+    .si {
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .sn {
+      font-weight: 600;
+      color: var(--blue);
+      cursor: help
+    }
+
+    .st {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600
+    }
+
+    .bll {
+      background: #dbeafe;
+      color: #1d4ed8
+    }
+
+    .tbl {
+      background: #e0f2fe;
+      color: #0369a1
+    }
+
+    .ctrl {
+      background: #ede9fe;
+      color: #6d28d9
+    }
+
+    .stats-count-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 12px
+    }
+
+    .scn {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue)
+    }
+
+    .scl {
+      font-size: 10px;
+      color: #94a3b8
+    }
+  </style>
+</head>
+
 <body>
-<div class="demo-main">
-<header class="bar"><div class="brand">ⓘ MES制造执行系统</div><nav class="nav"><span>工艺流程</span><span>企业架构</span><span class="active">生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span></nav><div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| BOM物料清单 · 字段血缘演示</span></div></header>
-<div class="sub-tabs"><span class="sub-tab active">BOM</span><span class="sub-arr">▸</span><span class="sub-tab">产品BOM</span></div>
+  <div class="demo-main">
+    <header class="bar">
+      <div class="brand">ⓘ MES制造执行系统</div>
+      <nav class="nav"><span>工艺流程</span><span>企业架构</span><span
+          class="active">生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span><span>报表管理</span><span>知识库</span><span>系统设置</span>
+      </nav>
+      <div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| BOM物料清单 · 字段血缘演示</span></div>
+    </header>
+    <div class="sub-tabs"><span class="sub-tab">生产模型</span><span class="sub-arr">▸</span><span
+        class="sub-tab active">BOM</span></div>
 
-<div class="toolbar"><table>
-<tr><th>母件编码：</th><td><input data-k="sParentProductNM" value="ON25F0021N5" style="width:200px"></td>
-<th style="padding-left:15px">母件名称：</th><td><input data-k="sParentProductName" value="示例洗发水" style="width:200px"></td>
-<td style="padding-left:15px"><button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button></td></tr>
-</table></div>
+    <div class="toolbar">
+      <table>
+        <tr>
+          <th>BOM名称：</th>
+          <td><input data-k="sBOM" value="EX-ON25F0021N5" style="width:250px" placeholder="输入BOM名称查询"></td>
+          <td style="padding-left:15px">
+            <button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button>
+            <button class="btn btn-pri" data-k="btnCreate">＋ 新增</button>
+            <button class="btn btn-sec" data-k="btnEdit">✎ 修改</button>
+            <button class="btn btn-sec" data-k="btnDelete">✕ 删除</button>
+            <button class="btn btn-sec" data-k="btnReset">↺ 重置</button>
+          </td>
+        </tr>
+      </table>
+    </div>
 
-<div class="content">
-<div class="dg"><table>
-<thead><tr><th>层级</th><th>物料编码</th><th>物料名称</th><th>标准用量(KG)</th><th>损耗率(%)</th><th>用量类型</th><th>生效日期</th><th>失效日期</th></tr></thead>
-<tbody>
-<tr style="background:#e8f0fe;font-weight:700"><td>0</td><td data-k="ParentProductNM">ON25F0021N5</td><td>示例洗发水</td><td>—</td><td>—</td><td>成品</td><td>2026-01-01</td><td>2099-12-31</td></tr>
-<tr><td>1</td><td data-k="ChildProductNM1">QRYL0022</td><td>月桂醇硫酸铵（30%）</td><td data-k="StandardQty1">0.16666667</td><td data-k="LossRate1">8.00</td><td data-k="UsageType1">可变用量</td><td data-k="EffDate1">2026-01-01</td><td data-k="ExpDate1">2099-12-31</td></tr>
-<tr><td>1</td><td data-k="ChildProductNM2">YL2025A001</td><td>椰子油酰胺丙基甜菜碱</td><td data-k="StandardQty2">0.08333333</td><td data-k="LossRate2">5.00</td><td>可变用量</td><td>2026-01-01</td><td>2099-12-31</td></tr>
-<tr><td>1</td><td data-k="ChildProductNM3">YL2025A002</td><td>聚二甲基硅氧烷</td><td data-k="StandardQty3">0.04166667</td><td data-k="LossRate3">3.00</td><td>可变用量</td><td>2026-01-01</td><td>2099-12-31</td></tr>
-<tr><td>1</td><td data-k="ChildProductNM4">YL2025A003</td><td>乙二醇二硬脂酸酯</td><td data-k="StandardQty4">0.02500000</td><td data-k="LossRate4">5.00</td><td>可变用量</td><td>2026-01-01</td><td>2099-12-31</td></tr>
-<tr><td>1</td><td data-k="ChildProductNM5">FL2025B001</td><td>香精SH-2025</td><td data-k="StandardQty5">0.00833333</td><td data-k="LossRate5">2.00</td><td>可变用量</td><td>2026-01-01</td><td>2099-12-31</td></tr>
-</tbody>
-</table></div></div></div>
+    <div class="content">
+      <div class="dg">
+        <table>
+          <thead>
+            <tr>
+              <th class="num">□</th>
+              <th>BOM名称</th>
+              <th>BOM版本</th>
+              <th>描述</th>
+              <th>最后修改人</th>
+              <th>最后修改时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td data-k="BOMNM">EX-ON25F0021N5</td>
+              <td data-k="BOMRevision">A</td>
+              <td data-k="Description">洗发水标准配方BOM</td>
+              <td data-k="LastModifyBy">超级管理员</td>
+              <td data-k="LastModifyTime">2026-07-15 14:23</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>EX-ON25F0021N6</td>
+              <td>B</td>
+              <td>洗发水升级配方BOM</td>
+              <td>工艺工程师</td>
+              <td>2026-07-10 09:15</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>EX-ON25F0021N7</td>
+              <td>A</td>
+              <td>洗发水小样配方BOM</td>
+              <td>超级管理员</td>
+              <td>2026-07-08 16:40</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>EX-ON25F0021N8</td>
+              <td>C</td>
+              <td>护发素标准配方BOM</td>
+              <td>工艺工程师</td>
+              <td>2026-07-05 11:20</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>EX-ON25F0021N9</td>
+              <td>A</td>
+              <td>沐浴露标准配方BOM</td>
+              <td>超级管理员</td>
+              <td>2026-07-01 08:30</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-<aside class="card" id="card"><div class="card-head"><div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div><button class="close-btn" onclick="cl()">×</button></div><div class="card-body"><div class="pth" id="pth"></div><dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl><dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl><dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl><dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl></div></aside>
+  <aside class="card" id="card">
+    <div class="card-head">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title">字段说明</h3>
+      </div><button class="close-btn" onclick="cl()">×</button>
+    </div>
+    <div class="card-body">
+      <div class="pth" id="pth"></div>
+      <dl class="meta">
+        <dt>页面字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>数据库来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>数据类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>查询过程 / 按钮动作</dt>
+        <dd id="formula"></dd>
+      </dl>
+    </div>
+  </aside>
 
-<div class="stats-panel"><div class="sh">📊 调用统计<span class="badge">BS·BOM | MESSCMX_BOM</span></div><div class="stats-body">
-<div class="stats-count-row"><div><div class="scn">5</div><div class="scl">数据库表</div></div><div><div class="scn">1</div><div class="scl">BLL</div></div></div>
-<div class="ss"><h4>📊 数据库表</h4><div class="si"><span class="sn" title="Product">Product</span><span class="st tbl">产品</span></div><div class="si"><span class="sn" title="MfgOrderBOM">MfgOrderBOM</span><span class="st tbl">工单BOM</span></div><div class="si"><span class="sn" title="ProductRecipeAndWorkersSetting">ProductRecipeAndWorkersSetting</span><span class="st tbl">产品配方工位设置</span></div><div class="si"><span class="sn" title="Recipe">Recipe</span><span class="st tbl">配方</span></div><div class="si"><span class="sn" title="SpecRecipe">SpecRecipe</span><span class="st tbl">规格配方</span></div></div>
-<div class="ss"><h4>🧩 BLL / Controller</h4><div class="si"><span class="sn" title="MESSCMX_BOM">MESSCMX_BOM</span><span class="st bll">BOM控制器</span></div></div></div></div>
+  <div class="stats-panel">
+    <div class="sh">📊 调用统计<span class="badge">BS·BOM | MESSCMX_BOM</span></div>
+    <div class="stats-body">
+      <div class="stats-count-row">
+        <div>
+          <div class="scn">1</div>
+          <div class="scl">Controller</div>
+        </div>
+        <div>
+          <div class="scn">1</div>
+          <div class="scl">BLL</div>
+        </div>
+        <div>
+          <div class="scn">1</div>
+          <div class="scl">API</div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4>🧩 Controller</h4>
+        <div class="si"><span class="sn" title="MESSCMX_BOMController">MESSCMX_BOMController</span><span
+            class="st ctrl">Index / Create / Update / DelBOM</span></div>
+      </div>
+      <div class="ss">
+        <h4>🧩 BLL</h4>
+        <div class="si"><span class="sn" title="MESSCMX_BOMBLL">MESSCMX_BOMBLL</span><span
+            class="st bll">GetMESSCMXBOMInfoListByPage</span></div>
+      </div>
+      <div class="ss">
+        <h4>🔌 API</h4>
+        <div class="si"><span class="sn" title="GetMESSCMXBOMInfoListByPage">GetMESSCMXBOMInfoListByPage</span><span
+            class="st api">api/MESSCMX_BOM/GetMESSCMXBOMInfoListByPage?queryData=</span></div>
+      </div>
+      <div class="ss">
+        <h4>📊 数据库表</h4>
+        <div class="si"><span class="sn" title="MESSCMX_BOM">MESSCMX_BOM</span><span class="st tbl">BOM主表</span></div>
+      </div>
+    </div>
+  </div>
 
-<script>
-const map={
-sParentProductNM:['母件编码','Product.ProductNM','nvarchar(50)','combogrid','查询',['Product']],
-sParentProductName:['母件名称','Product.Note','nvarchar(300)','combogrid','查询',['Product']],
-ParentProductNM:['母件编码','MfgOrderBOM.ProductNM','nvarchar(50)','List·树形根节点','列表',['MfgOrderBOM','Product']],
-ChildProductNM1:['子件编码','MfgOrderBOM.ProductNM','nvarchar(50)','List·树形子节点','列表',['MfgOrderBOM','Product']],
-StandardQty1:['标准用量','MfgOrderBOM.StandardQty','decimal(18,8)','List','列表',['MfgOrderBOM']],
-LossRate1:['损耗率','MfgOrderBOM.LossRate','decimal(18,6)','List','列表',['MfgOrderBOM']],
-UsageType1:['用量类型','MfgOrderBOM.UsageType','nvarchar(50)','List','列表',['MfgOrderBOM']],
-EffDate1:['生效日期','MfgOrderBOM.EffDate','datetime','List','列表',['MfgOrderBOM']],
-ExpDate1:['失效日期','MfgOrderBOM.ExpDate','datetime','List','列表',['MfgOrderBOM']],
-btnQuery:['⌕ 查询','API:GetBOMList','—','条件→MESSCMX_BOM→MfgOrderBOM→Product','查询',['MESSCMX_BOM','MfgOrderBOM','Product']],
-};
-const card=document.getElementById('card');
-function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');card.classList.add('show')}function cl(){card.classList.remove('show')}
-document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));
-let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))+'px';card.style.top=Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))+'px'};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
-</script></body></html>
+  <script>
+    const map = {
+      sBOM: ['BOM名称', '搜索条件·name=BOM', 'nvarchar', 'easyui-textbox→queryData→GetMESSCMXBOMInfoListByPage', '查询条件', ['MESSCMX_BOM']],
+      BOMNM: ['BOM名称', 'MESSCMX_BOM.BOMNM', 'nvarchar', 'datagrid column·sortable', '列表', ['GetMESSCMXBOMInfoListByPage', 'MESSCMX_BOM']],
+      BOMRevision: ['BOM版本', 'MESSCMX_BOM.BOMRevision', 'nvarchar', 'datagrid column·sortable', '列表', ['GetMESSCMXBOMInfoListByPage', 'MESSCMX_BOM']],
+      Description: ['描述', 'MESSCMX_BOM.Description', 'nvarchar', 'datagrid column·sortable', '列表', ['GetMESSCMXBOMInfoListByPage', 'MESSCMX_BOM']],
+      LastModifyBy: ['最后修改人', 'MESSCMX_BOM.LastModifyBy', 'nvarchar', 'datagrid column·sortable', '列表', ['GetMESSCMXBOMInfoListByPage', 'MESSCMX_BOM']],
+      LastModifyTime: ['最后修改时间', 'MESSCMX_BOM.LastModifyTime', 'datetime', 'datagrid column·formatter:datetoLocal·sortOrder:DESC', '列表', ['GetMESSCMXBOMInfoListByPage', 'MESSCMX_BOM']],
+      btnQuery: ['⌕ 查询', 'loadBindTable()', '—', 'sBOM→encodeURI→GetMESSCMXBOMInfoListByPage→datagrid·pageSize:15', '查询', ['MESSCMX_BOMController', 'MESSCMX_BOMBLL', 'MESSCMX_BOM']],
+      btnCreate: ['＋ 新增', 'ifram modal→Create.cshtml', '—', 'modalwindow·width:1000→/MESSCMX_BOM/Create', '新增', ['MESSCMX_BOMController']],
+      btnEdit: ['✎ 修改', 'ifram modal→Update.cshtml?BOMId=', '—', 'getSelected→modalwindow·width:1000→/MESSCMX_BOM/Update', '修改', ['MESSCMX_BOMController']],
+      btnDelete: ['✕ 删除', 'DelBOM?BaseId=&BOMId=', '—', 'getSelected→confirm→$.post→DelBOM→reload', '删除', ['MESSCMX_BOMController', 'MESSCMX_BOM']],
+      btnReset: ['↺ 重置', '$("#sBOM").textbox("setValue","")', '—', '清空搜索框', '重置', ['jQuery EasyUI']],
+    };
+    const card = document.getElementById('card');
+    function show(k, n) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; document.getElementById('pth').innerHTML = (f[5] || []).map((p, i) => (i > 0 ? '<span class="ar">→</span>' : '') + `<span>${p}</span>`).join(''); card.classList.add('show') } function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k, this) }));
+    let drag = null; const hd = card.querySelector('.card-head'); hd.onpointerdown = e => { if (e.target.closest('.close-btn') || !card.classList.contains('show')) return; const r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = e => { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = () => drag = null; document.addEventListener('click', e => { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+  </script>
+</body>
+
+</html>

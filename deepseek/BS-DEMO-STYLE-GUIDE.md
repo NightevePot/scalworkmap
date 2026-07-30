@@ -93,13 +93,13 @@ BS · Web MES | {页面中文名} · 字段血缘演示
 
 **各页面入口对照：**
 
-| Demo 页面 | 子标签 |
-|---|---|
-| 条码申请 | `仓库作业 ▸ 条码申请` |
-| 抽样标签 | `质量控制 ▸ 抽样标签` |
-| 检验 | `质量控制 ▸ 检验` |
+| Demo 页面    | 子标签                    |
+| ------------ | ------------------------- |
+| 条码申请     | `仓库作业 ▸ 条码申请`     |
+| 抽样标签     | `质量控制 ▸ 抽样标签`     |
+| 检验         | `质量控制 ▸ 检验`         |
 | 质检结果判定 | `质量控制 ▸ 质检结果判定` |
-| 放行/滞留 | `质量控制 ▸ 放行/滞留` |
+| 放行/滞留    | `质量控制 ▸ 放行/滞留`    |
 
 ---
 
@@ -250,12 +250,12 @@ document.addEventListener('click', e => {
 
 ### 🚫 绝对禁止的 CSS 组合（已踩坑验证）
 
-| 错误写法 | 后果 |
-|---|---|
-| `word-break: break-all` | 中英文字符全部逐字断开竖排 |
-| `overflow-wrap: break-word` + `word-break: keep-all` | 英文无空格时仍逐字断开 |
+| 错误写法                                              | 后果                              |
+| ----------------------------------------------------- | --------------------------------- |
+| `word-break: break-all`                               | 中英文字符全部逐字断开竖排        |
+| `overflow-wrap: break-word` + `word-break: keep-all`  | 英文无空格时仍逐字断开            |
 | `overflow: hidden; white-space: nowrap; min-width: 0` | flex 子元素缩到 0px，文字完全消失 |
-| `overflow: hidden; text-overflow: ellipsis` | 表名被截断只显示一半 |
+| `overflow: hidden; text-overflow: ellipsis`           | 表名被截断只显示一半              |
 
 ### 6.3 `.st`（中文标签）规范
 ```css
@@ -296,10 +296,10 @@ document.addEventListener('click', e => {
 ```
 
 ### 6.6 标签颜色规范
-| 类型 | class | 背景色 | 文字色 |
-|---|---|---|---|
-| 数据库表 | `.st.tbl` | `#d1fae5` | `#065f46` |
-| 存储过程 | `.st.sp` | `#ede9fe` | `#6d28d9` |
+| 类型       | class     | 背景色    | 文字色    |
+| ---------- | --------- | --------- | --------- |
+| 数据库表   | `.st.tbl` | `#d1fae5` | `#065f46` |
+| 存储过程   | `.st.sp`  | `#ede9fe` | `#6d28d9` |
 | BLL 业务层 | `.st.bll` | `#fef3c7` | `#92400e` |
 
 ---
@@ -321,6 +321,227 @@ const map = {
 ```
 
 ### 7.2 按钮动作描述规范
+
+按钮动作描述必须包含真实方法名（如 `IM_Button_Confirm_Click`），禁止使用模糊描述。
+
+---
+
+# CS (WinForms 客户端) Demo 页面制作规范
+
+> 最后更新：2026-07-29  
+> 适用范围：所有 CS (WinForms 桌面客户端) 字段血缘演示页面  
+> 参考模板：`demo-cs-template.html`
+
+---
+
+## ⚠️ 核心铁律（同 BS 规范 §核心铁律，补充 CS 专项）
+
+- **必须先读源码再动手。** CS 源码路径：`E:\code\scal-mes-client\WinClient\`
+- **优先读 `.Designer.cs`**（控件声明、坐标、大小、字体、颜色），再读 `.cs`（运行时逻辑）
+- **版本号必须来自真实文件。** 读 `WinClient\UpdateList.xml` 获取 `<Version>`，或直接问用户实际运行版本
+- **实际运行界面 > 源码。** 源码仓库可能不是最新部署版本，用户看到的界面为准
+
+---
+
+## 1. CS 整体结构（MainForm 外壳）
+
+CS 客户端启动后进入 `MainForm`，其结构为：
+
+```
+┌──────────────────────────────────────────────┐
+│  panelTop (82px, #BCDCF4)                      │  ← 顶栏
+│  logo | 日期 | 时间 | 星期 | 系统连接 | 版本 | 用户 │
+├────────┬─────────────────────────────────────┤
+│panelLeft│  kkTab1 (TabControl, OwnerDrawFixed) │
+│179px   │  ┌──────────────────────────────┐   │
+│tvMenu  │  │ Tab: 首页 | 原料称重 | 余料称重...│   │
+│WhiteSmk│  ├──────────────────────────────┤   │
+│        │  │  子窗体内容 (Dock=Fill)       │   │
+│        │  │                              │   │
+└────────┴──────────────────────────────────────┘
+```
+
+### 1.1 源码关键行号
+
+| 属性                | 值                                                | 源码位置                  |
+| ------------------- | ------------------------------------------------- | ------------------------- |
+| panelTop.BackColor  | `#BCDCF4` (188,220,244)                           | MainForm.Designer.cs L245 |
+| panelTop.Height     | 82px                                              | MainForm.Designer.cs L248 |
+| tvMenu.BackColor    | `WhiteSmoke`                                      | MainForm.Designer.cs L225 |
+| tvMenu.GroupBgColor | `#5FA2D3` (95,162,211)                            | MainForm.Designer.cs L229 |
+| tvMenu.Width        | 179px                                             | MainForm.Designer.cs L205 |
+| 字体                | 微软雅黑 9F                                       | MainForm.Designer.cs L228 |
+| 用户名              | 微软雅黑 15F Bold Black                           | MainForm.Designer.cs L287 |
+| 版本号来源          | `frmLogin.version` ← `UpdateList.xml` `<Version>` | frmLogin.cs L28 + L83     |
+
+---
+
+## 2. 子窗体结构（以 frmME_IssueMaterial 原料称重为例）
+
+### 2.1 面板 Dock=Top 层叠顺序
+
+WinForms `Dock=Top` 规则：**最后加入 Controls 的面板在最上面。** 读取 Designer.cs 中 `panelMain.Controls.Add()` 的顺序（从下到上）：
+
+```
+panelMain.Controls.Add(panel7);              // ⑦ 操作区 (最底部)
+panelMain.Controls.Add(panelDetail);          // ⑥ 已发料明细+称重记录
+panelMain.Controls.Add(panelBPRList);         // ⑤ BPR配方明细
+panelMain.Controls.Add(panelIssueMaterialTitle); // ④ 称重信息标题
+panelMain.Controls.Add(panelWorkOrderList);   // ③ 工单列表
+panelMain.Controls.Add(panelWorkOrder);       // ② 搜索栏
+panelMain.Controls.Add(panelBasicInfoTitle);  // ① 基础信息标题 (最顶部)
+```
+
+### 2.2 可折叠面板
+
+- `panelBasicInfoTitle` 点击 → 切换 `panelWorkOrder` + `panelWorkOrderList` 显隐
+- `panelIssueMaterialTitle` 点击 → 切换 `panelBPRList` + `panelDetail` 显隐
+- 标题栏：`labelBasicInfoTitle.Text = "-"` / `"+"`  表示展开/折叠
+- **面板背景色不是灰色！** `BackColor = SystemColors.GradientActiveCaption`（浅蓝渐变）
+
+### 2.3 子窗体标题颜色
+
+```css
+/* 对应 SystemColors.GradientActiveCaption */
+.sec-hdr {
+  background: linear-gradient(180deg, #E8F4FD, #BCDCF4);
+  height: 28px;
+  /* L1700 panelBasicInfoTitle, L1411 panelIssueMaterialTitle */
+}
+```
+
+---
+
+## 3. CS 专用配色方案
+
+| 用途              | 色值                                | 来源                               |
+| ----------------- | ----------------------------------- | ---------------------------------- |
+| 顶栏 / 高亮字段   | `#BCDCF4`                           | MainForm.Designer.cs L245          |
+| 树菜单分组标题    | `#5FA2D3`                           | MainForm.Designer.cs L229          |
+| 树菜单背景        | `WhiteSmoke`                        | MainForm.Designer.cs L225          |
+| 折叠标题栏        | `linear-gradient(#E8F4FD, #BCDCF4)` | SystemColors.GradientActiveCaption |
+| 内容区背景        | `#F0F0F0` (SystemColors.Control)    | WinForms 默认                      |
+| DataGridView 表头 | `#E8F0FE`                           | WinForms 默认                      |
+| 必填标记          | `Color.Red` (`*`)                   | L1672 label42                      |
+| 批号高亮          | `#BCDCF4` (同顶栏)                  | L94 txt_mfgBatch                   |
+
+---
+
+## 4. CS 字体规范
+
+| 场景              | 字体              | 来源                 |
+| ----------------- | ----------------- | -------------------- |
+| 一般标签/Label    | 微软雅黑 10F      | Designer 多处        |
+| 树菜单            | 微软雅黑 9F       | L228                 |
+| DataGridView      | **宋体 9F**       | L868 IM_DispatchList |
+| 用户名            | 微软雅黑 15F Bold | L287 lblOperName     |
+| 物料编号 / 标准值 | 微软雅黑 **20F**  | L70-71, L92          |
+| 操作按钮          | 微软雅黑 12F      | L107-112             |
+
+---
+
+## 5. CS 按钮尺寸精确值
+
+| 按钮文字         | 尺寸   | 字号 | 来源                      |
+| ---------------- | ------ | ---- | ------------------------- |
+| 查询             | 132×37 | 12F  | L1675 QueryButton         |
+| 调料             | 183×46 | 12F  | L107 IM_Button_ToMfgOrder |
+| 已发料明细重印   | 183×46 | 12F  | L108                      |
+| 原料称重明细重印 | 183×46 | 12F  | L108                      |
+| 免称             | 100×48 | 12F  | L110                      |
+| 称重             | 100×48 | 12F  | L111                      |
+| 确认             | 100×48 | 12F  | L112                      |
+| 取消称重         | 245×48 | 12F  | L126                      |
+
+---
+
+## 6. DataGridView 列名（必须来自源码）
+
+**禁止编造列名。** 列名来自 Designer.cs 中的 `HeaderText` 属性：
+
+```
+// 示例：IM_DispatchList (已发料明细)
+IM_DispatchList_SN.HeaderText = "#"
+IM_DispatchList_MFGBatch.HeaderText = "原料批号"
+IM_DispatchList_ExpirationDate.HeaderText = "有效期"
+IM_DispatchList_LotNM.HeaderText = "流水号"
+IM_DispatchList_DispatchQty.HeaderText = "发料数量"
+IM_DispatchList_WipQty.HeaderText = "线边数量"
+IM_DispatchList_UOMNM.HeaderText = "单位"
+IM_DispatchList_DispatchStatus.HeaderText = "发料状态"
+IM_DispatchList_Info.HeaderText = "其他信息"
+```
+
+---
+
+## 7. 左侧菜单（全部 35 项，来自 MainForm.cs TreeMenuName switch）
+
+菜单项从数据库权限动态加载（`dal.GetCSMenuAuthority`），但 switch 中定义了所有可能的模块：
+
+工单启动、内栈板包装、不锈钢清洗消毒、原料称重、原料称重复核、工单、返工记录表、成品包装、配制罐清洗启动、余料称重、配制罐输出、报废单、半成品产出、预配罐清洗启动、BPR作业、BPR作业修改、配制设备检查记录、配制区域生产前清场记录、储罐输入、生产前生产线清场检查表、中心线输入、储罐清洗启动、配制后清洗、储罐输出、在线产品装箱重量检查表、生产线分批、设备清洗消毒、配制产出TK绑定、批号重印、设备停机记录、罐装退料、配制产出、称重调试、天平调试、生产实绩录入
+
+---
+
+## 8. data-k 标注铁律
+
+**所有可见数据字段必须有 `data-k` 属性**，无一例外。包括但不限于：
+- 搜索框 / 下拉框
+- DataGridView 所有列的单元格
+- 操作区所有 TextBox / Label 值
+- 所有按钮
+- 顶栏的日期/时间/用户/版本
+
+每个 `data-k` 必须在 JS `map` 对象中有对应条目，格式：
+```javascript
+key:['字段中文名','数据库来源.字段名','控件类型·尺寸','调用链路','源码位置',['路径节点']]
+```
+
+---
+
+## 9. CS Demo HTML 模板结构
+
+```html
+<body>
+  <div style="display:flex;gap:8px">        <!-- 左右布局 -->
+    <div class="win">                         <!-- CS 窗口外壳 -->
+      <div class="topbar">...</div>           <!-- panelTop 82px #BCDCF4 -->
+      <div class="body">                      <!-- flex row -->
+        <div class="left">...</div>           <!-- 179px 树菜单 -->
+        <div class="right">                   <!-- 主内容区 -->
+          <div class="tabs">...</div>         <!-- Tab 页签 -->
+          <div class="content">               <!-- 子窗体内容 -->
+            <div class="sec-hdr">− 基础信息</div>   <!-- 可折叠标题 -->
+            <!-- 搜索栏 -->
+            <!-- DataGridView × N -->
+            <div class="sec-hdr">− 原料称重</div>   <!-- 可折叠标题 -->
+            <!-- DataGridView × N -->
+            <!-- 操作区 (最后,不可折叠) -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stats">...</div>              <!-- 右侧统计面板 -->
+  </div>
+  <aside class="card">...</aside>             <!-- 血缘卡片 -->
+</body>
+```
+
+---
+
+## 10. CS Demo 创建检查清单
+
+- [ ] 已读取目标窗体的 `.Designer.cs`，确认所有控件名/坐标/大小/颜色
+- [ ] 已读取 `.cs` 代码文件，确认运行时逻辑（折叠面板/数据绑定/按钮事件）
+- [ ] 顶栏正确：`#BCDCF4`, 82px, 日期/时间/星期/版本/用户
+- [ ] 左侧菜单包含全部 35 个模块（来自 MainForm.cs TreeMenuName switch）
+- [ ] 面板按 Dock=Top 倒序排列（最下面加入的最先 display）
+- [ ] 可折叠面板使用 `GradientActiveCaption` 渐变背景，28px 高
+- [ ] DataGridView 使用宋体 9F，表头 `#E8F0FE`，所有列名来自真实 HeaderText
+- [ ] 按钮尺寸精确匹配：查询 132×37，调料 183×46，免称/称重/确认 100×48
+- [ ] 所有可见数据字段都有 `data-k`，JS map 中有对应条目
+- [ ] 版本号来自 UpdateList.xml 或用户实际运行版本（禁止编造）
+- [ ] 已打开页面自检，无格式混乱或空白数据
+
 - 必须写明**目标写入表名**（不能写"传送到下一步"这种模糊描述）
 - 格式：`方法名() → 目标表名 → 作用说明`
 - 示例：`FI_Move_DZQM() → dtFinalInspection → FinalInspectionReason表 → MES主流程TravelDoc读取决定放行/滞留`
@@ -365,12 +586,12 @@ const map = {
 
 ## 10. 已知 BS 页面与源码对照
 
-| Demo 文件 | BS 源码页面 | 所属模块 |
-|---|---|---|
-| `demo-barcode-apply.html` | `CKZY_LotApply/Index.cshtml` | 仓库作业 → 条码申请 |
-| `sampling-label.html` | `ZLKZ_SamplingLabel` | 质量控制 → 抽样标签 |
-| `demo-inspection-check.html` | `MESZLKZ_Inspection/Index.cshtml` | 质量控制 → 检验 |
-| `demo-inspection.html` | `MESZLKZ_FinalInspection/Index.cshtml` | 质量控制 → 质检结果判定 |
+| Demo 文件                    | BS 源码页面                            | 所属模块                |
+| ---------------------------- | -------------------------------------- | ----------------------- |
+| `demo-barcode-apply.html`    | `CKZY_LotApply/Index.cshtml`           | 仓库作业 → 条码申请     |
+| `sampling-label.html`        | `ZLKZ_SamplingLabel`                   | 质量控制 → 抽样标签     |
+| `demo-inspection-check.html` | `MESZLKZ_Inspection/Index.cshtml`      | 质量控制 → 检验         |
+| `demo-inspection.html`       | `MESZLKZ_FinalInspection/Index.cshtml` | 质量控制 → 质检结果判定 |
 
 ---
 

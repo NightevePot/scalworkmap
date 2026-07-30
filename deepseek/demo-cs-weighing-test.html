@@ -1,0 +1,572 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>绉伴噸璋冭瘯 路 CS瀹㈡埛绔?/title>
+    <style>
+      :root {
+        --hdr: #BCDCF4;
+        --grp: #5FA2D3;
+        --bg: #F0F0F0;
+        --w: #FFF;
+        --txt: #333;
+        --bdr: #C0C0C0
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0
+      }
+
+      body {
+        font: 9pt "Microsoft YaHei", "寰蒋闆呴粦", sans-serif;
+        background: #E8ECF0;
+        display: flex;
+        justify-content: center;
+        padding: 8px;
+        min-height: 100vh
+      }
+
+      .win {
+        max-width: 900px;
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid #8492A0;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
+      }
+
+      .topbar {
+        height: 82px;
+        background: var(--hdr);
+        border-bottom: 1px solid #9BBDE0;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 20px
+      }
+
+      .topbar .logo {
+        font: 15pt "寰蒋闆呴粦";
+        font-weight: 700;
+        color: #1a3a5c
+      }
+
+      .topbar .info {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex: 1;
+        font-size: 9pt
+      }
+
+      .topbar .info .time {
+        font: 15pt "寰蒋闆呴粦";
+        font-weight: 700;
+        color: #000
+      }
+
+      .topbar .user {
+        font: 15pt "寰蒋闆呴粦";
+        font-weight: 700;
+        color: #000;
+        margin-left: auto
+      }
+
+      .topbar .ver {
+        font-size: 9pt;
+        color: DimGray
+      }
+
+      .body {
+        display: flex;
+        height: calc(100vh - 100px);
+        min-height: 600px
+      }
+
+      .left {
+        width: 179px;
+        background: WhiteSmoke;
+        border-right: 1px solid var(--bdr);
+        overflow-y: auto;
+        flex-shrink: 0
+      }
+
+      .left .grp-title {
+        padding: 8px 10px;
+        font-weight: 700;
+        font-size: 9pt;
+        background: var(--grp);
+        color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 1
+      }
+
+      .left .tree-item {
+        padding: 4px 8px 4px 18px;
+        cursor: pointer;
+        font-size: 9pt;
+        color: var(--txt);
+        border-left: 3px solid transparent
+      }
+
+      .left .tree-item:hover {
+        background: #E8F0FE
+      }
+
+      .left .tree-item.sel {
+        background: #DAE8F5;
+        border-left-color: #1a56b0;
+        font-weight: 700
+      }
+
+      .right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden
+      }
+
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        background: var(--w);
+        padding: 10px
+      }
+
+      .btn {
+        padding: 4px 16px;
+        border: 1px solid #C0C0C0;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
+        font: 15pt "瀹嬩綋", SimSun, serif;
+        cursor: pointer;
+        width: 142px;
+        height: 77px
+      }
+
+      .btn:hover {
+        background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
+      }
+
+      .btn.primary {
+        background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
+        border-color: #2D6AA0;
+        color: #fff
+      }
+
+      .grp {
+        border: 1px solid #C0C0C0;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        padding: 8px
+      }
+
+      .grp legend {
+        font: 10pt "寰蒋闆呴粦";
+        font-weight: 700;
+        padding: 0 6px
+      }
+
+      .big {
+        font: 15pt "瀹嬩綋", SimSun, serif;
+        font-weight: 700;
+        padding: 4px 8px;
+        border: 1px solid #C0C0C0;
+        border-radius: 2px;
+        background: #fff;
+        text-align: center
+      }
+
+      .big.green {
+        color: Green
+      }
+
+      .big.yellow {
+        color: #B8860B
+      }
+
+      .stats {
+        width: 280px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 8px;
+        font-size: 9pt;
+        margin-left: 8px
+      }
+
+      .stats .sh {
+        font-weight: 700;
+        font-size: 10pt;
+        margin-bottom: 6px
+      }
+
+      .stats .ss {
+        margin-bottom: 6px;
+        background: #fff;
+        border: 1px solid var(--bdr);
+        border-radius: 3px;
+        padding: 6px 8px
+      }
+
+      .stats .ss h4 {
+        font-size: 8pt;
+        color: DimGray;
+        margin-bottom: 3px
+      }
+
+      .stats .tag {
+        font-size: 7pt;
+        padding: 1px 5px;
+        border-radius: 3px
+      }
+
+      .tag-tbl {
+        background: #E0F2FE;
+        color: #0369A1
+      }
+
+      .tag-form {
+        background: #FEF3C7;
+        color: #92400E
+      }
+
+      .src-note {
+        font-size: 7pt;
+        color: #92400E;
+        background: #FEFCE8;
+        padding: 5px 7px;
+        border-radius: 3px
+      }
+
+      .card {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        width: 380px;
+        background: #fff;
+        border: 1px solid #8492A0;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+        display: none;
+        z-index: 100;
+        font-size: 9pt
+      }
+
+      .card.show {
+        display: block
+      }
+
+      .card-hd {
+        background: var(--hdr);
+        padding: 8px 12px;
+        border-bottom: 1px solid #9BBDE0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move
+      }
+
+      .card-hd h3 {
+        font-size: 10pt;
+        color: #1a3a5c
+      }
+
+      .card-bd {
+        padding: 8px 10px
+      }
+
+      .card-bd dt {
+        font-size: 8pt;
+        color: DimGray;
+        margin-bottom: 1px
+      }
+
+      .card-bd dd {
+        font-size: 9pt;
+        color: var(--txt);
+        word-break: break-all;
+        margin-bottom: 3px
+      }
+
+      .path {
+        display: flex;
+        gap: 3px;
+        font-size: 8pt;
+        color: var(--grp);
+        margin-bottom: 5px;
+        flex-wrap: wrap
+      }
+
+      .path span {
+        background: #E8F0FE;
+        padding: 1px 4px;
+        border-radius: 2px
+      }
+
+      .path .ar {
+        color: DimGray;
+        background: none
+      }
+
+      .toast {
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: 4px;
+        font-size: 10pt;
+        z-index: 300;
+        opacity: 0;
+        transition: opacity .3s;
+        pointer-events: none
+      }
+
+      .toast.show {
+        opacity: 1
+      }
+    </style>
+</head>
+
+<body>
+  <div style="display:flex;gap:8px">
+    <div class="win">
+      <div class="topbar">
+        <div class="logo">MES 鍒堕€犳墽琛岀郴缁?/div><div class="info"><span>馃搮 2026-07-29</span><span
+              class="time">14:30:00</span><span>鏄熸湡涓?/span><span>| 绯荤粺杩炴帴锛氭甯?/span></div><span
+            class="ver">褰撳墠鐗堟湰锛?.0.5.74</span><span class="user">馃懁 瓒呯骇绠＄悊鍛?/span></div>
+        <div class="body">
+          <div class="left">
+            <div class="grp-title">涓诲鑸?/div><div class="tree-item">鏃?/div><div class="grp-title">鐢熶骇鎵ц</div>
+                <div class="tree-item">宸ュ崟鍚姩</div>
+                <div class="tree-item">宸ュ崟</div>
+                <div class="tree-item">鍘熸枡绉伴噸</div>
+                <div class="tree-item">鍘熸枡绉伴噸澶嶆牳</div>
+                <div class="tree-item">浣欐枡绉伴噸</div>
+                <div class="tree-item sel">绉伴噸璋冭瘯</div>
+                <div class="tree-item">澶╁钩璋冭瘯</div>
+                <div class="tree-item">BPR浣滀笟</div>
+                <div class="tree-item">BPR浣滀笟淇敼</div>
+                <div class="tree-item">閰嶅埗缃愭竻娲楀惎鍔?/div><div class="tree-item">棰勯厤缃愭竻娲楀惎鍔?/div><div class="tree-item">
+                      鍌ㄧ綈娓呮礂鍚姩</div>
+                    <div class="tree-item">閰嶅埗鍚庢竻娲?/div><div class="tree-item">涓嶉攬閽㈡竻娲楁秷姣?/div><div class="tree-item">
+                          璁惧娓呮礂娑堟瘨</div>
+                        <div class="tree-item">閰嶅埗浜у嚭</div>
+                        <div class="tree-item">鍗婃垚鍝佷骇鍑?/div><div class="tree-item">閰嶅埗缃愯緭鍑?/div><div class="tree-item">
+                              鍌ㄧ綈杈撳叆</div>
+                            <div class="tree-item">鍌ㄧ綈杈撳嚭</div>
+                            <div class="tree-item">鎶ュ簾鍗?/div><div class="tree-item">缃愯閫€鏂?/div><div class="tree-item">
+                                  鍐呮爤鏉垮寘瑁?/div><div class="tree-item">鎴愬搧鍖呰</div>
+                                  <div class="tree-item">杩斿伐璁板綍琛?/div><div class="tree-item">鎵瑰彿閲嶅嵃</div>
+                                    <div class="tree-item">閰嶅埗浜у嚭TK缁戝畾</div>
+                                    <div class="tree-item">鐢熶骇绾垮垎鎵?/div><div class="tree-item">涓績绾胯緭鍏?/div><div
+                                          class="tree-item">閰嶅埗璁惧妫€鏌ヨ褰?/div><div class="tree-item">
+                                            閰嶅埗鍖哄煙鐢熶骇鍓嶆竻鍦鸿褰?/div><div class="tree-item">鐢熶骇鍓嶇敓浜х嚎娓呭満妫€鏌ヨ〃</div>
+                                            <div class="tree-item">鍦ㄧ嚎浜у搧瑁呯閲嶉噺妫€鏌ヨ〃</div>
+                                            <div class="tree-item">璁惧鍋滄満璁板綍</div>
+                                            <div class="tree-item">鐢熶骇瀹炵哗褰曞叆</div>
+                                          </div>
+                                          <div class="right">
+                                            <div class="content">
+
+                                              <!-- groupBox3: 閫夋嫨绉伴噸鏈?-->
+                                              <fieldset class="grp">
+                                                <legend>閫夋嫨绉伴噸鏈?/legend>
+                                                  <div style="display:flex;gap:12px;align-items:center">
+                                                    <label style="font:10pt '寰蒋闆呴粦'">绉伴噸鏈猴細</label><select
+                                                      data-k="sWeightMachine" style="width:200px;height:28px">
+                                                      <option>绉伴噸鍙?1 / COM3</option>
+                                                      <option>绉伴噸鍙?2 / COM4</option>
+                                                    </select>
+                                                    <button class="btn" style="font:9pt '寰蒋闆呴粦';width:80px;height:30px"
+                                                      data-k="btnRefresh">鍒锋柊</button>
+                                                  </div>
+                                              </fieldset>
+
+                                              <!-- groupBox1: 鐨噸淇℃伅 -->
+                                              <fieldset class="grp">
+                                                <legend>鐨噸淇℃伅</legend>
+                                                <div style="display:flex;gap:20px;align-items:center">
+                                                  <div><label style="font:10pt '寰蒋闆呴粦'">鐨噸锛?/label><span class="big"
+                                                        data-k="skinWeight"
+                                                        style="display:inline-block;min-width:160px">199.50</span></div>
+                                                  <button class="btn" data-k="btnSkinWeight">鐨噸绉伴噸</button>
+                                                </div>
+                                              </fieldset>
+
+                                              <!-- groupBox2: 鍑€閲嶄俊鎭?-->
+                                              <fieldset class="grp">
+                                                <legend>鍑€閲嶄俊鎭?/legend>
+                                                  <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+                                                    <div><label style="font:10pt '寰蒋闆呴粦'">姣涢噸锛?/label><span
+                                                          class="big yellow" data-k="grossWeight"
+                                                          style="display:inline-block;min-width:160px">4200.00</span>
+                                                    </div>
+                                                    <div><label style="font:10pt '寰蒋闆呴粦'">鍑€閲嶏細</label><span
+                                                        class="big green" data-k="netWeight"
+                                                        style="display:inline-block;min-width:160px">4000.50</span>
+                                                    </div>
+                                                    <button class="btn" data-k="btnNetWeight">鍑€閲嶇О閲?/button>
+                                                      <button class="btn" data-k="btnRemoveSkin">鍘荤毊閲?/button>
+                                                  </div>
+                                                  <div style="margin-top:8px;display:flex;gap:16px">
+                                                    <div><label style="font:10pt '寰蒋闆呴粦'">涓嬮檺锛?/label><span class="big"
+                                                          data-k="minValue"
+                                                          style="display:inline-block;min-width:120px">3950.00</span>
+                                                    </div>
+                                                    <div><label style="font:10pt '寰蒋闆呴粦'">鏍囧噯鍊硷細</label><span
+                                                        class="big" data-k="stdValue"
+                                                        style="display:inline-block;min-width:120px">4000.00</span>
+                                                    </div>
+                                                    <div><label style="font:10pt '寰蒋闆呴粦'">涓婇檺锛?/label><span class="big"
+                                                          data-k="maxValue"
+                                                          style="display:inline-block;min-width:120px">4050.00</span>
+                                                    </div>
+                                                  </div>
+                                                  <div
+                                                    style="margin-top:4px;height:40px;background:var(--w);border:1px solid #C0C0C0;border-radius:2px;display:flex;align-items:center;padding:0 8px">
+                                                    <div
+                                                      style="background:linear-gradient(90deg,#22c55e 0%,#22c55e 95%,#f59e0b 95%,#f59e0b 98%,#ef4444 98%,#ef4444 100%);height:20px;border-radius:3px;width:100%"
+                                                      title="WeightBar: 绉伴噸杩涘害鏉?></div>
+</div></fieldset>
+
+<!-- groupBox4: 閫夋嫨璇煶 -->
+<fieldset class=" grp">
+                                                      <legend>閫夋嫨璇煶</legend>
+                                                      <select data-k="sVoice" style="width:200px;height:28px">
+                                                        <option>涓枃濂冲０</option>
+                                                        <option>涓枃鐢峰０</option>
+                                                      </select>
+                                              </fieldset>
+
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div class="stats">
+                                        <div class="sh">&#x1F4CA; 璋冪敤缁熻<span class="tag tag-form"
+                                            style="margin-left:4px">CS&#xB7;绉伴噸璋冭瘯</span></div>
+                                        <div style="display:flex;gap:8px;margin-bottom:6px">
+                                          <div
+                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">3</div>
+                                            <div style="font-size:7pt;color:DimGray">鏁版嵁搴撹〃</div>
+                                          </div>
+                                          <div
+                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
+                                            <div style="font-size:7pt;color:DimGray">瀛樺偍杩囩▼</div>
+                                          </div>
+                                          <div
+                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">1</div>
+                                            <div style="font-size:7pt;color:DimGray">DAL绫?/div></div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
+                                              鏁版嵁搴撹〃</h4>
+                                            <div style="font-size:8pt;line-height:1.7">
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">DeviceConfig</span>
+                                                <span class="tag tag-tbl">璁惧閰嶇疆</span></div>
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">WeighingTestHistory</span>
+                                                <span class="tag tag-tbl">绉伴噸娴嬭瘯璁板綍</span></div>
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">Product</span>
+                                                <span class="tag tag-tbl">鐗╂枡</span></div>
+                                            </div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
+                                              瀛樺偍杩囩▼</h4>
+                                            <div style="font-size:8pt;color:#888;padding:2px 4px">閫氳繃 DAL&#x2192;WebAPI
+                                              鐩存帴鎿嶄綔锛屾湭浣跨敤鐙珛瀛樺偍杩囩▼</div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
+                                              鏁版嵁璁块棶灞?(DAL)</h4>
+                                            <div style="font-size:8pt;line-height:1.7">
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_WeighingTestDAL</span>
+                                                <span class="tag tag-bll">绉伴噸璋冭瘯</span></div>
+                                              <div style="margin-left:10px;color:#888;font-size:7pt">GetDeviceConfig /
+                                                SaveTestResult</div>
+                                            </div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
+                                              绐椾綋</h4>
+                                            <div style="font-size:8pt;line-height:1.7">
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">frmME_WeightingTest</span>
+                                                <span class="tag tag-form">绉伴噸璋冭瘯涓婚〉</span></div>
+                                            </div>
+                                          </div>
+                                          <div class="src-note"><b>&#x2705; 婧愮爜楠岃瘉锛?/b>
+                                              frmME_WeightingTest.Designer.cs<br>鎸夐挳瀹嬩綋15F&#xB7;groupBox&#xD7;4&#xB7;Color.Yellow/Green鐗规畩
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <aside class="card" id="card">
+                                        <div class="card-hd">
+                                          <div><small>FIELD DATA LINEAGE</small>
+                                            <h3 id="title"></h3>
+                                          </div><button onclick="cl()"
+                                            style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">鉁?/button>
+                                        </div>
+                                        <div class="card-bd">
+                                          <div class="path" id="pth"></div>
+                                          <dl>
+                                            <dt>瀛楁鍚?/dt>
+                                            <dd id="label"></dd>
+                                          </dl>
+                                          <dl>
+                                            <dt>鏁版嵁鏉ユ簮</dt>
+                                            <dd id="source"></dd>
+                                          </dl>
+                                          <dl>
+                                            <dt>鎺т欢绫诲瀷</dt>
+                                            <dd id="type"></dd>
+                                          </dl>
+                                          <dl>
+                                            <dt>璋冪敤閾捐矾</dt>
+                                            <dd id="formula"></dd>
+                                          </dl>
+                                        </div>
+                                      </aside>
+
+                                      <script>
+                                        const map = {
+                                          sWeightMachine: ['绉伴噸鏈?,'COM绔彛閫夋嫨','ComboBox','閫夋嫨涓插彛绉伴噸璁惧',['frmME_WeightingTest']],
+sVoice: ['璇煶', '璇煶鎾姤閫夋嫨', 'ComboBox', '閫夋嫨璇煶鎾姤绫诲瀷', ['frmME_WeightingTest']],
+                                            skinWeight: ['鐨噸', 'SkinWeight TextBox', 'TextBox路瀹嬩綋15F', '绉伴噸鏈衡啋鐨噸璇绘暟', ['SkinWeight']],
+                                            grossWeight: ['姣涢噸', 'GrossWeight路ForeColor=Yellow', 'TextBox路瀹嬩綋15F', '绉伴噸鏈衡啋姣涢噸璇绘暟', ['GrossWeight']],
+                                            netWeight: ['鍑€閲?,'NetWeight路ForeColor = Green','TextBox路瀹嬩綋15F','姣涢噸 - 鐨噸 = 鍑€閲 ?, ['NetWeight']],
+                                            minValue: ['涓嬮檺', 'MinValueLabel', 'Label路瀹嬩綋15F', 'BPR閰嶆柟鈫掑～鍏?,['MinValueLabel']],
+stdValue: ['鏍囧噯鍊?,'StdValueLabel','Label路瀹嬩綋15F','BPR閰嶆柟鈫掑～鍏 ?, ['StdValueLabel']],
+                                              maxValue: ['涓婇檺', 'MaxValueLabel', 'Label路瀹嬩綋15F', 'BPR閰嶆柟鈫掑～鍏?,['MaxValueLabel']],
+btnRefresh: ['鍒锋柊', 'btnRefresh_Click', 'Button 9F路80脳30', '鍒锋柊绉伴噸鏈哄垪琛?,['frmME_WeightingTest']],
+btnSkinWeight: ['鐨噸绉伴噸', 'SkinWeightButton_Click', 'Button 瀹嬩綋15F路142脳77', '璇诲彇鐨噸鈫扴kinWeight', ['frmME_WeightingTest']],
+                                                  btnNetWeight: ['鍑€閲嶇О閲?,'WeightButton_Click','Button 瀹嬩綋15F路142脳77','璇诲彇姣涢噸鈫掕绠楀噣閲嶁啋WeightBar',['frmME_WeightingTest']],
+btnRemoveSkin: ['鍘荤毊閲?,'RemoveSkinWeightButton_Click','Button 瀹嬩綋15F路142脳77','娓呴浂鐨噸',['frmME_WeightingTest']]};
+const card = document.getElementById('card');
+                                          function show(k){ const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show')}
+                                        function cl() { card.classList.remove('show') }
+                                        document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) }));
+                                        var drag = null, hd = card.querySelector('.card-hd'); hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = function () { drag = null }; document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+                                      </script>
+                                      <div class="toast" id="toast"></div>
+</body>
+
+</html>

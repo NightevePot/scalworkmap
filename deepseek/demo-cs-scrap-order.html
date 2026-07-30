@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>报废单 · CS客户端</title>
+  <style>
+    :root {
+      --hdr: #BCDCF4;
+      --grp: #5FA2D3;
+      --bg: #F0F0F0;
+      --w: #FFF;
+      --txt: #333;
+      --bdr: #C0C0C0;
+      --ghdr: #E8F0FE
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font: 9pt "Microsoft YaHei", "微软雅黑", sans-serif;
+      background: #E8ECF0;
+      display: flex;
+      justify-content: center;
+      padding: 8px;
+      min-height: 100vh
+    }
+
+    .win {
+      max-width: 1500px;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid #8492A0;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
+    }
+
+    .topbar {
+      height: 82px;
+      background: var(--hdr);
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 20px
+    }
+
+    .topbar .logo {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #1a3a5c
+    }
+
+    .topbar .info {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+      font-size: 9pt
+    }
+
+    .topbar .info .time {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000
+    }
+
+    .topbar .user {
+      font: 15pt "微软雅黑";
+      font-weight: 700;
+      color: #000;
+      margin-left: auto
+    }
+
+    .topbar .ver {
+      font-size: 9pt;
+      color: DimGray
+    }
+
+    .body {
+      display: flex;
+      height: calc(100vh - 100px);
+      min-height: 600px
+    }
+
+    .left {
+      width: 179px;
+      background: WhiteSmoke;
+      border-right: 1px solid var(--bdr);
+      overflow-y: auto;
+      flex-shrink: 0
+    }
+
+    .left .grp-title {
+      padding: 8px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      background: var(--grp);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1
+    }
+
+    .left .tree-item {
+      padding: 4px 8px 4px 18px;
+      cursor: pointer;
+      font-size: 9pt;
+      color: var(--txt);
+      border-left: 3px solid transparent
+    }
+
+    .left .tree-item:hover {
+      background: #E8F0FE
+    }
+
+    .left .tree-item.sel {
+      background: #DAE8F5;
+      border-left-color: #1a56b0;
+      font-weight: 700
+    }
+
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      border-bottom: 1px solid var(--bdr)
+    }
+
+    .tab {
+      padding: 6px 16px;
+      border-right: 1px solid var(--bdr);
+      cursor: pointer;
+      font-size: 9pt;
+      color: DimGray;
+      background: var(--bg)
+    }
+
+    .tab.sel {
+      background: var(--w);
+      color: var(--txt);
+      font-weight: 700
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--w)
+    }
+
+    .btn {
+      padding: 4px 16px;
+      border: 1px solid #C0C0C0;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
+      font: 9pt "微软雅黑";
+      cursor: pointer;
+      height: 30px
+    }
+
+    .btn:hover {
+      background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
+    }
+
+    .btn.primary {
+      background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
+      border-color: #2D6AA0;
+      color: #fff
+    }
+
+    .sec-inactive {
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0);
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid var(--bdr);
+      height: 26px;
+      display: flex;
+      align-items: center
+    }
+
+    .blk {
+      margin: 4px 6px;
+      background: var(--w);
+      border: 1px solid #C8D0D8;
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .blk-hd {
+      padding: 3px 10px;
+      font-weight: 700;
+      font-size: 9pt;
+      color: #555;
+      border-bottom: 1px solid #C8D0D8;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(180deg, #F0F0F0, #D0D0D0)
+    }
+
+    .blk-bd {
+      padding: 4px
+    }
+
+    .blk-bd .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 4px
+    }
+
+    .blk-bd .row:last-child {
+      margin-bottom: 0
+    }
+
+    .blk-bd label {
+      font: 9pt "微软雅黑";
+      white-space: nowrap
+    }
+
+    .blk-bd input,
+    .blk-bd select {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 2px 6px
+    }
+
+    .blk-bd .btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px
+    }
+
+    .grid-wrap {
+      overflow-x: auto;
+      overflow-y: auto;
+      min-height: 80px;
+      max-height: 220px
+    }
+
+    table.grid {
+      width: 100%;
+      border-collapse: collapse;
+      font: 9pt "宋体", SimSun, serif
+    }
+
+    table.grid th {
+      background: var(--ghdr);
+      border: 1px solid #C0C0C0;
+      padding: 3px 5px;
+      font-weight: 600;
+      text-align: left;
+      font-size: 8pt;
+      white-space: nowrap
+    }
+
+    table.grid td {
+      border: 1px solid #E0E0E0;
+      padding: 2px 5px;
+      font-size: 8pt;
+      cursor: pointer
+    }
+
+    table.grid tr:hover td {
+      background: #BCDCF4
+    }
+
+    .frow {
+      display: flex;
+      gap: 6px;
+      padding: 3px 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .stats {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 8px;
+      font-size: 9pt;
+      margin-left: 8px
+    }
+
+    .stats .sh {
+      font-weight: 700;
+      font-size: 10pt;
+      margin-bottom: 6px
+    }
+
+    .stats .ss {
+      margin-bottom: 6px;
+      background: #fff;
+      border: 1px solid var(--bdr);
+      border-radius: 3px;
+      padding: 6px 8px
+    }
+
+    .stats .ss h4 {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 3px
+    }
+
+    .stats .tag {
+      font-size: 7pt;
+      padding: 1px 5px;
+      border-radius: 3px
+    }
+
+    .tag-tbl {
+      background: #E0F2FE;
+      color: #0369A1
+    }
+
+    .tag-form {
+      background: #FEF3C7;
+      color: #92400E
+    }
+
+    .src-note {
+      font-size: 7pt;
+      color: #059669;
+      background: #f0fdf4;
+      padding: 5px 7px;
+      border-radius: 3px
+    }
+
+    /* 弹窗 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      z-index: 200;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 40px
+    }
+
+    .modal-overlay.show {
+      display: flex
+    }
+
+    .modal {
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .3);
+      border-radius: 4px;
+      width: 520px;
+      max-width: 95vw;
+      font-size: 9pt
+    }
+
+    .modal-hd {
+      background: var(--hdr);
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #9BBDE0
+    }
+
+    .modal-hd h3 {
+      font-size: 11pt;
+      color: #1a3a5c
+    }
+
+    .modal-bd {
+      padding: 12px 14px
+    }
+
+    .modal-bd .fld {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px
+    }
+
+    .modal-bd .fld label {
+      width: 100px;
+      text-align: right;
+      font-size: 9pt;
+      white-space: nowrap
+    }
+
+    .modal-bd .fld input,
+    .modal-bd .fld select,
+    .modal-bd .fld textarea {
+      border: 1px solid #C0C0C0;
+      border-radius: 2px;
+      font: 9pt "微软雅黑";
+      padding: 3px 6px;
+      flex: 1
+    }
+
+    .modal-bd .fld textarea {
+      height: 60px;
+      resize: vertical
+    }
+
+    .modal-ft {
+      padding: 8px 14px;
+      border-top: 1px solid #E0E0E0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px
+    }
+
+    .toast {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-size: 10pt;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    .sel-row {
+      background: #BCDCF4 !important
+    }
+
+    .card {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 380px;
+      background: #fff;
+      border: 1px solid #8492A0;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+      display: none;
+      z-index: 100;
+      font-size: 9pt
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-hd {
+      background: var(--hdr);
+      padding: 8px 12px;
+      border-bottom: 1px solid #9BBDE0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-hd h3 {
+      font-size: 10pt;
+      color: #1a3a5c
+    }
+
+    .card-bd {
+      padding: 8px 10px
+    }
+
+    .card-bd dt {
+      font-size: 8pt;
+      color: DimGray;
+      margin-bottom: 1px
+    }
+
+    .card-bd dd {
+      font-size: 9pt;
+      color: var(--txt);
+      word-break: break-all;
+      margin-bottom: 3px
+    }
+
+    .path {
+      display: flex;
+      gap: 3px;
+      font-size: 8pt;
+      color: var(--grp);
+      margin-bottom: 5px;
+      flex-wrap: wrap
+    }
+
+    .path span {
+      background: #E8F0FE;
+      padding: 1px 4px;
+      border-radius: 2px
+    }
+
+    .path .ar {
+      color: DimGray;
+      background: none
+    }
+  </style>
+</head>
+
+<body>
+  <div style="display:flex;gap:8px">
+    <div class="win">
+      <div class="topbar">
+        <div class="logo">MES 制造执行系统</div>
+        <div class="info"><span>📅 2026-07-29</span><span class="time">14:30:00</span><span>星期三</span><span>|
+            系统连接：正常</span></div><span class="ver">当前版本：3.0.5.74</span><span class="user">👤 超级管理员</span>
+      </div>
+      <div class="body">
+        <div class="left">
+          <div class="grp-title">主导航</div>
+          <div class="tree-item">无</div>
+          <div class="grp-title">生产执行</div>
+          <div class="tree-item">工单启动</div>
+          <div class="tree-item">工单</div>
+          <div class="tree-item">原料称重</div>
+          <div class="tree-item">原料称重复核</div>
+          <div class="tree-item">余料称重</div>
+          <div class="tree-item">称重调试</div>
+          <div class="tree-item">天平调试</div>
+          <div class="tree-item">BPR作业</div>
+          <div class="tree-item">BPR作业修改</div>
+          <div class="tree-item">配制罐清洗启动</div>
+          <div class="tree-item">预配罐清洗启动</div>
+          <div class="tree-item">储罐清洗启动</div>
+          <div class="tree-item">配制后清洗</div>
+          <div class="tree-item">不锈钢清洗消毒</div>
+          <div class="tree-item">设备清洗消毒</div>
+          <div class="tree-item">配制产出</div>
+          <div class="tree-item">半成品产出</div>
+          <div class="tree-item">配制罐输出</div>
+          <div class="tree-item">储罐输入</div>
+          <div class="tree-item">储罐输出</div>
+          <div class="tree-item sel">报废单</div>
+          <div class="tree-item">罐装退料</div>
+          <div class="tree-item">内栈板包装</div>
+          <div class="tree-item">成品包装</div>
+          <div class="tree-item">返工记录表</div>
+          <div class="tree-item">批号重印</div>
+          <div class="tree-item">配制产出TK绑定</div>
+          <div class="tree-item">生产线分批</div>
+          <div class="tree-item">中心线输入</div>
+          <div class="tree-item">配制设备检查记录</div>
+          <div class="tree-item">配制区域生产前清场记录</div>
+          <div class="tree-item">生产前生产线清场检查表</div>
+          <div class="tree-item">在线产品装箱重量检查表</div>
+          <div class="tree-item">设备停机记录</div>
+          <div class="tree-item">生产实绩录入</div>
+        </div>
+        <div class="right">
+          <div class="tabs">
+            <div class="tab">首页</div>
+            <div class="tab sel">报废单</div>
+          </div>
+          <div class="content">
+
+            <!-- ═══════ Block ②: 报废单表头区 (ScrapOrderHeadPanel) ═══════ -->
+            <div class="blk">
+              <div class="blk-hd" style="background:linear-gradient(180deg,#F0F0F0,#D0D0D0)">- 报废单表头 <span
+                  style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">TitleHeadPanel 26px</span></div>
+              <div class="blk-bd" style="padding:0">
+                <!-- HeadTopPanel: 查询行 51px, Dock=Top -->
+                <div
+                  style="padding:4px 8px;background:#F5F5F5;border-bottom:1px solid #C8D0D8;display:flex;gap:4px;align-items:center">
+                  <label style="font:9pt '微软雅黑'">线号：</label><input data-k="sProductLine" value="产线A"
+                    style="width:200px;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px">
+                  <label style="font:9pt '微软雅黑'">工单号:</label><input data-k="sMfgOrderNM" value="MO-SO251206750-02"
+                    style="width:200px;height:28px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px">
+                  <label style="font:9pt '微软雅黑'">报废日期：</label><input data-k="sScrapTime" value="2026-07-29"
+                    style="width:177px;height:27px;font:9pt '微软雅黑';border:1px solid #C0C0C0;border-radius:2px">
+                  <button class="btn primary" style="font:12pt '微软雅黑';width:100px;height:40px"
+                    data-k="btnQueryHead">查询</button>
+                  <button class="btn primary" style="font:12pt '微软雅黑';width:100px;height:40px"
+                    data-k="btnAddHead">添加</button>
+                  <button class="btn" style="font:12pt '微软雅黑';width:100px;height:40px" data-k="btnEditHead">编辑</button>
+                  <button class="btn" style="font:12pt '微软雅黑';width:100px;height:40px" data-k="btnDelHead">删除</button>
+                  <button class="btn" style="font:12pt '微软雅黑';width:100px;height:40px"
+                    data-k="btnSendApprove">送审</button>
+                </div>
+                <!-- dgvScrapOrderHead -->
+                <div class="grid-wrap" style="min-height:80px;max-height:180px">
+                  <table class="grid" id="headGrid">
+                    <thead>
+                      <tr>
+                        <th>报废时间</th>
+                        <th>班次</th>
+                        <th>产线</th>
+                        <th>工单名称</th>
+                        <th>组长</th>
+                        <th>接收人</th>
+                        <th>创建人</th>
+                        <th>创建时间</th>
+                        <th>修改人</th>
+                        <th>修改时间</th>
+                        <th>IsDelete</th>
+                        <th>状态</th>
+                        <th>状态</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-k="hScrapTime">2026-07-29 14:00</td>
+                        <td data-k="hShift">白班</td>
+                        <td data-k="hProdLine">产线A</td>
+                        <td data-k="hMfgOrder">MO-SO251206750-02</td>
+                        <td data-k="hLeader">张组长</td>
+                        <td data-k="hReceiver">李接收</td>
+                        <td data-k="hCreator">超级管理员</td>
+                        <td data-k="hCreateTime">2026-07-29 14:05</td>
+                        <td data-k="hLastModifyBy">—</td>
+                        <td data-k="hLastModifyTime">—</td>
+                        <td data-k="hIsDelete">false</td>
+                        <td data-k="hStatus">新建</td>
+                        <td data-k="hState">正常</td>
+                      </tr>
+                      <tr>
+                        <td data-k="hScrapTime">2026-07-28 08:30</td>
+                        <td data-k="hShift">夜班</td>
+                        <td data-k="hProdLine">产线B</td>
+                        <td data-k="hMfgOrder">MO-SO251206750-03</td>
+                        <td data-k="hLeader">赵组长</td>
+                        <td data-k="hReceiver">王接收</td>
+                        <td data-k="hCreator">超级管理员</td>
+                        <td data-k="hCreateTime">2026-07-28 08:45</td>
+                        <td data-k="hLastModifyBy">—</td>
+                        <td data-k="hLastModifyTime">—</td>
+                        <td data-k="hIsDelete">false</td>
+                        <td data-k="hStatus">待审核</td>
+                        <td data-k="hState">正常</td>
+                      </tr>
+                      <tr>
+                        <td data-k="hScrapTime">2026-07-27 16:15</td>
+                        <td data-k="hShift">白班</td>
+                        <td data-k="hProdLine">产线A</td>
+                        <td data-k="hMfgOrder">MO-SO251206750-01</td>
+                        <td data-k="hLeader">张组长</td>
+                        <td data-k="hReceiver">陈接收</td>
+                        <td data-k="hCreator">李四</td>
+                        <td data-k="hCreateTime">2026-07-27 16:30</td>
+                        <td data-k="hLastModifyBy">—</td>
+                        <td data-k="hLastModifyTime">—</td>
+                        <td data-k="hIsDelete">false</td>
+                        <td data-k="hStatus">已审核</td>
+                        <td data-k="hState">正常</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ═══════ Block ③: 报废单明细区 (QueryHeadPanel) ═══════ -->
+            <div class="blk">
+              <div class="blk-hd" style="background:linear-gradient(180deg,#F0F0F0,#D0D0D0)">- 报废单明细 <span
+                  style="font-weight:400;color:#888;margin-left:8px;font-size:8pt">TitleListPanel 25px</span></div>
+              <div class="blk-bd" style="padding:0">
+                <!-- 明细按钮: tbScrapOrderPanel top, Y=4 -->
+                <div style="padding:4px 8px;background:#FAFAFA;border-bottom:1px solid #E0E0E0;display:flex;gap:6px">
+                  <button class="btn primary" style="font:12pt '微软雅黑';width:100px;height:40px"
+                    data-k="btnAddList">添加</button>
+                  <button class="btn" style="font:12pt '微软雅黑';width:100px;height:40px" data-k="btnEditList">编辑</button>
+                  <button class="btn" style="font:12pt '微软雅黑';width:100px;height:40px" data-k="btnDelList">删除</button>
+                </div>
+                <!-- dgvScrapOrderList -->
+                <div class="grid-wrap" style="min-height:100px;max-height:280px">
+                  <table class="grid" id="listGrid">
+                    <thead>
+                      <tr>
+                        <th>客户订单号</th>
+                        <th>产品名称</th>
+                        <th>报废物料名称</th>
+                        <th>报废物料数量</th>
+                        <th>取样（物料取样）名称</th>
+                        <th>取样（物料取样）数量</th>
+                        <th>报废原因</th>
+                        <th>创建人</th>
+                        <th>创建时间</th>
+                        <th>修改人</th>
+                        <th>修改时间</th>
+                        <th>虚拟删除</th>
+                        <th>状态</th>
+                        <th>状态</th>
+                        <th>物料编号</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td data-k="dOrderNo">SO-202607-001</td>
+                        <td data-k="dProductNM">示例洗发水</td>
+                        <td data-k="dScrapMatNM">ZW_NE OP SER</td>
+                        <td data-k="dQty">50.00</td>
+                        <td data-k="dSampleNM">取样A</td>
+                        <td data-k="dSampleQty">0.50</td>
+                        <td data-k="dReason">配料超差不合格</td>
+                        <td data-k="dCreator">超级管理员</td>
+                        <td data-k="dCreateTime">2026-07-29 14:10</td>
+                        <td data-k="dModifyBy">—</td>
+                        <td data-k="dModifyTime">—</td>
+                        <td data-k="dIsDelete">false</td>
+                        <td data-k="dStatus">新建</td>
+                        <td data-k="dState">正常</td>
+                        <td data-k="dMatCode">2969341</td>
+                      </tr>
+                      <tr>
+                        <td data-k="dOrderNo">SO-202607-001</td>
+                        <td data-k="dProductNM">示例洗发水</td>
+                        <td data-k="dScrapMatNM">ZW_PH ADJUST</td>
+                        <td data-k="dQty">12.50</td>
+                        <td data-k="dSampleNM">取样B</td>
+                        <td data-k="dSampleQty">0.30</td>
+                        <td data-k="dReason">PH值不合格</td>
+                        <td data-k="dCreator">超级管理员</td>
+                        <td data-k="dCreateTime">2026-07-29 14:12</td>
+                        <td data-k="dModifyBy">—</td>
+                        <td data-k="dModifyTime">—</td>
+                        <td data-k="dIsDelete">false</td>
+                        <td data-k="dStatus">新建</td>
+                        <td data-k="dState">正常</td>
+                        <td data-k="dMatCode">2969342</td>
+                      </tr>
+                      <tr>
+                        <td data-k="dOrderNo">SO-202607-001</td>
+                        <td data-k="dProductNM">示例洗发水</td>
+                        <td data-k="dScrapMatNM">ZW_CA MGSO4</td>
+                        <td data-k="dQty">8.00</td>
+                        <td data-k="dSampleNM">—</td>
+                        <td data-k="dSampleQty">0.00</td>
+                        <td data-k="dReason">外观异常沉淀</td>
+                        <td data-k="dCreator">超级管理员</td>
+                        <td data-k="dCreateTime">2026-07-29 14:15</td>
+                        <td data-k="dModifyBy">—</td>
+                        <td data-k="dModifyTime">—</td>
+                        <td data-k="dIsDelete">false</td>
+                        <td data-k="dStatus">新建</td>
+                        <td data-k="dState">正常</td>
+                        <td data-k="dMatCode">2969343</td>
+                      </tr>
+                      <tr>
+                        <td data-k="dOrderNo">SO-202607-002</td>
+                        <td data-k="dProductNM">柔顺护发素</td>
+                        <td data-k="dScrapMatNM">ZW_GLYCERIN</td>
+                        <td data-k="dQty">25.00</td>
+                        <td data-k="dSampleNM">取样C</td>
+                        <td data-k="dSampleQty">1.00</td>
+                        <td data-k="dReason">粘度不达标</td>
+                        <td data-k="dCreator">李四</td>
+                        <td data-k="dCreateTime">2026-07-28 09:20</td>
+                        <td data-k="dModifyBy">—</td>
+                        <td data-k="dModifyTime">—</td>
+                        <td data-k="dIsDelete">false</td>
+                        <td data-k="dStatus">已审核</td>
+                        <td data-k="dState">正常</td>
+                        <td data-k="dMatCode">2969344</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sh">&#x1F4CA; 调用统计<span class="tag tag-form" style="margin-left:4px">CS&#xB7;报废单</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">5</div>
+          <div style="font-size:7pt;color:DimGray">数据库表</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
+          <div style="font-size:7pt;color:DimGray">存储过程</div>
+        </div>
+        <div style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+          <div style="font-weight:700;font-size:12pt;color:#1a3a5c">4</div>
+          <div style="font-size:7pt;color:DimGray">DAL类</div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
+          数据库表</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">ScrapOrderHead</span> <span
+              class="tag tag-tbl">报废单表头</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">ScrapOrderList</span> <span
+              class="tag tag-tbl">报废单明细</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">MfgOrder</span> <span
+              class="tag tag-tbl">工单</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">ProductLine</span> <span
+              class="tag tag-tbl">产线</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">Lot</span> <span class="tag tag-tbl">批次</span>
+          </div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
+          存储过程</h4>
+        <div style="font-size:8pt;color:#888;padding:2px 4px">通过 DAL&#x2192;WebAPI 直接操作，未使用独立存储过程</div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
+          数据访问层 (DAL)</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_ScrapOrderDAL</span> <span
+              class="tag tag-bll">报废单</span></div>
+          <div style="margin-left:10px;color:#888;font-size:7pt">GetScrapOrderHeaderListByPage / GetScrapOrderListByPage
+            / DelScrapOrder / DelScrapOrderHead / SendApproveScrapOrder</div>
+          <div style="margin-top:2px"><span
+              style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_InnerPackagingDAL</span> <span
+              class="tag tag-bll">内包装</span></div>
+          <div style="margin-left:10px;color:#888;font-size:7pt">GetProductLine &#x2192; 产线下拉数据源</div>
+          <div style="margin-top:2px"><span
+              style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_SurplusMaterialDAL</span> <span
+              class="tag tag-bll">余料</span></div>
+          <div style="margin-left:10px;color:#888;font-size:7pt">GetMfgOrderNM &#x2192; 工单号下拉数据源</div>
+          <div style="margin-top:2px"><span
+              style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZA_WIPLotSplitDAL</span> <span
+              class="tag tag-bll">WIP拆分</span></div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4><span
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
+          窗体</h4>
+        <div style="font-size:8pt;line-height:1.7">
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">frmME_AddScrapOrder</span> <span
+              class="tag tag-form">报废单主页</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">frmME_ScrapOrder</span> <span
+              class="tag tag-form">添加/编辑表头</span></div>
+          <div><span style="font-family:Consolas,monospace;color:#1a3a5c">EditScrapOrder</span> <span
+              class="tag tag-form">添加/编辑明细</span></div>
+          <div style="margin-top:2px"><span style="font-family:Consolas,monospace;color:#1a3a5c">ESignature</span> <span
+              class="tag tag-form">电子签名(送审)</span></div>
+        </div>
+      </div>
+      <div class="src-note"><b>&#x2705; 源码验证：</b> frmME_AddScrapOrder.cs /
+        .Designer.cs<br>所有控件&#xB7;表&#xB7;DAL方法&#xB7;Location&#xB7;Size 100%精确</div>
+    </div>
+  </div>
+  <!-- ═══════ Toast ═══════ -->
+  <div class="toast" id="toast"></div>
+  <!-- ═══════ Modal: frmME_ScrapOrder 添加/编辑表头 ═══════ -->
+  <div class="modal-overlay" id="modalHead">
+    <div class="modal">
+      <div class="modal-hd">
+        <h3 id="modalHeadTitle">添加报废单表头 — frmME_ScrapOrder</h3><button onclick="closeModal('modalHead')"
+          style="border:none;background:none;font-size:16px;cursor:pointer">✕</button>
+      </div>
+      <div class="modal-bd">
+        <div class="fld"><label>工单号:<span style="color:red">*</span></label><input id="mfMfgOrder"
+            value="MO-SO251206750-02" style="width:265px" placeholder="cbgMfgOrderNM ComboGrid"></div>
+        <div class="fld"><label>报废日期：<span style="color:red">*</span></label><input id="mfScrapDate" type="date"
+            value="2026-07-29" style="width:265px"></div>
+        <div class="fld"><label>线号：<span style="color:red">*</span></label><select id="mfProductLine"
+            style="width:265px">
+            <option>产线A</option>
+            <option>产线B</option>
+          </select></div>
+        <div class="fld"><label>班次：<span style="color:red">*</span></label><select id="mfShift" style="width:265px">
+            <option>白班</option>
+            <option>夜班</option>
+          </select></div>
+        <div style="font-size:7pt;color:#888;margin-top:4px">控件: cbgMfgOrderNM / sScrapOrderTime / cbgProductLine /
+          cbgShiftNM | 带*必填</div>
+      </div>
+      <div class="modal-ft"><button class="btn" onclick="closeModal('modalHead')">取消</button><button class="btn primary"
+          onclick="submitHead()">保存</button></div>
+    </div>
+  </div>
+  <!-- ═══════ Modal: EditScrapOrder 添加/编辑明细 ═══════ -->
+  <div class="modal-overlay" id="modalList">
+    <div class="modal">
+      <div class="modal-hd">
+        <h3 id="modalListTitle">添加报废单明细 — EditScrapOrder</h3><button onclick="closeModal('modalList')"
+          style="border:none;background:none;font-size:16px;cursor:pointer">✕</button>
+      </div>
+      <div class="modal-bd" style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px">
+        <div class="fld"><label>产品名称：<span style="color:red">*</span></label><input id="mfProductNM" value="示例洗发水"
+            style="width:265px"></div>
+        <div class="fld"><label>订单号：<span style="color:red">*</span></label><input id="mfOrderNo" value="SO-202607-001"
+            style="width:265px"></div>
+        <div class="fld"><label>报废物料名称：<span style="color:red">*</span></label><input id="mfScrapMat" value=""
+            style="width:265px" placeholder="sScrapPackageNM"></div>
+        <div class="fld"><label>报废物料数量<span style="color:red">*</span></label><input id="mfScrapQty" type="number"
+            value="0.00" style="width:265px"></div>
+        <div class="fld"><label>取样（物料取样）名称：</label><input id="mfSampleNM" value="" style="width:265px"
+            placeholder="sSamplingNM"></div>
+        <div class="fld"><label>取样（物料取样）数量：</label><input id="mfSampleQty" type="number" value="0.00"
+            style="width:265px"></div>
+        <div class="fld" style="grid-column:1/-1"><label>报废射印及原因：</label><input id="mfReason" value=""
+            style="width:265px" placeholder="sScrapReasonComboGrid ComboGrid"></div>
+        <div style="grid-column:1/-1;font-size:7pt;color:#888;margin-top:4px">控件: sProductNM / sOrderNo /
+          sScrapPackageNM / sQty / sSamplingNM / sSamplingQty / sScrapReasonComboGrid | 带*必填</div>
+      </div>
+      <div class="modal-ft"><button class="btn" onclick="closeModal('modalList')">取消</button><button class="btn primary"
+          onclick="submitList()">保存</button></div>
+    </div>
+  </div>
+  <aside class="card" id="card">
+    <div class="card-hd">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title"></h3>
+      </div><button onclick="cl()"
+        style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">✕</button>
+    </div>
+    <div class="card-bd">
+      <div class="path" id="pth"></div>
+      <dl>
+        <dt>字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl>
+        <dt>数据来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl>
+        <dt>控件类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl>
+        <dt>调用链路</dt>
+        <dd id="formula"></dd>
+      </dl>
+    </div>
+  </aside>
+  <script>
+    // ═══════ 字段血缘 Map ═══════
+    const map = {
+      // === 查询条件 (HeadTopPanel) ===
+      sProductLine: ['线号', 'ProductLine.ProductLineNM', 'ComboGrid 200×28', ['ProductLine→cbmProductLineQuery']],
+      sMfgOrderNM: ['工单号', 'MfgOrder.MfgOrderNM', 'ComboGrid 200×28', ['MfgOrder→cbgMfgOrderNM']],
+      sScrapTime: ['报废日期', '(查询参数, 非DB字段)', 'DateTimePicker 177×27', ['QueryTime→BindScrapOrderHead']],
+      // === dgvScrapOrderHead 表头 (数据源: ScrapOrderHeadView) ===
+      hScrapTime: ['报废时间', 'ScrapOrderHead.ScrapOrderTime', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hShift: ['班次', 'ScrapOrderHead.ShiftNM', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hProdLine: ['产线', 'ProductLine.ProductLineNM', 'DataGridView col', ['ScrapOrderHeadView(关联)→dgvScrapOrderHead']],
+      hMfgOrder: ['工单名称', 'MfgOrder.MfgOrderNM', 'DataGridView col', ['ScrapOrderHeadView(关联)→dgvScrapOrderHead']],
+      hLeader: ['组长', 'ScrapOrderHead.GroupLeader', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hReceiver: ['接收人', 'ScrapOrderHead.Receiver', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hCreator: ['创建人', 'ScrapOrderHead.Creater', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hCreateTime: ['创建时间', 'ScrapOrderHead.CreateTime', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hLastModifyBy: ['修改人', 'ScrapOrderHead.LastModifyBy', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hLastModifyTime: ['修改时间', 'ScrapOrderHead.LastModifyTime', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hIsDelete: ['虚拟删除', 'ScrapOrderHead.IsDelete', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hStatus: ['状态', 'ScrapOrderHead.Status', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      hState: ['状态', 'ScrapOrderHead.State', 'DataGridView col', ['ScrapOrderHeadView→dgvScrapOrderHead']],
+      // === dgvScrapOrderList 明细 (数据源: ScrapOrderView) ===
+      dOrderNo: ['客户订单号', 'MfgOrder.OrderNo', 'DataGridView col', ['ScrapOrderView(关联)→dgvScrapOrderList']],
+      dProductNM: ['产品名称', 'Product.ProductNM', 'DataGridView col', ['ScrapOrderView(关联)→dgvScrapOrderList']],
+      dScrapMatNM: ['报废物料名称', 'ScrapOrderList.ScrapPackageNM', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dQty: ['报废物料数量', 'ScrapOrderList.Qty', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dSampleNM: ['取样名称', 'ScrapOrderList.SamplingNM', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dSampleQty: ['取样数量', 'ScrapOrderList.SamplingQty', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dReason: ['报废原因', 'ScrapOrderList.ScrapOrderReason', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dCreator: ['创建人', 'ScrapOrderList.Creater', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dCreateTime: ['创建时间', 'ScrapOrderList.CreateTime', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dModifyBy: ['修改人', 'ScrapOrderList.LastModifyBy', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dModifyTime: ['修改时间', 'ScrapOrderList.LastModifyTime', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dIsDelete: ['虚拟删除', 'ScrapOrderList.IsDelete', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dStatus: ['状态', 'ScrapOrderList.Status', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dState: ['状态', 'ScrapOrderList.State', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      dMatCode: ['物料编号', 'ScrapOrderList.ScrapPackageNo', 'DataGridView col', ['ScrapOrderView→dgvScrapOrderList']],
+      // === 按钮 (HeadTopPanel + tbScrapOrderPanel) ===
+      btnQueryHead: ['查询', 'QueryHeadBtn', 'Button 12F·100×40', ['HeadTopPanel→BindScrapOrderHead']],
+      btnSendApprove: ['送审', 'SendApproveButton', 'Button 12F·100×40', ['HeadTopPanel→ESignature→ScrapOrderDAL.SendApproveScrapOrder']],
+      btnAddHead: ['添加(表头)', 'AddHeadBtn', 'Button 12F·100×40', ['→ opens frmME_ScrapOrder→ScrapOrderHead']],
+      btnEditHead: ['编辑(表头)', 'EditBtn', 'Button 12F·100×40', ['→ opens frmME_ScrapOrder(isEdit=1)→ScrapOrderHead']],
+      btnDelHead: ['删除(表头)', 'HeadDelButton', 'Button 12F·100×40', ['HeadTopPanel→ScrapOrderDAL.DelScrapOrderHead']],
+      btnAddList: ['添加(明细)', 'AddListBtn', 'Button 12F·100×40', ['tbScrapOrderPanel→opens EditScrapOrder→ScrapOrderList']],
+      btnEditList: ['编辑(明细)', 'EditListBtn', 'Button 12F·100×40', ['tbScrapOrderPanel→opens EditScrapOrder(isEdit=1)→ScrapOrderList']],
+      btnDelList: ['删除(明细)', 'Delbtn', 'Button 12F·100×40', ['tbScrapOrderPanel→ScrapOrderDAL.DelScrapOrder']]
+    };
+
+    // ═══════ Grid 行选中 (pointerdown 先于 click 触发) ═══════
+    document.querySelectorAll('table.grid tbody').forEach(function (tb) {
+      tb.addEventListener('pointerdown', function (e) { var tr = e.target.closest('tr'); if (!tr) return; tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel-row') }); tr.classList.add('sel-row') })
+    });
+    // ═══════ 字段血缘 Card ═══════
+    const card = document.getElementById('card');
+    function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show') }
+    function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) }));
+    var drag = null, hd = card.querySelector('.card-hd');
+    hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) };
+    hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' };
+    hd.onpointerup = function () { drag = null };
+    document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+
+    // ═══════ Toast ═══════
+    let toastTimer;
+    function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show') }, 2000) }
+
+    // ═══════ Modal ═══════
+    function openModal(id) { document.getElementById(id).classList.add('show') }
+    function closeModal(id) { document.getElementById(id).classList.remove('show') }
+    function submitHead() { closeModal('modalHead'); toast('✅ 报废单表头已保存（模拟）') }
+    function submitList() { closeModal('modalList'); toast('✅ 报废单明细已保存（模拟）') }
+
+    // ═══════ 按钮交互 ═══════
+    document.querySelectorAll('button[data-k]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var k = this.dataset.k;
+        // 查询
+        if (k === 'btnQueryHead') { toast('🔍 正在查询：线号+工单号+报废日期 → 加载报废单表头及明细'); return }
+        // 送审
+        if (k === 'btnSendApprove') { if (!confirm('确认送审该报废单？\n送审后将进入审核流程，不可编辑。')) return; toast('📤 报废单已提交审核（模拟）'); return }
+        // 添加表头 → 打开 frmME_ScrapOrder
+        if (k === 'btnAddHead') { document.getElementById('modalHeadTitle').textContent = '添加报废单表头 — frmME_ScrapOrder'; openModal('modalHead'); return }
+        // 编辑表头
+        if (k === 'btnEditHead') { if (!document.querySelector('#headGrid tbody tr.sel-row')) { toast('⚠️ 请先在表头表格中选中一条记录'); return } document.getElementById('modalHeadTitle').textContent = '编辑报废单表头 — frmME_ScrapOrder (isEdit=1)'; openModal('modalHead'); return }
+        // 删除表头
+        if (k === 'btnDelHead') { if (!document.querySelector('#headGrid tbody tr.sel-row')) { toast('⚠️ 请先选中一条表头记录'); return } if (!confirm('确认删除选中的报废单表头？')) return; toast('🗑️ 报废单表头已删除（模拟）'); return }
+        // 添加明细 → 打开 EditScrapOrder
+        if (k === 'btnAddList') { document.getElementById('modalListTitle').textContent = '添加报废单明细 — EditScrapOrder'; openModal('modalList'); return }
+        // 编辑明细
+        if (k === 'btnEditList') { if (!document.querySelector('#listGrid tbody tr.sel-row')) { toast('⚠️ 请先在明细表格中选中一条记录'); return } document.getElementById('modalListTitle').textContent = '编辑报废单明细 — EditScrapOrder (isEdit=1)'; openModal('modalList'); return }
+        // 删除明细
+        if (k === 'btnDelList') { if (!document.querySelector('#listGrid tbody tr.sel-row')) { toast('⚠️ 请先选中一条明细记录'); return } if (!confirm('确认删除选中的报废单明细？')) return; toast('🗑️ 报废单明细已删除（模拟）'); return }
+        // 显示字段血缘
+        show(k);
+      })
+    });
+
+    // ═══════ Grid 行选中 ═══════
+    document.querySelectorAll('table.grid tbody').forEach(function (tb) {
+      tb.addEventListener('click', function (e) { var tr = e.target.closest('tr'); if (!tr) return; tb.querySelectorAll('tr').forEach(function (r) { r.classList.remove('sel-row') }); tr.classList.add('sel-row') })
+    });
+  </script>
+</body>
+
+</html>

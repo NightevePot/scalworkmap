@@ -1,83 +1,562 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>工艺维护 · BPR配方 · 字段血缘演示</title>
-<style>:root{--green:#00a65a;--blue:#1688ca;--line:#d3dce1;--soft:#f5f8f9}*{box-sizing:border-box;margin:0;padding:0}body{min-width:980px;color:#17232d;background:#fff;font:12px "Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:flex-start;gap:16px;padding:12px}.demo-main{flex:1;max-width:1050px}.bar{height:50px;display:flex;color:#fff;background:var(--green)}.brand{width:215px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-size:20px;font-weight:700}.nav{display:flex}.nav span{width:70px;display:grid;place-items:center;border-right:1px solid rgba(0,0,0,.12);font-weight:700;font-size:12px}.nav span.active{background:rgba(0,0,0,.16);box-shadow:inset 0 -3px 0 #fff}.bar-info{display:flex;align-items:center;padding:0 16px;font-weight:700;font-size:11px;gap:8px;margin-left:auto}.bar-badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}.sub-tabs{height:32px;display:flex;align-items:center;padding:0 12px;background:#f7f7f7;border-bottom:1px solid #cfd4d7;gap:4px;font-size:11px}.sub-tab{padding:4px 12px;border:1px solid #d5d9dc;border-bottom:0;color:#4e5d67;background:#fff;border-radius:3px 3px 0 0;cursor:pointer}.sub-tab.active{border-top:3px solid var(--green);color:#173f5f;font-weight:700}.sub-arr{color:#94a3b8;font-size:10px}
-.toolbar{background:var(--soft);padding:8px 16px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center}.toolbar input{padding:4px 8px;border:1px solid var(--line);border-radius:3px;font-size:12px;outline:none;height:28px}.btn{border:none;border-radius:3px;font-size:12px;font-weight:700;cursor:pointer;padding:5px 14px}.btn-pri{background:var(--blue);color:#fff}
-.content{padding:8px 10px}.dg{background:#fff;border:1px solid var(--line);margin-bottom:10px}.dg table{width:100%;border-collapse:collapse}.dg th{background:#f0f4f7;border-bottom:2px solid var(--line);padding:7px 8px;font-size:12px;text-align:left}.dg td{padding:6px 8px;border-bottom:1px solid #e8ecf0;font-size:12px;cursor:pointer}.dg td:hover{background:#e8f0fe}
-.card{position:fixed;right:24px;bottom:24px;width:340px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;z-index:100;overflow:hidden}.card.show{display:block}.card-head{background:var(--soft);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;cursor:move}.card-head h3{font-size:13px;color:var(--blue)}.card-head small{font-size:10px;color:#94a3b8;display:block}.close-btn{border:none;background:none;font-size:18px;cursor:pointer;color:#94a3b8}.card-body{padding:12px 14px}.meta{margin-bottom:8px}.meta dt{font-size:10px;color:#94a3b8;text-transform:uppercase;margin-bottom:2px}.meta dd{font-size:12px;color:#17232d;word-break:break-all}.pth{display:flex;gap:4px;font-size:10px;color:var(--blue);margin-bottom:8px;flex-wrap:wrap}.pth span{background:#e8f0fe;padding:2px 6px;border-radius:3px}.ar{color:#94a3b8;background:none!important;padding:2px 0!important}
-.stats-panel{width:280px;flex-shrink:0;position:sticky;top:12px}.sh{font-weight:700;font-size:13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}.badge{font-size:10px;background:var(--green);color:#fff;padding:2px 8px;border-radius:10px;font-weight:400}.stats-body{font-size:11px}.ss{margin-bottom:14px}.ss h4{font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase}.si{margin-bottom:3px;display:flex;align-items:center;gap:4px}.sn{font-weight:600;color:var(--blue);cursor:help}.st{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}.bll{background:#dbeafe;color:#1d4ed8}.tbl{background:#e0f2fe;color:#0369a1}.sp{background:#fef3c7;color:#92400e}.ctrl{background:#ede9fe;color:#6d28d9}.stats-count-row{display:flex;gap:20px;margin-bottom:12px}.scn{font-size:18px;font-weight:700;color:var(--blue)}.scl{font-size:10px;color:#94a3b8}</style></head>
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>操作指导 · 字段血缘演示</title>
+  <style>
+    :root {
+      --green: #00a65a;
+      --blue: #1688ca;
+      --line: #d3dce1;
+      --soft: #f5f8f9
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      min-width: 980px;
+      color: #17232d;
+      background: #fff;
+      font: 12px "Microsoft YaHei", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px
+    }
+
+    .demo-main {
+      flex: 1;
+      max-width: 1050px
+    }
+
+    .bar {
+      height: 50px;
+      display: flex;
+      color: #fff;
+      background: var(--green)
+    }
+
+    .brand {
+      width: 215px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .nav {
+      display: flex
+    }
+
+    .nav span {
+      width: 70px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid rgba(0, 0, 0, .12);
+      font-weight: 700;
+      font-size: 12px
+    }
+
+    .nav span.active {
+      background: rgba(0, 0, 0, .16);
+      box-shadow: inset 0 -3px 0 #fff
+    }
+
+    .bar-info {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: 700;
+      font-size: 11px;
+      gap: 8px;
+      margin-left: auto
+    }
+
+    .bar-badge {
+      background: rgba(255, 255, 255, .2);
+      padding: 2px 8px;
+      border-radius: 10px
+    }
+
+    .sub-tabs {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #cfd4d7;
+      gap: 4px;
+      font-size: 11px
+    }
+
+    .sub-tab {
+      padding: 4px 12px;
+      border: 1px solid #d5d9dc;
+      border-bottom: 0;
+      color: #4e5d67;
+      background: #fff;
+      border-radius: 3px 3px 0 0;
+      cursor: default
+    }
+
+    .sub-tab.active {
+      border-top: 3px solid var(--green);
+      color: #173f5f;
+      font-weight: 700
+    }
+
+    .sub-arr {
+      color: #94a3b8;
+      font-size: 10px
+    }
+
+    .toolbar {
+      background: var(--soft);
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .toolbar table {
+      width: 100%
+    }
+
+    .toolbar th {
+      text-align: right;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 6px
+    }
+
+    .toolbar td {
+      padding: 3px 12px 3px 4px
+    }
+
+    .toolbar input {
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      font-size: 12px;
+      outline: none;
+      height: 28px
+    }
+
+    .btn {
+      border: none;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 5px 14px
+    }
+
+    .btn-pri {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .btn-sec {
+      background: #fff;
+      color: #17232d;
+      border: 1px solid var(--line)
+    }
+
+    .content {
+      padding: 8px 10px
+    }
+
+    .dg {
+      background: #fff;
+      border: 1px solid var(--line)
+    }
+
+    .dg table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .dg th {
+      background: #f0f4f7;
+      border-bottom: 2px solid var(--line);
+      padding: 7px 8px;
+      font-size: 12px;
+      text-align: left
+    }
+
+    .dg td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e8ecf0;
+      font-size: 12px;
+      cursor: pointer
+    }
+
+    .dg td:hover {
+      background: #e8f0fe
+    }
+
+    .dg .num {
+      width: 36px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 10px
+    }
+
+    .card {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 340px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .15);
+      display: none;
+      z-index: 100;
+      overflow: hidden
+    }
+
+    .card.show {
+      display: block
+    }
+
+    .card-head {
+      background: var(--soft);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move
+    }
+
+    .card-head h3 {
+      font-size: 13px;
+      color: var(--blue)
+    }
+
+    .card-head small {
+      font-size: 10px;
+      color: #94a3b8;
+      display: block
+    }
+
+    .close-btn {
+      border: none;
+      background: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #94a3b8
+    }
+
+    .card-body {
+      padding: 12px 14px
+    }
+
+    .meta {
+      margin-bottom: 8px
+    }
+
+    .meta dt {
+      font-size: 10px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      margin-bottom: 2px
+    }
+
+    .meta dd {
+      font-size: 12px;
+      color: #17232d;
+      word-break: break-all
+    }
+
+    .pth {
+      display: flex;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--blue);
+      margin-bottom: 8px;
+      flex-wrap: wrap
+    }
+
+    .pth span {
+      background: #e8f0fe;
+      padding: 2px 6px;
+      border-radius: 3px
+    }
+
+    .ar {
+      color: #94a3b8;
+      background: none !important;
+      padding: 2px 0 !important
+    }
+
+    .stats-panel {
+      width: 280px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 12px
+    }
+
+    .sh {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .badge {
+      font-size: 10px;
+      background: var(--green);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 400
+    }
+
+    .stats-body {
+      font-size: 11px
+    }
+
+    .ss {
+      margin-bottom: 14px
+    }
+
+    .ss h4 {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      text-transform: uppercase
+    }
+
+    .si {
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .sn {
+      font-weight: 600;
+      color: var(--blue);
+      cursor: help
+    }
+
+    .st {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600
+    }
+
+    .bll {
+      background: #dbeafe;
+      color: #1d4ed8
+    }
+
+    .tbl {
+      background: #e0f2fe;
+      color: #0369a1
+    }
+
+    .ctrl {
+      background: #ede9fe;
+      color: #6d28d9
+    }
+
+    .stats-count-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 12px
+    }
+
+    .scn {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue)
+    }
+
+    .scl {
+      font-size: 10px;
+      color: #94a3b8
+    }
+  </style>
+</head>
+
 <body>
-<div class="demo-main">
-<header class="bar"><div class="brand">ⓘ MES制造执行系统</div><nav class="nav"><span class="active">工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span></nav><div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| 工艺维护 · BPR配方 · 字段血缘演示</span></div></header>
-<div class="sub-tabs"><span class="sub-tab">工艺流程模块</span><span class="sub-arr">▸</span><span class="sub-tab active" onclick="switchTab('craft')" id="tab-craft">工艺维护（操作指导）</span><span class="sub-tab" onclick="switchTab('bpr')" id="tab-bpr">BPR配方</span><span class="sub-tab" onclick="switchTab('approval')" id="tab-approval">BPR核准</span></div>
+  <div class="demo-main">
+    <header class="bar">
+      <div class="brand">ⓘ MES制造执行系统</div>
+      <nav class="nav"><span
+          class="active">工艺流程</span><span>企业架构</span><span>生产模型</span><span>查询管理</span><span>工作流程</span><span>质量控制</span><span>仓库作业</span><span>计划任务</span><span>批次工具</span><span>报表管理</span><span>知识库</span><span>系统设置</span>
+      </nav>
+      <div class="bar-info"><span class="bar-badge">BS · Web MES</span><span>| 操作指导 · 字段血缘演示</span></div>
+    </header>
+    <div class="sub-tabs"><span class="sub-tab">工艺流程模块</span><span class="sub-arr">▸</span><span
+        class="sub-tab active">操作指导</span></div>
 
-<div class="toolbar">
-<input data-k="sProductNM" value="ON25F0021N5" style="width:200px" placeholder="产品编码">
-<input data-k="sProductName" value="示例洗发水" style="width:200px" placeholder="产品名称">
-<button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button>
-</div>
+    <div class="toolbar">
+      <table>
+        <tr>
+          <th>SOP名称：</th>
+          <td><input data-k="sRecipeId" value="洗发水主配物SOP" style="width:250px" placeholder="输入SOP名称查询"></td>
+          <td style="padding-left:15px">
+            <button class="btn btn-pri" data-k="btnQuery">⌕ 查询</button>
+            <button class="btn btn-pri" data-k="btnCreate">＋ 新增</button>
+            <button class="btn btn-sec" data-k="btnEdit">✎ 修改</button>
+            <button class="btn btn-sec" data-k="btnDelete">✕ 删除</button>
+            <button class="btn btn-sec" data-k="btnReset">↺ 重置</button>
+          </td>
+        </tr>
+      </table>
+    </div>
 
-<div class="content" id="panel-craft">
-<div class="dg"><table>
-<thead><tr><th>步骤序号</th><th>步骤名称</th><th>标准值</th><th>下限</th><th>上限</th><th>单位</th><th>数据采集</th><th>工位</th></tr></thead>
-<tbody>
-<tr><td data-k="step_seq1">10</td><td data-k="step_name1">加料</td><td data-k="step_std1">0.528</td><td>0.5227</td><td>0.5333</td><td>KG</td><td>自动读取</td><td>ST-01</td></tr>
-<tr><td>20</td><td>搅拌</td><td>600</td><td>580</td><td>620</td><td>秒</td><td>自动读取</td><td>ST-01</td></tr>
-<tr><td>30</td><td>循环</td><td>120</td><td>110</td><td>130</td><td>秒</td><td>人工输入</td><td>ST-01</td></tr>
-<tr><td>40</td><td data-k="step_name4">均质</td><td>180</td><td>170</td><td>190</td><td>秒</td><td>自动读取</td><td>ST-02</td></tr>
-<tr><td>50</td><td>出料</td><td>—</td><td>—</td><td>—</td><td>—</td><td>人工输入</td><td>ST-02</td></tr>
-<tr><td>60</td><td>确认</td><td>—</td><td>—</td><td>—</td><td>—</td><td>电子签名</td><td>ST-02</td></tr>
-</tbody>
-</table></div></div>
+    <div class="content">
+      <div class="dg">
+        <table>
+          <thead>
+            <tr>
+              <th class="num">□</th>
+              <th>SOP名称</th>
+              <th>描述</th>
+              <th>最后修改人</th>
+              <th>最后修改时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td data-k="RecipeNM">洗发水主配物SOP</td>
+              <td data-k="Description">洗发水主配物标准操作流程</td>
+              <td data-k="LastModifyBy">超级管理员</td>
+              <td data-k="LastModifyTime">2026-07-15 14:23</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>洗发水预配物SOP</td>
+              <td>洗发水预配物标准操作流程</td>
+              <td>超级管理员</td>
+              <td>2026-07-12 09:15</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>护发素主配物SOP</td>
+              <td>护发素主配物标准操作流程</td>
+              <td>工艺工程师</td>
+              <td>2026-07-10 16:40</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>沐浴露主配物SOP</td>
+              <td>沐浴露主配物标准操作流程</td>
+              <td>工艺工程师</td>
+              <td>2026-07-05 11:20</td>
+            </tr>
+            <tr>
+              <td class="num"><input type="checkbox"></td>
+              <td>通用包装SOP</td>
+              <td>通用包装操作流程</td>
+              <td>超级管理员</td>
+              <td>2026-07-01 08:30</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-<div class="content" id="panel-bpr" style="display:none">
-<div class="dg"><table>
-<thead><tr><th>BPR配方号</th><th>产品编码</th><th>产品名称</th><th>配方类型</th><th>批量(KG)</th><th>版本</th><th>状态</th></tr></thead>
-<tbody>
-<tr><td data-k="bpr_id">BPR-20260715-001</td><td data-k="bpr_product">ON25F0021N5</td><td>示例洗发水</td><td>主配物</td><td>1760</td><td>V2.3</td><td>已核准</td></tr>
-</tbody>
-</table></div>
-<div class="dg"><table>
-<thead><tr><th>物料编码</th><th>物料名称</th><th>标准用量(KG)</th><th>下限(KG)</th><th>上限(KG)</th><th>损耗率(%)</th></tr></thead>
-<tbody>
-<tr><td data-k="bpr_mat1">QRYL0022</td><td>月桂醇硫酸铵（30%）</td><td>0.528</td><td>0.5227</td><td>0.5333</td><td>8.00</td></tr>
-</tbody>
-</table></div></div>
+  <aside class="card" id="card">
+    <div class="card-head">
+      <div><small>FIELD DATA LINEAGE</small>
+        <h3 id="title">字段说明</h3>
+      </div><button class="close-btn" onclick="cl()">×</button>
+    </div>
+    <div class="card-body">
+      <div class="pth" id="pth"></div>
+      <dl class="meta">
+        <dt>页面字段名</dt>
+        <dd id="label"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>数据库来源</dt>
+        <dd id="source"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>数据类型</dt>
+        <dd id="type"></dd>
+      </dl>
+      <dl class="meta">
+        <dt>查询过程 / 按钮动作</dt>
+        <dd id="formula"></dd>
+      </dl>
+    </div>
+  </aside>
 
-<div class="content" id="panel-approval" style="display:none">
-<div class="dg"><table>
-<thead><tr><th>配方号</th><th>产品</th><th>提交人</th><th>提交时间</th><th>核准人</th><th>核准时间</th><th>状态</th></tr></thead>
-<tbody>
-<tr><td data-k="appr_bpr">BPR-20260715-001</td><td>示例洗发水</td><td>工艺工程师</td><td>2026-07-15 09:00</td><td>生产主管</td><td>2026-07-15 10:30</td><td>已核准</td></tr>
-</tbody>
-</table></div></div></div>
+  <div class="stats-panel">
+    <div class="sh">📊 调用统计<span class="badge">BS·操作指导 | MESGYLC_Recipe</span></div>
+    <div class="stats-body">
+      <div class="stats-count-row">
+        <div>
+          <div class="scn">1</div>
+          <div class="scl">Controller</div>
+        </div>
+        <div>
+          <div class="scn">1</div>
+          <div class="scl">BLL</div>
+        </div>
+        <div>
+          <div class="scn">1</div>
+          <div class="scl">API</div>
+        </div>
+      </div>
+      <div class="ss">
+        <h4>🧩 Controller</h4>
+        <div class="si"><span class="sn" title="MESGYLC_RecipeController">MESGYLC_RecipeController</span><span
+            class="st ctrl">Index / Create / Update / DelRecipe</span></div>
+      </div>
+      <div class="ss">
+        <h4>🧩 BLL</h4>
+        <div class="si"><span class="sn" title="MESGYLC_RecipeBLL">MESGYLC_RecipeBLL</span><span
+            class="st bll">GetMESGYLCRecipeListByPage</span></div>
+      </div>
+      <div class="ss">
+        <h4>🔌 API</h4>
+        <div class="si"><span class="sn" title="GetMESGYLCRecipeListByPage">GetMESGYLCRecipeListByPage</span><span
+            class="st api">api/MESGYLC_Recipe/GetMESGYLCRecipeListByPage?queryData=</span></div>
+      </div>
+      <div class="ss">
+        <h4>📊 数据库表</h4>
+        <div class="si"><span class="sn" title="MESGYLC_Recipe">MESGYLC_Recipe</span><span
+            class="st tbl">SOP/Recipe主表</span></div>
+      </div>
+    </div>
+  </div>
 
-<aside class="card" id="card"><div class="card-head"><div><small>FIELD DATA LINEAGE</small><h3 id="title">字段说明</h3></div><button class="close-btn" onclick="cl()">×</button></div><div class="card-body"><div class="pth" id="pth"></div><dl class="meta"><dt>页面字段名</dt><dd id="label"></dd></dl><dl class="meta"><dt>数据库来源</dt><dd id="source"></dd></dl><dl class="meta"><dt>数据类型</dt><dd id="type"></dd></dl><dl class="meta"><dt>查询过程 / 按钮动作</dt><dd id="formula"></dd></dl></div></aside>
+  <script>
+    const map = {
+      sRecipeId: ['SOP名称', '搜索条件·name=RecipeId·查询用RecipeNM', 'nvarchar', 'easyui-textbox→queryData={RecipeNM}→GetMESGYLCRecipeListByPage', '查询条件', ['MESGYLC_Recipe']],
+      RecipeNM: ['SOP名称', 'MESGYLC_Recipe.RecipeNM', 'nvarchar', 'datagrid column·sortable', '列表', ['GetMESGYLCRecipeListByPage', 'MESGYLC_Recipe']],
+      Description: ['描述', 'MESGYLC_Recipe.Description', 'nvarchar', 'datagrid column·sortable', '列表', ['GetMESGYLCRecipeListByPage', 'MESGYLC_Recipe']],
+      LastModifyBy: ['最后修改人', 'MESGYLC_Recipe.LastModifyBy', 'nvarchar', 'datagrid column·sortable', '列表', ['GetMESGYLCRecipeListByPage', 'MESGYLC_Recipe']],
+      LastModifyTime: ['最后修改时间', 'MESGYLC_Recipe.LastModifyTime', 'datetime', 'datagrid column·formatter:datetoLocal·sortOrder:DESC', '列表', ['GetMESGYLCRecipeListByPage', 'MESGYLC_Recipe']],
+      btnQuery: ['⌕ 查询', 'loadBindTable()', '—', 'sRecipeId→JSON.stringify({RecipeNM})→GetMESGYLCRecipeListByPage→datagrid·pageSize:15', '查询', ['MESGYLC_RecipeController', 'MESGYLC_RecipeBLL', 'MESGYLC_Recipe']],
+      btnCreate: ['＋ 新增', 'ifram modal→Create.cshtml', '—', 'modalwindow·width:800→/MESGYLC_Recipe/Create', '新增', ['MESGYLC_RecipeController']],
+      btnEdit: ['✎ 修改', 'ifram modal→Update.cshtml?recipeId=&Ieguid=', '—', 'getSelected→modalwindow·width:800→/MESGYLC_Recipe/Update', '修改', ['MESGYLC_RecipeController']],
+      btnDelete: ['✕ 删除', 'DelRecipe?recipeId=&userName=', '—', 'getSelected→confirm→$.post→DelRecipe→reload', '删除', ['MESGYLC_RecipeController', 'MESGYLC_Recipe']],
+      btnReset: ['↺ 重置', '$("#sRecipeId").textbox("setValue","")', '—', '清空搜索框', '重置', ['jQuery EasyUI']],
+    };
+    const card = document.getElementById('card');
+    function show(k, n) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; document.getElementById('pth').innerHTML = (f[5] || []).map((p, i) => (i > 0 ? '<span class="ar">→</span>' : '') + `<span>${p}</span>`).join(''); card.classList.add('show') } function cl() { card.classList.remove('show') }
+    document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k, this) }));
+    let drag = null; const hd = card.querySelector('.card-head'); hd.onpointerdown = e => { if (e.target.closest('.close-btn') || !card.classList.contains('show')) return; const r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = e => { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = () => drag = null; document.addEventListener('click', e => { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+  </script>
+</body>
 
-<div class="stats-panel"><div class="sh">📊 调用统计<span class="badge">BS·工艺 | MESGYLC</span></div><div class="stats-body">
-<div class="stats-count-row"><div><div class="scn">4</div><div class="scl">数据库表</div></div><div><div class="scn">3</div><div class="scl">Controller</div></div></div>
-<div class="ss"><h4>📊 数据库表</h4><div class="si"><span class="sn" title="Recipe">Recipe</span><span class="st tbl">配方（工艺步骤）</span></div><div class="si"><span class="sn" title="SpecRecipe">SpecRecipe</span><span class="st tbl">规格配方（质检标准）</span></div><div class="si"><span class="sn" title="ProductRecipeAndWorkersSetting">ProductRecipeAndWorkersSetting</span><span class="st tbl">产品配方工位设置</span></div><div class="si"><span class="sn" title="ProcessSpecStep">ProcessSpecStep</span><span class="st tbl">工艺规格步骤</span></div></div>
-<div class="ss"><h4>🧩 Controller</h4><div class="si"><span class="sn" title="MESGYLC_Recipe">MESGYLC_Recipe</span><span class="st ctrl">操作指导（工艺参数）</span></div><div class="si"><span class="sn" title="MESGYLC_BPR">MESGYLC_BPR</span><span class="st ctrl">BPR配方定义</span></div><div class="si"><span class="sn" title="MESGYLC_BPRApprovel">MESGYLC_BPRApprovel</span><span class="st ctrl">BPR核准</span></div></div></div></div>
-
-<script>
-const map={
-sProductNM:['产品编码','Product.ProductNM','nvarchar(50)','combogrid','查询',['Product']],
-sProductName:['产品名称','Product.Note','nvarchar(300)','combogrid','查询',['Product']],
-step_seq1:['步骤序号','Recipe.StepSeq','int','List','列表',['Recipe']],
-step_name1:['步骤名称','Recipe.StepName','nvarchar(200)','List','列表',['Recipe']],
-step_std1:['标准值','Recipe.StandardValue','decimal(18,4)','List','列表',['Recipe']],
-step_name4:['步骤名称','Recipe.StepName','nvarchar(200)','List·支持跳步','列表',['Recipe','BPRWorkLog']],
-bpr_id:['BPR配方号','Recipe.RecipeNM','nvarchar(50)','List·BPR配方定义','列表',['Recipe']],
-bpr_product:['产品编码','Product.ProductNM','nvarchar(50)','List','列表',['Recipe','Product']],
-bpr_mat1:['物料编码','Recipe.ProductNM','nvarchar(50)','List·配方物料明细','列表',['Recipe','Product']],
-appr_bpr:['配方号','Recipe.RecipeNM','nvarchar(50)','List·核准记录','列表',['Recipe','BPRApprovelHistory']],
-btnQuery:['⌕ 查询','API:GetRecipeByProduct','—','产品→MESGYLC_Recipe→Recipe→SpecRecipe','查询',['MESGYLC_Recipe','Recipe']],
-};
-function switchTab(tab){
-document.querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));
-document.getElementById('tab-'+tab).classList.add('active');
-['craft','bpr','approval'].forEach(t=>document.getElementById('panel-'+t).style.display=t===tab?'block':'none');
-}
-const card=document.getElementById('card');
-function show(k,n){const f=map[k];if(!f)return;document.getElementById('title').textContent=f[0];document.getElementById('label').textContent=f[0];document.getElementById('source').textContent=f[1];document.getElementById('type').textContent=f[2];document.getElementById('formula').textContent=f[3];document.getElementById('pth').innerHTML=(f[5]||[]).map((p,i)=>(i>0?'<span class="ar">→</span>':'')+`<span>${p}</span>`).join('');card.classList.add('show')}function cl(){card.classList.remove('show')}
-document.querySelectorAll('[data-k]').forEach(n=>n.addEventListener('click',function(e){e.stopPropagation();show(this.dataset.k,this)}));
-let drag=null;const hd=card.querySelector('.card-head');hd.onpointerdown=e=>{if(e.target.closest('.close-btn')||!card.classList.contains('show'))return;const r=card.getBoundingClientRect();drag={x:e.clientX-r.left,y:e.clientY-r.top};hd.setPointerCapture(e.pointerId)};hd.onpointermove=e=>{if(!drag)return;card.style.left=Math.max(8,Math.min(innerWidth-card.offsetWidth-8,e.clientX-drag.x))+'px';card.style.top=Math.max(8,Math.min(innerHeight-card.offsetHeight-8,e.clientY-drag.y))+'px'};hd.onpointerup=()=>drag=null;document.addEventListener('click',e=>{if(card.classList.contains('show')&&!card.contains(e.target)&&!e.target.closest('[data-k]'))card.classList.remove('show')});
-</script></body></html>
+</html>

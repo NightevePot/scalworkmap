@@ -1,0 +1,685 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>閰嶅埗浜у嚭 路 CS瀹㈡埛绔?/title>
+    <style>
+      :root {
+        --hdr: #BCDCF4;
+        --grp: #5FA2D3;
+        --bg: #F0F0F0;
+        --w: #FFF;
+        --txt: #333;
+        --bdr: #C0C0C0;
+        --ghdr: #E8F0FE
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0
+      }
+
+      body {
+        font: 9pt "Microsoft YaHei", "寰蒋闆呴粦", sans-serif;
+        background: #E8ECF0;
+        display: flex;
+        justify-content: center;
+        padding: 8px;
+        min-height: 100vh
+      }
+
+      .win {
+        max-width: 1500px;
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid #8492A0;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .25)
+      }
+
+      .topbar {
+        height: 82px;
+        background: var(--hdr);
+        border-bottom: 1px solid #9BBDE0;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 20px
+      }
+
+      .topbar .logo {
+        font: 15pt "寰蒋闆呴粦";
+        font-weight: 700;
+        color: #1a3a5c
+      }
+
+      .topbar .info {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex: 1;
+        font-size: 9pt
+      }
+
+      .topbar .info .time {
+        font: 15pt "寰蒋闆呴粦";
+        font-weight: 700;
+        color: #000
+      }
+
+      .topbar .user {
+        font: 15pt "寰蒋闆呴粦";
+        font-weight: 700;
+        color: #000;
+        margin-left: auto
+      }
+
+      .topbar .ver {
+        font-size: 9pt;
+        color: DimGray
+      }
+
+      .body {
+        display: flex;
+        height: calc(100vh - 100px);
+        min-height: 600px
+      }
+
+      .left {
+        width: 179px;
+        background: WhiteSmoke;
+        border-right: 1px solid var(--bdr);
+        overflow-y: auto;
+        flex-shrink: 0
+      }
+
+      .left .grp-title {
+        padding: 8px 10px;
+        font-weight: 700;
+        font-size: 9pt;
+        background: var(--grp);
+        color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 1
+      }
+
+      .left .tree-item {
+        padding: 4px 8px 4px 18px;
+        cursor: pointer;
+        font-size: 9pt;
+        color: var(--txt);
+        border-left: 3px solid transparent
+      }
+
+      .left .tree-item:hover {
+        background: #E8F0FE
+      }
+
+      .left .tree-item.sel {
+        background: #DAE8F5;
+        border-left-color: #1a56b0;
+        font-weight: 700
+      }
+
+      .right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden
+      }
+
+      .tabs {
+        display: flex;
+        background: var(--bg);
+        border-bottom: 1px solid var(--bdr)
+      }
+
+      .tab {
+        padding: 6px 16px;
+        border-right: 1px solid var(--bdr);
+        cursor: pointer;
+        font-size: 9pt;
+        color: DimGray;
+        background: var(--bg)
+      }
+
+      .tab.sel {
+        background: var(--w);
+        color: var(--txt);
+        font-weight: 700
+      }
+
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        background: var(--w)
+      }
+
+      .btn {
+        padding: 4px 16px;
+        border: 1px solid #C0C0C0;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #FCFCFC, #E8E8E8);
+        font: 9pt "寰蒋闆呴粦";
+        cursor: pointer;
+        height: 30px
+      }
+
+      .btn:hover {
+        background: linear-gradient(180deg, #E8F0FE, #DAE8F5)
+      }
+
+      .btn.primary {
+        background: linear-gradient(180deg, #5FA2D3, #3B7FBA);
+        border-color: #2D6AA0;
+        color: #fff
+      }
+
+      .sec-hdr {
+        background: linear-gradient(180deg, #E8F4FD, #BCDCF4);
+        padding: 4px 10px;
+        font-weight: 700;
+        font-size: 9pt;
+        color: #1a3a5c;
+        border-bottom: 1px solid #9BBDE0;
+        height: 27px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer
+      }
+
+      .grid-wrap {
+        overflow-x: auto
+      }
+
+      table.grid {
+        width: 100%;
+        border-collapse: collapse;
+        font: 9pt "瀹嬩綋", SimSun, serif
+      }
+
+      table.grid th {
+        background: var(--ghdr);
+        border: 1px solid #C0C0C0;
+        padding: 4px 6px;
+        font-weight: 600;
+        text-align: left;
+        font-size: 9pt
+      }
+
+      table.grid td {
+        border: 1px solid #E0E0E0;
+        padding: 3px 6px;
+        font-size: 9pt;
+        cursor: pointer
+      }
+
+      table.grid tr:hover td {
+        background: var(--hdr)
+      }
+
+      .frow {
+        display: flex;
+        gap: 12px;
+        padding: 4px 12px;
+        flex-wrap: wrap;
+        align-items: center
+      }
+
+      .frow .fld {
+        display: flex;
+        align-items: center;
+        gap: 4px
+      }
+
+      .frow .fld label {
+        font: 10pt "寰蒋闆呴粦";
+        white-space: nowrap
+      }
+
+      .frow .fld .val {
+        padding: 2px 6px;
+        border: 1px solid var(--bdr);
+        border-radius: 2px;
+        background: #fff;
+        font: 10pt "寰蒋闆呴粦";
+        height: 29px;
+        display: flex;
+        align-items: center
+      }
+
+      .frow .fld .val.ro {
+        background: #F5F5F5
+      }
+
+      .stats {
+        width: 280px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 8px;
+        font-size: 9pt;
+        margin-left: 8px
+      }
+
+      .stats .sh {
+        font-weight: 700;
+        font-size: 10pt;
+        margin-bottom: 6px
+      }
+
+      .stats .ss {
+        margin-bottom: 6px;
+        background: #fff;
+        border: 1px solid var(--bdr);
+        border-radius: 3px;
+        padding: 6px 8px
+      }
+
+      .stats .ss h4 {
+        font-size: 8pt;
+        color: DimGray;
+        margin-bottom: 3px
+      }
+
+      .stats .tag {
+        font-size: 7pt;
+        padding: 1px 5px;
+        border-radius: 3px
+      }
+
+      .tag-tbl {
+        background: #E0F2FE;
+        color: #0369A1
+      }
+
+      .tag-form {
+        background: #FEF3C7;
+        color: #92400E
+      }
+
+      .src-note {
+        font-size: 7pt;
+        color: #92400E;
+        background: #FEFCE8;
+        padding: 5px 7px;
+        border-radius: 3px
+      }
+
+      .card {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        width: 380px;
+        background: #fff;
+        border: 1px solid #8492A0;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+        display: none;
+        z-index: 100;
+        font-size: 9pt
+      }
+
+      .card.show {
+        display: block
+      }
+
+      .card-hd {
+        background: var(--hdr);
+        padding: 8px 12px;
+        border-bottom: 1px solid #9BBDE0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move
+      }
+
+      .card-hd h3 {
+        font-size: 10pt;
+        color: #1a3a5c
+      }
+
+      .card-bd {
+        padding: 8px 10px
+      }
+
+      .card-bd dt {
+        font-size: 8pt;
+        color: DimGray;
+        margin-bottom: 1px
+      }
+
+      .card-bd dd {
+        font-size: 9pt;
+        color: var(--txt);
+        word-break: break-all;
+        margin-bottom: 3px
+      }
+
+      .path {
+        display: flex;
+        gap: 3px;
+        font-size: 8pt;
+        color: var(--grp);
+        margin-bottom: 5px;
+        flex-wrap: wrap
+      }
+
+      .path span {
+        background: #E8F0FE;
+        padding: 1px 4px;
+        border-radius: 2px
+      }
+
+      .path .ar {
+        color: DimGray;
+        background: none
+      }
+
+      .toast {
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: 4px;
+        font-size: 10pt;
+        z-index: 300;
+        opacity: 0;
+        transition: opacity .3s;
+        pointer-events: none
+      }
+
+      .toast.show {
+        opacity: 1
+      }
+    </style>
+</head>
+
+<body>
+  <div style="display:flex;gap:8px">
+    <div class="win">
+      <div class="topbar">
+        <div class="logo">MES 鍒堕€犳墽琛岀郴缁?/div><div class="info"><span>馃搮 2026-07-29</span><span
+              class="time">14:30:00</span><span>鏄熸湡涓?/span><span>| 绯荤粺杩炴帴锛氭甯?/span></div><span
+            class="ver">褰撳墠鐗堟湰锛?.0.5.74</span><span class="user">馃懁 瓒呯骇绠＄悊鍛?/span></div>
+        <div class="body">
+          <div class="left">
+            <div class="grp-title">涓诲鑸?/div><div class="tree-item">鏃?/div><div class="grp-title">鐢熶骇鎵ц</div>
+                <div class="tree-item">宸ュ崟鍚姩</div>
+                <div class="tree-item">宸ュ崟</div>
+                <div class="tree-item">鍘熸枡绉伴噸</div>
+                <div class="tree-item">鍘熸枡绉伴噸澶嶆牳</div>
+                <div class="tree-item">浣欐枡绉伴噸</div>
+                <div class="tree-item">绉伴噸璋冭瘯</div>
+                <div class="tree-item">澶╁钩璋冭瘯</div>
+                <div class="tree-item">BPR浣滀笟</div>
+                <div class="tree-item">BPR浣滀笟淇敼</div>
+                <div class="tree-item">閰嶅埗缃愭竻娲楀惎鍔?/div><div class="tree-item">棰勯厤缃愭竻娲楀惎鍔?/div><div class="tree-item">
+                      鍌ㄧ綈娓呮礂鍚姩</div>
+                    <div class="tree-item">閰嶅埗鍚庢竻娲?/div><div class="tree-item">涓嶉攬閽㈡竻娲楁秷姣?/div><div class="tree-item">
+                          璁惧娓呮礂娑堟瘨</div>
+                        <div class="tree-item sel">閰嶅埗浜у嚭</div>
+                        <div class="tree-item">鍗婃垚鍝佷骇鍑?/div><div class="tree-item">閰嶅埗缃愯緭鍑?/div><div class="tree-item">
+                              鍌ㄧ綈杈撳叆</div>
+                            <div class="tree-item">鍌ㄧ綈杈撳嚭</div>
+                            <div class="tree-item">鎶ュ簾鍗?/div><div class="tree-item">缃愯閫€鏂?/div><div class="tree-item">
+                                  鍐呮爤鏉垮寘瑁?/div><div class="tree-item">鎴愬搧鍖呰</div>
+                                  <div class="tree-item">杩斿伐璁板綍琛?/div><div class="tree-item">鎵瑰彿閲嶅嵃</div>
+                                    <div class="tree-item">閰嶅埗浜у嚭TK缁戝畾</div>
+                                    <div class="tree-item">鐢熶骇绾垮垎鎵?/div><div class="tree-item">涓績绾胯緭鍏?/div><div
+                                          class="tree-item">閰嶅埗璁惧妫€鏌ヨ褰?/div><div class="tree-item">
+                                            閰嶅埗鍖哄煙鐢熶骇鍓嶆竻鍦鸿褰?/div><div class="tree-item">鐢熶骇鍓嶇敓浜х嚎娓呭満妫€鏌ヨ〃</div>
+                                            <div class="tree-item">鍦ㄧ嚎浜у搧瑁呯閲嶉噺妫€鏌ヨ〃</div>
+                                            <div class="tree-item">璁惧鍋滄満璁板綍</div>
+                                            <div class="tree-item">鐢熶骇瀹炵哗褰曞叆</div>
+                                          </div>
+                                          <div class="right">
+                                            <div class="tabs">
+                                              <div class="tab">棣栭〉</div>
+                                              <div class="tab">璁惧鍚姩</div>
+                                              <div class="tab sel">閰嶅埗浜у嚭</div>
+                                            </div>
+                                            <div class="content">
+
+                                              <!-- ===== topmain: panelTitleZB + TopList ===== -->
+                                              <!-- panelTitleZB: GradientActiveCaption -->
+                                              <div class="sec-hdr" onclick="tgl('top')"><span id="tgl-top">鈭?/span>
+                                                  宸ュ崟淇℃伅</div>
+                                              <div id="sec-top">
+                                                <div
+                                                  style="padding:4px 10px;background:var(--bg);display:flex;gap:12px;align-items:center">
+                                                  <label style="font:10pt '寰蒋闆呴粦'">宸ュ崟锛?/label><input
+                                                      data-k="sMfgOrderNM" value="MO-SO251206750-02"
+                                                      style="width:200px;height:28px;font:9pt '寰蒋闆呴粦';border:1px solid #C0C0C0;border-radius:2px">
+                                                    <button class="btn primary" data-k="btnQueryMO">鏌ヨ</button>
+                                                </div>
+                                                <!-- LotList: 浜у嚭娴佹按鍙峰垪琛?-->
+                                                <div class="grid-wrap" style="max-height:150px">
+                                                  <table class="grid">
+                                                    <thead>
+                                                      <tr>
+                                                        <th>#</th>
+                                                        <th>閰嶅埗寮€濮嬫椂闂?/th>
+                                                        <th>閰嶅埗浜у嚭鏃堕棿</th>
+                                                        <th>鐢熶骇鎵瑰彿</th>
+                                                        <th>娴佹按鍙?/th>
+                                                        <th>鍑€閲?/th>
+                                                        <th>鐨噸</th>
+                                                        <th>姣涢噸</th>
+                                                        <th>璁惧鍚?TankNO)</th>
+                                                        <th>鍦ㄥ簱鐘舵€?/th>
+                                                        <th>鍝佽川鐘舵€?/th>
+                                                        <th>绉伴噸浜?/th>
+                                                        <th>鐘舵€?/th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr>
+                                                        <td>1</td>
+                                                        <td data-k="outStartTime">2026-07-23 08:00</td>
+                                                        <td data-k="outEndTime">2026-07-23 14:30</td>
+                                                        <td data-k="outBatch">2630</td>
+                                                        <td data-k="outLotNM">005226290006001</td>
+                                                        <td data-k="outNetW">4000.50</td>
+                                                        <td data-k="outSkinW">199.50</td>
+                                                        <td data-k="outGrossW">4200.00</td>
+                                                        <td data-k="outTankNO">PZ-Tank-01</td>
+                                                        <td data-k="outStockStatus">鍦ㄥ簱</td>
+                                                        <td data-k="outQCStatus">寰呮</td>
+                                                        <td data-k="outWeigher">瓒呯骇绠＄悊鍛?/td>
+                                                        <td data-k="outStatus">宸蹭骇鍑?/td>
+                                                      </tr>
+                                                    </tbody>
+                                                  </table>
+                                                </div>
+                                              </div>
+
+                                              <!-- ===== mainbtoom: title2(pTitleCZ) + titi(鎿嶄綔鍖? ===== -->
+                                              <!-- panelTitleCZ: GradientActiveCaption, 27px -->
+                                              <div class="sec-hdr" onclick="tgl('bottom')"><span
+                                                  id="tgl-bottom">鈭?/span> 浜у嚭</div>
+                                              <div id="sec-bottom" style="padding:4px 10px">
+
+                                                <!-- titi: 鎿嶄綔鍖?-->
+                                                <div class="frow">
+                                                  <div class="fld"><label>鐨噸锛?/label><span
+                                                        style="color:red;font:10pt '寰蒋闆呴粦'">*</span>
+                                                      <div class="val ro" style="width:160px" data-k="opSkinW">199.50
+                                                      </div>
+                                                  </div>
+                                                  <div class="fld"><label>姣涢噸锛?/label><span
+                                                        style="color:red;font:10pt '寰蒋闆呴粦'">*</span>
+                                                      <div class="val ro" style="width:160px" data-k="opGrossW">4200.00
+                                                      </div>
+                                                  </div>
+                                                  <div class="fld"><label>鍑€閲嶏細</label><span
+                                                      style="color:red;font:10pt '寰蒋闆呴粦'">*</span>
+                                                    <div class="val ro" style="width:160px;font-weight:700"
+                                                      data-k="opNetW">4000.50</div>
+                                                  </div>
+                                                  <div class="fld"><label>鏈夋晥鏃ユ湡锛?/label><select
+                                                        data-k="opExpDateSelect"
+                                                        style="width:149px;height:35px;font:12pt '寰蒋闆呴粦'">
+                                                        <option>+1骞?/option>
+                                                        <option>+2骞?/option>
+                                                      </select></div>
+                                                  <div class="fld"><label>鏃ユ湡锛?/label><input data-k="opExpDate"
+                                                        value="2027-07-23"
+                                                        style="width:276px;height:34px;font:12pt '寰蒋闆呴粦';border:1px solid #C0C0C0;border-radius:2px">
+                                                  </div>
+                                                </div>
+                                                <div class="frow" style="gap:8px;margin-top:4px">
+                                                  <button class="btn primary"
+                                                    style="font:12pt '寰蒋闆呴粦';width:147px;height:44px"
+                                                    data-k="btnOutput">浜у嚭</button>
+                                                  <button class="btn"
+                                                    style="font:12pt '寰蒋闆呴粦';width:147px;height:44px;color:red"
+                                                    data-k="btnRemove">搴熼櫎</button>
+                                                  <button class="btn" style="font:12pt '寰蒋闆呴粦';width:147px;height:44px"
+                                                    data-k="btnReprint">閲嶅嵃</button>
+                                                </div>
+                                              </div>
+
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="stats">
+                                        <div class="sh">&#x1F4CA; 璋冪敤缁熻<span class="tag tag-form"
+                                            style="margin-left:4px">CS&#xB7;閰嶅埗浜у嚭</span></div>
+                                        <div style="display:flex;gap:8px;margin-bottom:6px">
+                                          <div
+                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">4</div>
+                                            <div style="font-size:7pt;color:DimGray">鏁版嵁搴撹〃</div>
+                                          </div>
+                                          <div
+                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">0</div>
+                                            <div style="font-size:7pt;color:DimGray">瀛樺偍杩囩▼</div>
+                                          </div>
+                                          <div
+                                            style="flex:1;text-align:center;background:#fff;border:1px solid var(--bdr);border-radius:3px;padding:4px">
+                                            <div style="font-weight:700;font-size:12pt;color:#1a3a5c">1</div>
+                                            <div style="font-size:7pt;color:DimGray">DAL绫?/div></div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px"></span>&#x1F4CA;
+                                              鏁版嵁搴撹〃</h4>
+                                            <div style="font-size:8pt;line-height:1.7">
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">MfgOrder</span>
+                                                <span class="tag tag-tbl">宸ュ崟</span></div>
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">PZOutputHistory</span>
+                                                <span class="tag tag-tbl">閰嶅埗浜у嚭</span></div>
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">DispatchHistory</span>
+                                                <span class="tag tag-tbl">鍙戞枡鍘嗗彶</span></div>
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">Product</span>
+                                                <span class="tag tag-tbl">鐗╂枡</span></div>
+                                            </div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:4px"></span>&#x2699;
+                                              瀛樺偍杩囩▼</h4>
+                                            <div style="font-size:8pt;color:#888;padding:2px 4px">閫氳繃 DAL&#x2192;WebAPI
+                                              鐩存帴鎿嶄綔锛屾湭浣跨敤鐙珛瀛樺偍杩囩▼</div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin-right:4px"></span>&#x1F9E9;
+                                              鏁版嵁璁块棶灞?(DAL)</h4>
+                                            <div style="font-size:8pt;line-height:1.7">
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">MESZZZX_PZOutputDAL</span>
+                                                <span class="tag tag-bll">閰嶅埗浜у嚭</span></div>
+                                              <div style="margin-left:10px;color:#888;font-size:7pt">GetPZOutput /
+                                                SavePZOutput / GetMfgOrderInfo</div>
+                                            </div>
+                                          </div>
+                                          <div class="ss">
+                                            <h4><span
+                                                style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin-right:4px"></span>&#x1F5A5;
+                                              绐椾綋</h4>
+                                            <div style="font-size:8pt;line-height:1.7">
+                                              <div><span
+                                                  style="font-family:Consolas,monospace;color:#1a3a5c">frmME_PZOutput</span>
+                                                <span class="tag tag-form">閰嶅埗浜у嚭涓婚〉</span></div>
+                                            </div>
+                                          </div>
+                                          <div class="src-note"><b>&#x2705; 婧愮爜楠岃瘉锛?/b>
+                                              frmME_PZOutput.Designer.cs<br>GradientActiveCaption&#xD7;2&#xB7;鎸夐挳12F&#xB7;DateTimePicker
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <aside class="card" id="card">
+                                        <div class="card-hd">
+                                          <div><small>FIELD DATA LINEAGE</small>
+                                            <h3 id="title"></h3>
+                                          </div><button onclick="cl()"
+                                            style="border:none;background:none;font-size:16px;cursor:pointer;color:DimGray">鉁?/button>
+                                        </div>
+                                        <div class="card-bd">
+                                          <div class="path" id="pth"></div>
+                                          <dl>
+                                            <dt>瀛楁鍚?/dt>
+                                            <dd id="label"></dd>
+                                          </dl>
+                                          <dl>
+                                            <dt>鏁版嵁鏉ユ簮</dt>
+                                            <dd id="source"></dd>
+                                          </dl>
+                                          <dl>
+                                            <dt>鎺т欢绫诲瀷</dt>
+                                            <dd id="type"></dd>
+                                          </dl>
+                                          <dl>
+                                            <dt>璋冪敤閾捐矾</dt>
+                                            <dd id="formula"></dd>
+                                          </dl>
+                                        </div>
+                                      </aside>
+                                      <script>
+                                        function tgl(id) {
+                                          var items = document.querySelectorAll('#sec-' + id); var t = document.getElementById('tgl-' + id); var hidden = items[0].style.display === 'none'; items.forEach(function (el) { el.style.display = hidden ? '' : 'none' }); t.textContent = hidden ? '+' : '鈭?}
+                                          const map = {
+                                            sMfgOrderNM: ['宸ュ崟鎼滅储', 'ComboGrid', 'ComboGrid', '宸ュ崟鈫掑姞杞戒骇鍑哄垪琛?,['frmME_PZOutput']],
+outStartTime: ['閰嶅埗寮€濮嬫椂闂?,'PZOutputHistory路閰嶅埗寮€濮嬫椂闂 ?, 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                              outEndTime: ['閰嶅埗浜у嚭鏃堕棿', 'PZOutputHistory路閰嶅埗浜у嚭鏃堕棿', 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                              outBatch: ['鐢熶骇鎵瑰彿', 'PZOutputHistory路鐢熶骇鎵瑰彿', 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                              outLotNM: ['娴佹按鍙?,'PZOutputHistory路娴佹按鍙 ?, 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                              outNetW: ['鍑€閲?,'PZOutputHistory路鍑€閲 ?, 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                              outSkinW: ['鐨噸', 'PZOutputHistory路鐨噸', 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                              outGrossW: ['姣涢噸', 'PZOutputHistory路姣涢噸', 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                              outTankNO: ['璁惧鍚?TankNO)', 'PZOutputHistory路璁惧鍚?,'DataGridView col','浜у嚭鍒楄〃',['PZOutputHistory']],
+outStockStatus: ['鍦ㄥ簱鐘舵€?,'PZOutputHistory路鍦ㄥ簱鐘舵€?, 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                                outQCStatus: ['鍝佽川鐘舵€?,'PZOutputHistory路鍝佽川鐘舵€?, 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                                outWeigher: ['绉伴噸浜?,'PZOutputHistory路绉伴噸浜 ?, 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                                outStatus: ['鐘舵€?,'PZOutputHistory路鐘舵€?, 'DataGridView col', '浜у嚭鍒楄〃', ['PZOutputHistory']],
+                                                opSkinW: ['鐨噸', 'SkinWeight路label9', 'TextBox 12F路ReadOnly', '閫変腑琛屸啋濉厖', ['SkinWeight']],
+                                                opGrossW: ['姣涢噸', 'GrossWeight路label8', 'TextBox 12F路ReadOnly', '閫変腑琛屸啋濉厖', ['GrossWeight']],
+                                                opNetW: ['鍑€閲?,'NetWeight路label7','TextBox 12F路ReadOnly','閫変腑琛屸啋濉厖',['NetWeight']],
+opExpDateSelect: ['鏈夋晥鏃ユ湡閫夋嫨', 'cbExpirationDate', 'ComboBox 12F路149脳35', '+1骞?+2骞撮€夋嫨', ['cbExpirationDate']],
+                                                  opExpDate: ['鏃ユ湡', 'dtpExpirationDate', 'DateTimePicker 12F路276脳34', '鏈夋晥鏃ユ湡', ['dtpExpirationDate']],
+                                                  btnQueryMO: ['鏌ヨ', '鎼滅储鎸夐挳', 'Button', '宸ュ崟鈫掑姞杞戒骇鍑哄垪琛?,['frmME_PZOutput']],
+btnOutput: ['浜у嚭', 'btnOutput_Click', 'Button 12F路147脳44', '纭閰嶅埗浜у嚭鈫掔敓鎴怢ot', ['btnOutput']],
+                                                    btnRemove: ['搴熼櫎', 'btnRemove_Click', 'Button 12F路147脳44路绾㈠瓧', '搴熼櫎浜у嚭璁板綍', ['btnRemove']],
+                                                    btnReprint: ['閲嶅嵃', 'btnReprint_Click', 'Button 12F路147脳44', '琛ュ嵃浜у嚭鏍囩', ['btnReprint']]};
+                                          const card = document.getElementById('card');
+                                          function show(k) { const f = map[k]; if (!f) return; document.getElementById('title').textContent = f[0]; document.getElementById('label').textContent = f[0]; document.getElementById('source').textContent = f[1]; document.getElementById('type').textContent = f[2]; document.getElementById('formula').textContent = f[3]; card.classList.add('show') }
+                                          function cl() { card.classList.remove('show') }
+                                          document.querySelectorAll('[data-k]').forEach(n => n.addEventListener('click', function (e) { e.stopPropagation(); show(this.dataset.k) }));
+                                          var drag = null, hd = card.querySelector('.card-hd'); hd.onpointerdown = function (e) { if (e.target.tagName === 'BUTTON' || !card.classList.contains('show')) return; var r = card.getBoundingClientRect(); drag = { x: e.clientX - r.left, y: e.clientY - r.top }; hd.setPointerCapture(e.pointerId) }; hd.onpointermove = function (e) { if (!drag) return; card.style.left = Math.max(8, Math.min(innerWidth - card.offsetWidth - 8, e.clientX - drag.x)) + 'px'; card.style.top = Math.max(8, Math.min(innerHeight - card.offsetHeight - 8, e.clientY - drag.y)) + 'px' }; hd.onpointerup = function () { drag = null }; document.addEventListener('click', function (e) { if (card.classList.contains('show') && !card.contains(e.target) && !e.target.closest('[data-k]')) card.classList.remove('show') });
+                                      </script>
+                                      <div class="toast" id="toast"></div>
+</body>
+
+</html>
