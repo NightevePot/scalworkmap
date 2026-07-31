@@ -1,0 +1,10 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "fix-cs-encoding",
+			"type": "shell",
+			"command": "node E:\\code\\scal-pda-f\\workspace\\deepseek\\fix_encoding.js"
+		}
+	]
+}
